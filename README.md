@@ -163,6 +163,13 @@ in [Repo MetAudits' METHODOLOGY.md](https://metaudits.rijdho.org/repo-metaudits/
 cross-validated against the independent [FAIR-Checker](https://fair-checker.france-bioinformatique.fr/)
 tool. Because the engine here is a faithful port, those results carry over.
 
+## Citation
+
+If you use this tool or its rubric, please cite it — see [`CITATION.cff`](CITATION.cff) or the
+"Cite this repository" button. Archived on Zenodo: concept DOI
+[10.5281/zenodo.21492530](https://doi.org/10.5281/zenodo.21492530) (always resolves to the
+latest version).
+
 ## License
 
 [MIT](LICENSE) — reuse and adapt freely.
