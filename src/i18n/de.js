@@ -41,6 +41,7 @@ export const de = {
   "ui.dc.mode.aria": "DataCite durchsuchen nach",
   "ui.dc.sample.label": "Zu bewertende Datensätze",
   "ui.dc.until.label": "Bis Publikationsjahr",
+  "ui.footer.cite": "Zum Zitieren dieses Tools: <a href=\"https://doi.org/10.5281/zenodo.21492530\" target=\"_blank\" rel=\"noreferrer\">doi:10.5281/zenodo.21492530</a> — der DOI verweist stets auf die neueste Version.",
   "ui.footer.contact": "Bei Fragen zur Datennutzung oder Namensnennung: <a href=\"https://life.rijdho.org\" target=\"_blank\" rel=\"noreferrer\">@rijdho</a>",
   "ui.footer.twin": "Offener Zwilling von <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">Repo MetAudits</a> — dasselbe Raster mit 14 Teilprinzipien, clientseitig umgesetzt, plus Konzeptvollständigkeit im MGC-Stil. MIT · <a href=\"https://github.com/rijdho/fair-repo-audit\" target=\"_blank\" rel=\"noreferrer\">github.com/rijdho/fair-repo-audit</a>",
   "ui.kind.clientId": "Client ID",
