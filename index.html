@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>fair-repo-audit — FAIR metadata readout</title>
+  <meta name="description" data-i18n-attr="content:meta.description" content="Point it at a DataCite or OAI-PMH repository and read its FAIR metadata quality — 14 sub-principle scores plus field-level completeness. 100% client-side, rubric fully open." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236d4aff'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%23ffffff' font-family='monospace' font-weight='bold'%3EF%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css?v=24" />
+</head>
+<body>
+  <div class="app" id="app">
+    <aside class="rail">
+      <div class="brand-mark">
+        <div class="brand-glyph" aria-hidden="true"></div>
+        <div>
+          <h1 class="brand-name">fair-repo-audit</h1>
+          <div class="brand-sub">rijdho.github.io</div>
+        </div>
+      </div>
+      <div class="nav-label" data-i18n="ui.tabs.aria">Metadata source</div>
+      <nav aria-label="Metadata source" data-i18n-attr="aria-label:ui.tabs.aria">
+        <button class="nav-item tab active" data-mode="datacite"><span class="nav-step">DC</span><span class="nav-lbl">DataCite</span></button>
+        <button class="nav-item tab" data-mode="oai"><span class="nav-step">OA</span><span class="nav-lbl">OAI-PMH</span></button>
+        <button class="nav-item tab" data-mode="compare"><span class="nav-step">VS</span><span class="nav-lbl" data-i18n="ui.tabs.compare">Compare</span></button>
+      </nav>
+      <div class="rail-foot">
+        <span data-i18n-html="ui.footer.contact">For questions about data usage or attribution: <a href="https://life.rijdho.org" target="_blank" rel="noreferrer">@rijdho</a></span>
+        <br />
+        MIT · <a href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer">github</a>
+      </div>
+    </aside>
+    <button class="rail-backdrop" id="rail-backdrop" aria-label="Close menu" data-i18n-attr="aria-label:ui.nav.close" tabindex="-1"></button>
+    <div class="main-col">
+      <div class="cmdbar">
+        <button class="menu-btn" id="menu" aria-label="Menu" data-i18n-attr="aria-label:ui.nav.menu"><svg viewBox="0 0 24 24" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg></button>
+        <div class="cmd-title" id="cmd-title">DataCite</div>
+        <div class="cmd-spacer"></div>
+        <div class="langs" id="lang" role="group" aria-label="Language" data-i18n-attr="aria-label:ui.lang.aria"></div>
+        <a class="ghost-btn" href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer" data-i18n="ui.brand.source">source ↗</a>
+        <button id="theme" class="icon-btn" title="Toggle theme" aria-label="Toggle light/dark theme"
+                data-i18n-attr="title:ui.theme.title;aria-label:ui.theme.aria"></button>
+      </div>
+      <main class="content">
+        <div class="content-inner">
+          <p class="eyebrow" data-i18n="ui.brand.tagline">A readout of FAIR metadata quality for research repositories</p>
+          <p class="lede" data-i18n-html="ui.lede">
+            Point it at a repository and read how <b>FAIR</b> its metadata is — the 14 sub-principle score,
+            then the field-level completeness behind it. Everything runs in your browser against live data;
+            nothing is uploaded. The rubric is <a href="https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js" target="_blank" rel="noreferrer">fully open</a>.
+          </p>
+
+          <!-- DataCite -->
+          <section id="panel-datacite" class="panel active">
+            <div id="dc-mode" class="radios" role="radiogroup" aria-label="Search DataCite by" data-i18n-attr="aria-label:ui.dc.mode.aria">
+              <label><input type="radio" name="dcmode" value="clientId" checked /> <span data-i18n="ui.kind.clientId">Client ID</span></label>
+              <label><input type="radio" name="dcmode" value="prefix" /> <span data-i18n="ui.kind.prefix">DOI prefix</span></label>
+              <label><input type="radio" name="dcmode" value="publisher" /> <span data-i18n="ui.kind.publisher">Publisher</span></label>
+            </div>
+            <div class="input-row">
+              <div class="dc-input-wrap">
+                <input id="dc-input" type="text" placeholder="dryad.dryad · 10.5281 · PANGAEA" aria-label="DataCite query"
+                       data-i18n-attr="aria-label:ui.dc.input.aria"
+                       role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="dc-suggest-list" autocomplete="off" />
+                <ul id="dc-suggest-list" class="suggest-list" role="listbox" aria-label="Matching repositories" data-i18n-attr="aria-label:ui.suggest.aria" hidden></ul>
+              </div>
+              <select id="dc-sample" title="Records to assess" aria-label="Records to assess" data-i18n-attr="title:ui.dc.sample.label;aria-label:ui.dc.sample.label">
+                <option value="25">25</option>
+                <option value="100">100</option>
+                <option value="250">250</option>
+                <option value="all" data-i18n="ui.sample.all">All ≤10k</option>
+              </select>
+              <button id="dc-analyze" class="btn" data-i18n="ui.btn.analyze">Analyze</button>
+            </div>
+            <div class="year-row">
+              <span class="eyebrow" data-i18n="ui.years.label">Years</span>
+              <select id="dc-from" title="From publication year" aria-label="From publication year" data-i18n-attr="title:ui.dc.from.label;aria-label:ui.dc.from.label"><option value="" data-i18n="ui.year.any">Any</option></select>
+              <span class="year-dash">–</span>
+              <select id="dc-until" title="Until publication year" aria-label="Until publication year" data-i18n-attr="title:ui.dc.until.label;aria-label:ui.dc.until.label"><option value="" data-i18n="ui.year.any">Any</option></select>
+              <button id="dc-suggest" class="btn ghost" title="Show how this repository's records are distributed by publication year, then click to focus a range"
+                      data-i18n="ui.btn.suggestYears" data-i18n-attr="title:ui.btn.suggestYears.title">Suggest years</button>
+              <button id="dc-year-clear" class="btn ghost" data-i18n="ui.btn.clear" hidden>Clear</button>
+            </div>
+            <div id="dc-yearviz" class="yearviz" hidden></div>
+            <div class="examples">
+              <span class="eyebrow" data-i18n="ui.try">Try</span>
+              <button class="example" data-mode="clientId" data-value="dryad.dryad">Dryad</button>
+              <button class="example" data-mode="clientId" data-value="gdcc.harvard-dv">Harvard Dataverse</button>
+              <button class="example" data-mode="prefix" data-value="10.5281">Zenodo</button>
+              <button class="example" data-mode="publisher" data-value="PANGAEA">PANGAEA</button>
+            </div>
+          </section>
+
+          <!-- OAI-PMH -->
+          <section id="panel-oai" class="panel">
+            <div class="input-row">
+              <input id="oai-input" type="text" placeholder="OAI-PMH base URL · https://zenodo.org/oai2d" aria-label="OAI-PMH base URL"
+                     data-i18n-attr="placeholder:ui.oai.input.placeholder;aria-label:ui.oai.input.aria" />
+              <select id="oai-sample" title="Records to harvest" aria-label="Records to harvest" data-i18n-attr="title:ui.oai.sample.label;aria-label:ui.oai.sample.label">
+                <option value="25">25</option>
+                <option value="50" selected>50</option>
+                <option value="100">100</option>
+                <option value="250">250</option>
+              </select>
+              <button id="oai-analyze" class="btn" data-i18n="ui.btn.analyze">Analyze</button>
+            </div>
+            <div class="year-row">
+              <span class="eyebrow" data-i18n="ui.oai.years.label">Record years</span>
+              <select id="oai-from" title="From record datestamp year" aria-label="From record datestamp year" data-i18n-attr="title:ui.oai.from.label;aria-label:ui.oai.from.label"><option value="" data-i18n="ui.year.any">Any</option></select>
+              <span class="year-dash">–</span>
+              <select id="oai-until" title="Until record datestamp year" aria-label="Until record datestamp year" data-i18n-attr="title:ui.oai.until.label;aria-label:ui.oai.until.label"><option value="" data-i18n="ui.year.any">Any</option></select>
+              <button id="oai-year-clear" class="btn ghost" data-i18n="ui.btn.clear" hidden>Clear</button>
+              <span class="year-note" data-i18n-html="ui.oai.yearNote">filters by record <b>datestamp</b> (added / updated in the repo), not publication year</span>
+            </div>
+            <details class="advanced">
+              <summary data-i18n="ui.oai.proxy.summary">CORS proxy (advanced)</summary>
+              <p class="muted" data-i18n-html="ui.oai.proxy.desc">OAI-PMH endpoints rarely send CORS headers, so requests route through a thin relay
+                — no scoring logic, see <code>cors-proxy/</code>. Leave blank for the default, or paste your own
+                <code>…workers.dev/?url=</code>.</p>
+              <input id="oai-proxy" type="text" placeholder="https://your-proxy.workers.dev/?url=" aria-label="CORS proxy URL" data-i18n-attr="aria-label:ui.oai.proxy.aria" />
+            </details>
+            <div class="examples">
+              <span class="eyebrow" data-i18n="ui.try">Try</span>
+              <button class="example" data-value="https://zenodo.org/oai2d">Zenodo</button>
+              <button class="example" data-value="https://oai.datacite.org/oai">DataCite OAI</button>
+            </div>
+          </section>
+
+          <!-- Compare -->
+          <section id="panel-compare" class="panel">
+            <div class="cmp-grid">
+              <div class="cmp-col">
+                <span class="eyebrow" data-i18n="ui.cmp.repoA">Repository A</span>
+                <div class="cmp-inrow">
+                  <select id="cmp-a-kind" class="cmp-kind" aria-label="A source type" data-i18n-attr="aria-label:ui.cmp.a.kind.aria">
+                    <option value="clientId" data-i18n="ui.kind.clientId">Client ID</option>
+                    <option value="prefix" data-i18n="ui.kind.prefix">DOI prefix</option>
+                    <option value="publisher" data-i18n="ui.kind.publisher">Publisher</option>
+                    <option value="oai">OAI-PMH URL</option>
+                  </select>
+                  <div class="dc-input-wrap">
+                    <input id="cmp-a-input" type="text" placeholder="dryad.dryad" aria-label="A query" data-i18n-attr="aria-label:ui.cmp.a.input.aria"
+                           role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cmp-a-suggest-list" autocomplete="off" />
+                    <ul id="cmp-a-suggest-list" class="suggest-list" role="listbox" aria-label="Matching repositories" data-i18n-attr="aria-label:ui.suggest.aria" hidden></ul>
+                  </div>
+                </div>
+              </div>
+              <div class="cmp-col">
+                <span class="eyebrow" data-i18n="ui.cmp.repoB">Repository B</span>
+                <div class="cmp-inrow">
+                  <select id="cmp-b-kind" class="cmp-kind" aria-label="B source type" data-i18n-attr="aria-label:ui.cmp.b.kind.aria">
+                    <option value="clientId" data-i18n="ui.kind.clientId">Client ID</option>
+                    <option value="prefix" data-i18n="ui.kind.prefix">DOI prefix</option>
+                    <option value="publisher" data-i18n="ui.kind.publisher">Publisher</option>
+                    <option value="oai">OAI-PMH URL</option>
+                  </select>
+                  <div class="dc-input-wrap">
+                    <input id="cmp-b-input" type="text" placeholder="gdcc.harvard-dv" aria-label="B query" data-i18n-attr="aria-label:ui.cmp.b.input.aria"
+                           role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="cmp-b-suggest-list" autocomplete="off" />
+                    <ul id="cmp-b-suggest-list" class="suggest-list" role="listbox" aria-label="Matching repositories" data-i18n-attr="aria-label:ui.suggest.aria" hidden></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="cmp-actions">
+              <select id="cmp-sample" title="Records per side" aria-label="Records per side" data-i18n-attr="title:ui.cmp.sample.label;aria-label:ui.cmp.sample.label">
+                <option value="25" data-i18n="ui.cmp.sample.25">25 each</option>
+                <option value="100" data-i18n="ui.cmp.sample.100">100 each</option>
+              </select>
+              <button id="cmp-analyze" class="btn" data-i18n="ui.btn.compare">Compare</button>
+            </div>
+            <p class="muted" style="margin-top:12px" data-i18n="ui.cmp.note">e.g. Dryad vs Harvard Dataverse, or PANGAEA vs Zenodo. Both sides can be DataCite or OAI-PMH; the concept diff shows when both are the same kind.</p>
+          </section>
+
+          <div id="status" class="status" style="display:none" role="status" aria-live="polite"></div>
+          <div id="results" style="display:none"></div>
+
+          <footer>
+            <p data-i18n-html="ui.footer.twin">Open twin of <a href="https://metaudits.rijdho.org/repo-metaudits/" target="_blank" rel="noreferrer">Repo MetAudits</a> —
+              the same 14-sub-principle rubric, moved client-side, plus MGC-style concept completeness.
+              MIT · <a href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer">github.com/rijdho/fair-repo-audit</a></p>
+          </footer>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="./src/app.js?v=25"></script>
+</body>
+</html>
