@@ -1,6 +1,6 @@
 # fair-repo-audit
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21492530.svg)](https://doi.org/10.5281/zenodo.21492530)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21492530.svg?v=2)](https://doi.org/10.5281/zenodo.21492530)
 
 **Score the FAIR metadata quality of any DataCite or OAI-PMH repository — entirely in your browser.**
 
