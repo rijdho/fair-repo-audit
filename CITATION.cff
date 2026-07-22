@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use this tool or its rubric, please cite it as below."
+title: "fair-repo-audit"
+abstract: >-
+  A static, client-side web tool that scores the FAIR metadata quality of any
+  DataCite or OAI-PMH repository against 14 FAIR sub-principles, with
+  concept-completeness profiles, per-record heatmaps, temporal trends and a
+  side-by-side compare mode. Multilingual (EN/ES/FR/DE). The open twin of the
+  hosted Repo MetAudits service: the scoring engine is a faithful,
+  fully-readable port, so scores match across both tools.
+type: software
+authors:
+  - family-names: "Hartley Belmar"
+    given-names: "Ricardo"
+    alias: rijdho
+    orcid: "https://orcid.org/0000-0001-5058-9309"
+repository-code: "https://github.com/rijdho/fair-repo-audit"
+url: "https://rijdho.github.io/fair-repo-audit/"
+license: MIT
+version: "1.2.0"
+date-released: "2026-07-22"
+keywords:
+  - FAIR principles
+  - research data management
+  - metadata quality
+  - DataCite
+  - OAI-PMH
+  - open science
+  - repository assessment
