@@ -1,5 +1,7 @@
 # fair-repo-audit
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21492530.svg)](https://doi.org/10.5281/zenodo.21492530)
+
 **Score the FAIR metadata quality of any DataCite or OAI-PMH repository — entirely in your browser.**
 
 A static, dependency-free web app. Point it at a DataCite client / prefix / publisher, or an
