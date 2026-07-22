@@ -42,6 +42,7 @@ export const fr = {
   "ui.dc.mode.aria": "Rechercher dans DataCite par",
   "ui.dc.sample.label": "Notices à évaluer",
   "ui.dc.until.label": "Jusqu'à l'année de publication",
+  "ui.footer.cite": "Pour citer cet outil : <a href=\"https://doi.org/10.5281/zenodo.21492530\" target=\"_blank\" rel=\"noreferrer\">doi:10.5281/zenodo.21492530</a> — le DOI renvoie toujours à la dernière version.",
   "ui.footer.contact": "Pour toute question sur l'usage des données ou l'attribution : <a href=\"https://life.rijdho.org\" target=\"_blank\" rel=\"noreferrer\">@rijdho</a>",
   "ui.footer.twin": "Jumeau ouvert de <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">Repo MetAudits</a> — le même barème à 14 sous-principes, déplacé côté client, plus la complétude des concepts façon MGC. MIT · <a href=\"https://github.com/rijdho/fair-repo-audit\" target=\"_blank\" rel=\"noreferrer\">github.com/rijdho/fair-repo-audit</a>",
   "ui.kind.clientId": "Identifiant client",

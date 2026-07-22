@@ -41,6 +41,7 @@ export const es = {
   "ui.dc.mode.aria": "Buscar en DataCite por",
   "ui.dc.sample.label": "Registros a evaluar",
   "ui.dc.until.label": "Hasta el año de publicación",
+  "ui.footer.cite": "Para citar esta herramienta: <a href=\"https://doi.org/10.5281/zenodo.21492530\" target=\"_blank\" rel=\"noreferrer\">doi:10.5281/zenodo.21492530</a> — el DOI siempre resuelve a la última versión.",
   "ui.footer.contact": "Para consultas sobre uso de datos o atribución: <a href=\"https://life.rijdho.org\" target=\"_blank\" rel=\"noreferrer\">@rijdho</a>",
   "ui.footer.twin": "Gemelo abierto de <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">Repo MetAudits</a>: la misma rúbrica de 14 subprincipios, trasladada al navegador, más la completitud de conceptos al estilo MGC. MIT · <a href=\"https://github.com/rijdho/fair-repo-audit\" target=\"_blank\" rel=\"noreferrer\">github.com/rijdho/fair-repo-audit</a>",
   "ui.kind.clientId": "Client ID",
