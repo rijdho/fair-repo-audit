@@ -14,6 +14,7 @@ authors:
     given-names: "Ricardo"
     alias: rijdho
     orcid: "https://orcid.org/0000-0001-5058-9309"
+doi: 10.5281/zenodo.21492530
 identifiers:
   - type: doi
     value: 10.5281/zenodo.21492530
