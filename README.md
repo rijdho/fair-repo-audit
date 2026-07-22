@@ -10,6 +10,8 @@ sub-principles**. Nothing is uploaded or stored; all computation runs client-sid
 
 🔗 **Live:** https://rijdho.github.io/fair-repo-audit/
 
+Available in **English, Spanish, French and German** (auto-detected, switchable).
+
 This is the **open twin** of [Repo MetAudits](https://metaudits.rijdho.org/repo-metaudits/).
 That tool keeps its scoring engine server-side (protected); this one moves the *same* rubric
 into the browser where it is fully visible — inspired by the open, client-side philosophy of
@@ -163,13 +165,13 @@ in [Repo MetAudits' METHODOLOGY.md](https://metaudits.rijdho.org/repo-metaudits/
 cross-validated against the independent [FAIR-Checker](https://fair-checker.france-bioinformatique.fr/)
 tool. Because the engine here is a faithful port, those results carry over.
 
+## License
+
+[MIT](LICENSE) — reuse and adapt freely.
+
 ## Citation
 
 If you use this tool or its rubric, please cite it — see [`CITATION.cff`](CITATION.cff) or the
 "Cite this repository" button. Archived on Zenodo: concept DOI
 [10.5281/zenodo.21492530](https://doi.org/10.5281/zenodo.21492530) (always resolves to the
 latest version).
-
-## License
-
-[MIT](LICENSE) — reuse and adapt freely.
