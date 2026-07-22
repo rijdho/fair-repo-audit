@@ -421,13 +421,13 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
 .cmp-q { font-family: var(--mono); font-size: .78rem; color: var(--text); white-space: nowrap;
   overflow: hidden; text-overflow: ellipsis; }
 .cmp-lgd { display: inline-flex; float: right; margin-top: 0; }
-.cmp-prow { display: grid; grid-template-columns: 168px 1fr 66px; gap: 12px; align-items: center; margin-bottom: 7px; font-size: .82rem; }
+.cmp-prow { display: grid; grid-template-columns: 168px 1fr 80px; gap: 12px; align-items: center; margin-bottom: 7px; font-size: .82rem; }
 .cmp-plabel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .cmp-bars { display: flex; flex-direction: column; gap: 3px; }
 .cmp-bars .bar { height: 6px; }
 @media (max-width: 620px) {
   .cmp-grid, .cmp-heads { grid-template-columns: 1fr; }
-  .cmp-prow { grid-template-columns: 110px 1fr 58px; }
+  .cmp-prow { grid-template-columns: 110px 1fr 64px; }
 }
 
 footer { margin: 26px 0 0; padding: 18px 0 8px; color: var(--muted); font-size: .8rem;
