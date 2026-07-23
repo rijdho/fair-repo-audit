@@ -98,15 +98,51 @@ let lastCompare = null;
 
 // ── Tabs (rail nav) ──
 const updateCmdTitle = () => { const a = $('.tab.active .nav-lbl'); if (a) $('#cmd-title').textContent = a.textContent; };
+let resultsMode = null; // which tab produced what's in #results
 $$('.tab').forEach(tab => tab.addEventListener('click', () => {
   $$('.tab').forEach(x => x.classList.toggle('active', x === tab));
   $$('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab.dataset.mode}`));
-  // Results belong to the analysis that produced them — clear them when switching tabs.
-  const r = $('#results'); r.innerHTML = ''; r.style.display = 'none';
-  status('');
+  const r = $('#results'), s = $('#status'), mode = tab.dataset.mode;
+  if (mode === 'how') {
+    // The guide is a reading room, not an analysis source — park the results, don't burn them.
+    r.style.display = 'none'; s.style.display = 'none';
+  } else if (mode === resultsMode && r.children.length) {
+    r.style.display = 'block';
+    if (s.textContent) s.style.display = 'block';
+  } else {
+    // Results belong to the analysis that produced them — clear them when switching sources.
+    r.innerHTML = ''; r.style.display = 'none'; resultsMode = null;
+    status('');
+  }
   updateCmdTitle();
   $('#app').classList.remove('rail-open'); // mobile: picking a source closes the drawer
 }));
+
+// ── "How it works": the 14 checks, rendered from the same i18n keys the results views use ──
+const HOW_PRINCIPLES = [
+  ['F', ['F1', 'F2', 'F3', 'F4']],
+  ['A', ['A1', 'A1.1', 'A2']],
+  ['I', ['I1', 'I2', 'I3']],
+  ['R', ['R1', 'R1.1', 'R1.2', 'R1.3']],
+];
+function renderHowChecks() {
+  const box = $('#how-checks'); if (!box) return;
+  box.innerHTML = '';
+  for (const [p, ids] of HOW_PRINCIPLES) {
+    const head = el('div', 'cg-head');
+    head.innerHTML = `<span class="cg-letter f-ink-${p}">${p}</span>`
+      + `<span class="cg-name">${esc(t(`principle.${p}`))}</span>`
+      + `<span class="cg-gloss">${esc((PRINCIPLE_GLOSS[p] || '').split(' — ')[1] || '')}</span>`;
+    box.appendChild(head);
+    for (const id of ids) {
+      const row = el('div', 'how-check');
+      row.innerHTML = `<span class="chk-id f-ink-${p}">${id}</span>`
+        + `<span class="how-check-name">${esc(t(`check.dc.${id}.name`))}</span>`
+        + `<span class="how-check-desc">${esc(t(`check.dc.${id}.description`))}</span>`;
+      box.appendChild(row);
+    }
+  }
+}
 
 // ── Mobile rail drawer ──
 $('#menu').addEventListener('click', () => $('#app').classList.add('rail-open'));
@@ -140,6 +176,7 @@ const reflectLang = () => {
   $$('button[data-code]', langBox).forEach(b => b.setAttribute('aria-current', b.dataset.code === currentLang ? 'true' : 'false'));
   applyDom();
   updateCmdTitle();
+  renderHowChecks();
 };
 setLang(currentLang);
 reflectLang();
@@ -163,8 +200,10 @@ langBox.addEventListener('click', (e) => {
 // globals captured by finish().
 function rerender() {
   if (lastYearHist) drawYearPicker();
-  if (lastCompare) { renderCompare(lastCompare.a, lastCompare.b); return; }
-  if (lastAggregate && lastAssessments.length) render(lastAggregate, lastMeta);
+  if (lastCompare) renderCompare(lastCompare.a, lastCompare.b);
+  else if (lastAggregate && lastAssessments.length) render(lastAggregate, lastMeta);
+  // Repainting forces the results visible — if the guide is open, park them again.
+  if ($('.tab.active')?.dataset.mode === 'how') { $('#results').style.display = 'none'; $('#status').style.display = 'none'; }
 }
 
 // ── Status / progress ──
@@ -473,6 +512,7 @@ function render(a, meta) {
   const results = $('#results');
   results.innerHTML = '';
   results.style.display = 'block';
+  { const m = $('.tab.active')?.dataset.mode; if (m && m !== 'how') resultsMode = m; }
 
   // Hero readout: overall index + four FAIR gauges (letters carry identity, not colour alone)
   const gauges = a.principles.map(p => {
@@ -805,6 +845,7 @@ const aggOf = (r) => r.assessments.length === 1 ? r.assessments[0] : aggregateAs
 function renderCompare(A, B) {
   lastCompare = { a: A, b: B };   // remember the pair so a language switch can redraw it
   const results = $('#results'); results.innerHTML = ''; results.style.display = 'block';
+  { const m = $('.tab.active')?.dataset.mode; if (m && m !== 'how') resultsMode = m; }
   const sc = seriesColors();
   const aggA = aggOf(A), aggB = aggOf(B);
   const recA = generateRecommendations(aggA), recB = generateRecommendations(aggB);
