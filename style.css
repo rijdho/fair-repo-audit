@@ -220,6 +220,33 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
 .advanced summary { cursor: pointer; color: var(--muted); font-family: var(--mono); font-size: .78rem; }
 .advanced input { width: 100%; margin-top: 8px; }
 
+/* ── "How it works" guide ── */
+.how-steps { list-style: none; counter-reset: how; margin: 18px 0; padding: 0;
+  display: grid; gap: 12px; }
+.how-steps li { counter-increment: how; position: relative; padding-left: 44px; }
+.how-steps li::before { content: counter(how, decimal-leading-zero); position: absolute; left: 0; top: 1px;
+  width: 30px; height: 26px; border-radius: 8px; display: grid; place-items: center;
+  font-family: var(--mono); font-size: 11px; font-weight: 600;
+  background: var(--brand-soft); color: var(--brand); }
+.how-steps li b { display: block; font-family: var(--disp); font-weight: 700; font-size: .92rem;
+  letter-spacing: -0.01em; }
+.how-steps li span { color: var(--muted); font-size: .86rem; }
+.how-sec { border: 1px solid var(--border); border-radius: var(--r-sm); margin-top: 10px;
+  padding: 12px 16px; }
+.how-sec summary { cursor: pointer; font-family: var(--disp); font-weight: 700; font-size: .92rem;
+  letter-spacing: -0.01em; }
+.how-sec summary:hover { color: var(--brand); }
+.how-sec[open] summary { margin-bottom: 8px; }
+.how-sec p { font-size: .86rem; margin: 8px 0; }
+.how-check { display: grid; grid-template-columns: 42px minmax(180px, 240px) 1fr; gap: 10px;
+  align-items: baseline; padding: 5px 0; font-size: .84rem; }
+.how-check .how-check-name { font-weight: 500; }
+.how-check .how-check-desc { color: var(--muted); font-size: .8rem; }
+@media (max-width: 620px) {
+  .how-check { grid-template-columns: 42px 1fr; }
+  .how-check .how-check-desc { grid-column: 2; }
+}
+
 .status { margin: 20px 0; padding: 12px 16px; border-radius: var(--r-sm); font-family: var(--mono); font-size: .84rem;
   background: var(--surface-alt); border: 1px solid var(--border); color: var(--muted); }
 .status.error { border-color: var(--f-R); color: var(--f-R); }

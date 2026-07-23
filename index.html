@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="./style.css?v=25" />
+  <link rel="stylesheet" href="./style.css?v=26" />
 </head>
 <body>
   <div class="app" id="app">
@@ -26,6 +26,10 @@
         <button class="nav-item tab active" data-mode="datacite"><span class="nav-step">DC</span><span class="nav-lbl">DataCite</span></button>
         <button class="nav-item tab" data-mode="oai"><span class="nav-step">OA</span><span class="nav-lbl">OAI-PMH</span></button>
         <button class="nav-item tab" data-mode="compare"><span class="nav-step">VS</span><span class="nav-lbl" data-i18n="ui.tabs.compare">Compare</span></button>
+      </nav>
+      <div class="nav-label" data-i18n="ui.nav.guide">Guide</div>
+      <nav aria-label="Guide" data-i18n-attr="aria-label:ui.nav.guide">
+        <button class="nav-item tab" data-mode="how"><span class="nav-step">?</span><span class="nav-lbl" data-i18n="ui.tabs.how">How it works</span></button>
       </nav>
       <div class="rail-foot">
         <span data-i18n-html="ui.footer.contact">For questions about data usage or attribution: <a href="https://life.rijdho.org" target="_blank" rel="noreferrer">@rijdho</a></span>
@@ -175,6 +179,43 @@
             <p class="muted" style="margin-top:12px" data-i18n="ui.cmp.note">e.g. Dryad vs Harvard Dataverse, or PANGAEA vs Zenodo. Both sides can be DataCite or OAI-PMH; the concept diff shows when both are the same kind.</p>
           </section>
 
+          <!-- How it works -->
+          <section id="panel-how" class="panel">
+            <p class="lede" style="margin-top:0" data-i18n-html="how.lede">
+              In one line: <b>it reads a repository's public metadata and grades each record against the FAIR
+              principles</b> — Findable, Accessible, Interoperable, Reusable. The four steps below are the whole
+              story; the sections after them offer as much depth as you want.
+            </p>
+            <ol class="how-steps">
+              <li><b data-i18n="how.step1.title">Point it at a repository</b><span data-i18n="how.step1.text">A DataCite client ID, DOI prefix or publisher — or any OAI-PMH base URL.</span></li>
+              <li><b data-i18n="how.step2.title">It fetches live records</b><span data-i18n="how.step2.text">Your browser downloads a sample of metadata records straight from the source. Nothing is uploaded anywhere.</span></li>
+              <li><b data-i18n="how.step3.title">Every record faces 14 checks</b><span data-i18n="how.step3.text">Each FAIR sub-principle becomes a concrete test — is there a persistent identifier? a machine-readable license? — scored Full, Partial or Not met.</span></li>
+              <li><b data-i18n="how.step4.title">You read the profile — and the fixes</b><span data-i18n="how.step4.text">Scores, charts and a prioritized to-do list of what to re-curate. Every view explains itself as you hover and click.</span></li>
+            </ol>
+            <p class="muted" data-i18n="how.deeper">Want more depth? Each section below goes one level further.</p>
+            <details class="how-sec">
+              <summary data-i18n="how.checks.title">The 14 checks, one by one</summary>
+              <p class="muted" data-i18n-html="how.checks.intro"></p>
+              <div id="how-checks"></div>
+            </details>
+            <details class="how-sec">
+              <summary data-i18n="how.score.title">How the score is computed</summary>
+              <p data-i18n-html="how.score.bands"></p>
+              <p data-i18n-html="how.score.mean"></p>
+              <p data-i18n-html="how.score.capability"></p>
+            </details>
+            <details class="how-sec">
+              <summary data-i18n="how.data.title">Where the data comes from</summary>
+              <p data-i18n-html="how.data.datacite"></p>
+              <p data-i18n-html="how.data.oai"></p>
+              <p data-i18n-html="how.data.privacy"></p>
+            </details>
+            <details class="how-sec">
+              <summary data-i18n="how.open.title">Open by design</summary>
+              <p data-i18n-html="how.open.body"></p>
+            </details>
+          </section>
+
           <div id="status" class="status" style="display:none" role="status" aria-live="polite"></div>
           <div id="results" style="display:none"></div>
 
@@ -189,6 +230,6 @@
     </div>
   </div>
 
-  <script type="module" src="./src/app.js?v=25"></script>
+  <script type="module" src="./src/app.js?v=26"></script>
 </body>
 </html>

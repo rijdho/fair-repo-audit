@@ -53,6 +53,9 @@ Every record is scored against 14 FAIR sub-principles (Wilkinson et al. 2016), e
   the protocol's native `from`/`until` selective harvesting.
 - **Compare** — two repositories side by side (DataCite or OAI-PMH): overall, per-principle,
   concept diff, and the dual radar.
+- **How it works** — an in-app guide (its own tab): the four-step story for newcomers, then
+  expandable depth — the 14 checks one by one (rendered from the same catalogues the results
+  use), the scoring bands, and where the data comes from. Available in all four languages.
 - **License & connectivity profiles**, prioritized recommendations, and **JSON / text / CSV**
   export — including an **Action list (CSV)**: every record that isn't full on a check, with the
   reason (a re-curation to-do list).
