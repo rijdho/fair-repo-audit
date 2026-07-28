@@ -15,6 +15,9 @@ latest release.
 
 ## [1.3.0] — 2026-07-28
 
+Version DOI:
+[10.5281/zenodo.21647450](https://doi.org/10.5281/zenodo.21647450).
+
 ### Added
 
 - **How it works** — an in-app guide in its own tab: the four-step story for newcomers, then
