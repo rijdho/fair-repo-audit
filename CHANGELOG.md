@@ -13,6 +13,8 @@ latest release.
 
 ## [Unreleased]
 
+## [1.3.0] — 2026-07-28
+
 ### Added
 
 - **How it works** — an in-app guide in its own tab: the four-step story for newcomers, then
@@ -81,5 +83,6 @@ Version DOI: [10.5281/zenodo.21492531](https://doi.org/10.5281/zenodo.21492531).
   no dependencies).
 - `CITATION.cff` with citation metadata, MIT licence.
 
-[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.3.0
 [1.2.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.2.0
