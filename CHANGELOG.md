@@ -35,6 +35,15 @@ latest release.
 - README restructured: the languages line moved up top, `## Citation` became the closing
   section, standardized with `coara-action-planner`.
 
+### Removed
+
+- **The built-in default CORS relay.** OAI-PMH now requires a relay you deploy yourself from
+  `cors-proxy/` and paste into *CORS proxy (advanced)*; the app shows a clear error until you
+  do. Shipping a default contradicted this tool's own promise of depending on nobody else's
+  infrastructure: it routed every visitor's OAI-PMH traffic through a single account and
+  hardcoded that account's hostname into a public repository. DataCite is unaffected — it
+  sends CORS headers and needs no relay.
+
 ### Fixed
 
 - Compare value column widened so scores stay on one line in the system monospace font.

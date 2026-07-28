@@ -161,15 +161,17 @@ Browser (GitHub Pages, static — no build step)
 ├── src/i18n/        — en · es · fr · de catalogues + a ~140-line t() runtime
 └── src/app.js       — UI
 
-cors-proxy/           — optional: a ~40-line CORS relay for OAI-PMH (no scoring logic)
+cors-proxy/           — a ~40-line CORS relay, required for OAI-PMH (no scoring logic)
 ```
 
 - **DataCite** needs no server — the API sends CORS headers, so the browser queries it directly.
   `affiliation=true` is always set (without it DataCite strips ROR affiliation identifiers).
 - **OAI-PMH** endpoints rarely send CORS headers, so those requests pass through a **dumb byte
-  relay**. It holds no logic — it just forwards the GET and adds CORS headers. Deploy your own
-  from [`cors-proxy/`](cors-proxy/) and paste its URL into the app's *CORS proxy* field, so this
-  tool never depends on anyone else's infrastructure.
+  relay**. It holds no logic — it just forwards the GET and adds CORS headers. **No relay is
+  shipped as a default**, on purpose: a hardcoded one would route every visitor's traffic through
+  a single account and publish that account's hostname here. Deploy your own from
+  [`cors-proxy/`](cors-proxy/) and paste its URL into the app's *CORS proxy* field, so this tool
+  never depends on anyone else's infrastructure. DataCite needs no relay and is unaffected.
 
 ## Tests
 

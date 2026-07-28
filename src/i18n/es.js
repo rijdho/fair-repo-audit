@@ -57,7 +57,7 @@ export const es = {
   "ui.oai.input.aria": "URL base OAI-PMH",
   "ui.oai.input.placeholder": "URL base OAI-PMH · https://zenodo.org/oai2d",
   "ui.oai.proxy.aria": "URL del proxy CORS",
-  "ui.oai.proxy.desc": "Los endpoints OAI-PMH rara vez envían cabeceras CORS, así que las peticiones pasan por un relé mínimo, sin lógica de puntuación; véase <code>cors-proxy/</code>. Déjelo en blanco para usar el predeterminado, o pegue su propio <code>…workers.dev/?url=</code>.",
+  "ui.oai.proxy.desc": "Los endpoints OAI-PMH rara vez envían cabeceras CORS, así que las peticiones pasan por un relé mínimo, sin lógica de puntuación; véase <code>cors-proxy/</code>. Es obligatorio para OAI-PMH: despliegue el suyo y péguelo aquí, para que esta herramienta no dependa de la infraestructura de nadie más.",
   "ui.oai.proxy.summary": "Proxy CORS (avanzado)",
   "ui.oai.sample.label": "Registros a recolectar",
   "ui.oai.until.label": "Hasta el año de la marca temporal del registro",

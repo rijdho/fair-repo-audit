@@ -122,8 +122,8 @@
             <details class="advanced">
               <summary data-i18n="ui.oai.proxy.summary">CORS proxy (advanced)</summary>
               <p class="muted" data-i18n-html="ui.oai.proxy.desc">OAI-PMH endpoints rarely send CORS headers, so requests route through a thin relay
-                — no scoring logic, see <code>cors-proxy/</code>. Leave blank for the default, or paste your own
-                <code>…workers.dev/?url=</code>.</p>
+                — no scoring logic, see <code>cors-proxy/</code>. Required for OAI-PMH: deploy your own and paste it
+                here, so this tool depends on nobody else's infrastructure.</p>
               <input id="oai-proxy" type="text" placeholder="https://your-proxy.workers.dev/?url=" aria-label="CORS proxy URL" data-i18n-attr="aria-label:ui.oai.proxy.aria" />
             </details>
             <div class="examples">

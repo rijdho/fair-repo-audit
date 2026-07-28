@@ -3,12 +3,22 @@
 // CORS relay (a "dumb" byte proxy — it holds NO scoring logic). The proxy URL is
 // configurable: deploy your own from ./cors-proxy or point at any relay you trust.
 
-const DEFAULT_PROXY = 'https://oai-proxy.ricnomas-ba7.workers.dev/?url=';
-let proxyBase = DEFAULT_PROXY;
-export function setProxy(url) { proxyBase = url || DEFAULT_PROXY; }
+// No relay is shipped as a default on purpose. Hardcoding one would point every
+// visitor's OAI-PMH traffic at a single account and publish that account's
+// hostname in this repo — the opposite of "depends on nobody else's
+// infrastructure". Deploy ./cors-proxy and paste the URL into the app.
+let proxyBase = '';
+export function setProxy(url) { proxyBase = (url || '').trim(); }
 export function getProxy() { return proxyBase; }
 
 async function oaiFetch(baseUrl, params) {
+  if (!proxyBase) {
+    throw new Error(
+      'No CORS proxy configured. OAI-PMH endpoints rarely send CORS headers, so the ' +
+      'browser cannot reach them directly. Deploy the relay in cors-proxy/ and paste ' +
+      'its URL into "CORS proxy (advanced)".',
+    );
+  }
   const oaiUrl = `${baseUrl}?${new URLSearchParams(params)}`;
   const res = await fetch(proxyBase + encodeURIComponent(oaiUrl));
   if (!res.ok) throw new Error(`Proxy/OAI returned ${res.status}`);
