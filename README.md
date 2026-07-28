@@ -8,9 +8,16 @@ A static, dependency-free web app. Point it at a DataCite client / prefix / publ
 OAI-PMH base URL, and it harvests live metadata and scores every record against **14 FAIR
 sub-principles**. Nothing is uploaded or stored; all computation runs client-side.
 
+Built for repository managers, data stewards and research-data support staff — anyone who has to
+answer "how good is our metadata, really?", ideally before someone else asks.
+
 🔗 **Live:** https://rijdho.github.io/fair-repo-audit/
 
 Available in **English, Spanish, French and German** (auto-detected, switchable).
+
+![Headline readout for the Dryad repository: an overall score of 96%, rated EXCELLENT, from
+13.5 of 14 FAIR checks across 25 of 169,540 records — with per-principle scores of 4/4 Findable,
+3/3 Accessible, 2.5/3 Interoperable and 4/4 Reusable.](docs/score.png)
 
 This is the **open twin** of [Repo MetAudits](https://metaudits.rijdho.org/repo-metaudits/).
 That tool keeps its scoring engine server-side (protected); this one moves the *same* rubric
@@ -60,6 +67,11 @@ Every record is scored against 14 FAIR sub-principles (Wilkinson et al. 2016), e
   export — including an **Action list (CSV)**: every record that isn't full on a check, with the
   reason (a re-curation to-do list).
 
+![The FAIR profile radar for Dryad: a four-axis plot with the mean polygon drawn boldly over the
+faint outlines of all 25 individual records. Findable, Accessible and Reusable sit at 100%, and
+Interoperable — the weakest principle — at 91%, ranging from 67% to 100% across
+records.](docs/fair-profile.png)
+
 ### Share a result
 
 Every analysis is captured in the URL, so results are bookmarkable and shareable. Examples:
@@ -106,6 +118,37 @@ To add a language: copy `en.js`, translate the values, register the code and its
 in `LANGS` in `src/i18n/index.js`, and import it into `LOCALES`.
 
 ## Architecture
+
+The two sources reach the engine by different routes, and that asymmetry is the only
+non-obvious thing about the design:
+
+```mermaid
+flowchart TB
+    accTitle: How a query reaches the scoring engine
+    accDescr: The browser queries the DataCite REST API directly, because that API sends CORS headers. OAI-PMH endpoints rarely send them, so those requests pass through a dumb byte relay that only forwards the GET and adds CORS headers, holding no scoring logic. Records from both routes feed the same client-side FAIR engine, which scores each one against 14 sub-principles and renders the results views and exports.
+
+    browser["🌐 Browser<br/>static, no build step"]
+    datacite["📇 DataCite REST API"]
+    relay["🔁 CORS relay<br/>forwards bytes, no logic"]
+    oaipmh["🗄️ OAI-PMH endpoint"]
+    engine["⚖️ src/fair.js<br/>14 FAIR sub-principles"]
+    views["📊 Radar, heatmap, concepts,<br/>recommendations, exports"]
+
+    browser -->|"API sends CORS headers"| datacite
+    browser -->|"endpoint usually sends none"| relay
+    relay --> oaipmh
+    datacite --> engine
+    oaipmh --> engine
+    engine --> views
+
+    classDef client fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e3a5f
+    classDef remote fill:#fef9c3,stroke:#ca8a04,stroke-width:2px,color:#713f12
+    classDef core fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#14532d
+
+    class browser client
+    class datacite,relay,oaipmh remote
+    class engine,views core
+```
 
 ```
 Browser (GitHub Pages, static — no build step)
@@ -167,6 +210,21 @@ The rubric, the Full/Partial/None bands, and the source-capability-aware scoring
 in [Repo MetAudits' METHODOLOGY.md](https://metaudits.rijdho.org/repo-metaudits/) and
 cross-validated against the independent [FAIR-Checker](https://fair-checker.france-bioinformatique.fr/)
 tool. Because the engine here is a faithful port, those results carry over.
+
+## Caveats
+
+- **Directional, not authoritative.** The scores are a structured prompt for re-curation, not a
+  certification. Two repositories on the same score can be in very different places.
+- **It scores metadata, not data.** Every check runs against the metadata record as the API
+  exposes it. Whether the described dataset is actually retrievable, documented or usable is
+  outside what this tool can see.
+- **A sample, not a census.** Each run scores the `n` records the query returned, not the whole
+  repository. Widen the sample before reading any number as *the* repository's score.
+- **DataCite and OAI-PMH results are not directly comparable.** The two surfaces expose different
+  things, and **Year focus** means different things on each: publication year on DataCite, record
+  datestamp on OAI-PMH.
+- **The radar is a shape, not a score.** With its axes in a fixed order, the polygon's area and
+  outline carry no meaning — read the per-principle numbers, not the picture.
 
 ## License
 
