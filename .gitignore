@@ -5,3 +5,6 @@ node_modules/
 # Per-machine tool permissions, not project config. Was covered only by a global
 # ignore file, which does not travel with a clone — so it lives here too.
 .claude/settings.local.json
+
+# Claude Code session state — local-only, never committed
+.claude/
