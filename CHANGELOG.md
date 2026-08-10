@@ -13,6 +13,12 @@ latest release.
 
 ## [Unreleased]
 
+### Added
+
+- Pages now deploys through a GitHub Actions workflow (`deploy.yml`) instead of the
+  legacy branch builder: the test suite gates every deploy, and the tree is uploaded
+  verbatim with no Jekyll processing.
+
 ## [1.3.0] — 2026-07-28
 
 Version DOI:

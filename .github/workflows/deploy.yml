@@ -1,0 +1,64 @@
+name: Deploy to GitHub Pages
+
+# Static app, no build step: the repo tree is served verbatim. The job exists to
+# (a) gate the deploy on the test suite and (b) bypass the legacy Jekyll builder,
+# which processes the tree needlessly and has served stale builds while looking
+# "deployed".
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  # false on purpose. With true, a push cancels the in-flight deploy — and on a day
+  # when the Pages backend publishes slowly (2026-08-06 on coara-action-planner:
+  # ~15 min instead of ~10 s), pushing more often than that means NOTHING ever
+  # completes: each deploy dies mid-publish and leaves a zombie
+  # deployment_in_progress record on the backend that even the cancel API would
+  # not clear. Queued runs waiting their turn cost only latency; cancelled
+  # half-published deploys cost the deploy itself.
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      # No package.json: the suite runs on Node's built-in runner, dependency-free.
+      - run: node --test tests/*.test.mjs
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Do NOT add `timeout:` here hoping to survive a slow Pages day. It cannot
+      # work: deploy-pages clamps the input with Math.min(timeoutInput, MAX_TIMEOUT)
+      # where MAX_TIMEOUT = 600000 (src/internal/deployment.js, unchanged across
+      # v4, v5 and main), and the Pages backend enforces its own 10-minute deadline
+      # anyway. The input can only ever *lower* the wait.
+      #
+      # When Pages is slow, deploy-pages gives up at ten minutes and then CANCELS
+      # the deployment, so the run goes red. Before reacting to that:
+      #   - The site usually still publishes, minutes AFTER the red X. Check the
+      #     deployed asset hashes before believing the failure.
+      #   - A Pages deployment id IS the commit SHA (actions/deploy-pages#383), so
+      #     re-running a cancelled run recreates the same cancelled deployment and
+      #     fails in seconds. Push a new commit instead of re-running.
+      - id: deployment
+        uses: actions/deploy-pages@v4
