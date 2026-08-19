@@ -13,6 +13,13 @@ latest release.
 
 ## [Unreleased]
 
+### Changed
+
+- **License: MIT -> AGPL-3.0-or-later.** The code stays fully readable, citable and
+  forkable; what changes is that anyone offering a modified version as a network service
+  must publish their modifications under the same license. Releases up to 1.3.0 remain
+  MIT (including their Zenodo archives).
+
 ### Added
 
 - Pages now deploys through a GitHub Actions workflow (`deploy.yml`) instead of the

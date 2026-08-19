@@ -230,7 +230,9 @@ tool. Because the engine here is a faithful port, those results carry over.
 
 ## License
 
-[MIT](LICENSE) — reuse and adapt freely.
+[AGPL-3.0-or-later](LICENSE) — read, cite, fork and adapt freely; if you run a modified
+version as a network service, share your changes under the same license. Releases up to
+1.3.0 were published under MIT and remain so.
 
 ## Citation
 
