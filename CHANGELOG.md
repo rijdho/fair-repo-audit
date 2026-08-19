@@ -22,6 +22,21 @@ latest release.
 
 ### Added
 
+- **Metadata format choice for OAI-PMH, and DIM support.** The harvester was pinned to
+  `oai_dc`, the poorest format an endpoint exposes. DSpace flattens every qualifier into
+  it, so `rights.uri`, `identifier.orcid`, `identifier.ror` and `language.iso` arrive
+  stripped or not at all, and a DSpace repository then scores worse than it deserves for
+  a reason that lives in the crosswalk rather than in its metadata. A format selector now
+  sits beside the sample size, defaulting to "richest available": the app asks the
+  endpoint (`ListMetadataFormats`) and picks the best format it can parse. The choice
+  travels in the shared link as `f=`.
+- **DIM crosswalk** (`dimFieldsToDc`). DIM carries every value on the same element name
+  (`<dim:field mdschema= element= qualifier=>`), so the generic leaf-element walk
+  collapsed an entire record into a single `field` key: the format was unreadable in
+  practice. Values now map onto their Dublin Core element, keep their qualified key
+  alongside (`rights.uri`), and non-DC schemas are namespaced, so a local `udla.type` can
+  never be mistaken for a published `dc:type`. `contributor.author` is aliased to
+  `creator`, the way DSpace's own oai_dc crosswalk does it.
 - Pages now deploys through a GitHub Actions workflow (`deploy.yml`) instead of the
   legacy branch builder: the test suite gates every deploy, and the tree is uploaded
   verbatim with no Jekyll processing.

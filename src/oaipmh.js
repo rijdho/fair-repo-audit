@@ -31,6 +31,64 @@ async function oaiFetch(baseUrl, params) {
 
 const txt = (el, sel) => el?.querySelector(sel)?.textContent?.trim() || '';
 
+// ── DIM (DSpace Intermediate Metadata) ──
+// DSpace's own format, and the only lossless one it exposes. oai_dc flattens
+// qualifiers away, so `rights.uri`, `identifier.orcid`, `identifier.ror` and
+// `language.iso` all arrive as a bare `rights` / `identifier` / `language` — or
+// not at all. Scoring a DSpace repository on oai_dc therefore reads as poorer
+// than the repository actually is: a measurement artefact, not a metadata gap.
+//
+// DIM cannot go through the generic leaf-element walk in parseRecord(), because
+// every value is carried by the SAME element name — <dim:field mdschema=
+// element= qualifier=> — so that walk collapses an entire record into one
+// `field` key. Hence this crosswalk.
+
+// DSpace stores authors in contributor.author, and its own oai_dc crosswalk
+// maps them onto dc:creator. Without this alias every DSpace record would score
+// as having no creator at all.
+const DIM_ALIAS = { 'contributor.author': 'creator' };
+
+// Pure, and exported, so it can be unit-tested in Node where there is no
+// DOMParser. `fields` is [{ mdschema, element, qualifier, value }, …].
+export function dimFieldsToDc(fields) {
+  const meta = {};
+  const push = (key, value) => { if (key && value) (meta[key] ??= []).push(value); };
+
+  for (const f of fields) {
+    const element = (f.element || '').trim();
+    const qualifier = (f.qualifier || '').trim();
+    const schema = (f.mdschema || 'dc').trim();
+    const value = (f.value || '').trim();
+    if (!element || !value) continue;
+
+    const dotted = qualifier ? `${element}.${qualifier}` : element;
+
+    if (schema === 'dc') {
+      // The bare Dublin Core element is what the FAIR engine reads, so a
+      // qualified value feeds both it and its own qualified key.
+      push(DIM_ALIAS[dotted] ?? element, value);
+      if (qualifier) push(dotted, value);
+    } else {
+      // Local and non-DC schemas (dspace.*, oaire.*, others.*) are namespaced.
+      // They must never land on a bare DC key: a local `udla.type` silently
+      // polluting `type` would corrupt the vocabulary checks with values the
+      // repository never published as Dublin Core.
+      push(`${schema}.${dotted}`, value);
+    }
+  }
+  return meta;
+}
+
+// What the endpoint can actually emit. Offering the user a format the server
+// does not support just trades one empty result for another.
+export async function listMetadataFormats(baseUrl) {
+  const doc = await oaiFetch(baseUrl, { verb: 'ListMetadataFormats' });
+  return [...doc.querySelectorAll('metadataFormat')].map(f => ({
+    prefix: txt(f, 'metadataPrefix'),
+    schema: txt(f, 'schema'),
+  })).filter(f => f.prefix);
+}
+
 export async function identify(baseUrl) {
   const doc = await oaiFetch(baseUrl, { verb: 'Identify' });
   return {
@@ -45,14 +103,24 @@ export async function identify(baseUrl) {
 // Turn one <record> element into the shape assessOaiRecord expects.
 function parseRecord(recEl) {
   const header = recEl.querySelector('header');
-  const meta = {};
+  let meta = {};
   const md = recEl.querySelector('metadata');
   if (md) {
-    for (const el of md.querySelectorAll('*')) {
-      const ln = el.localName;
-      if (ln === 'dc' || ln === 'metadata' || el.children.length > 0) continue;
-      const v = el.textContent.trim();
-      if (v) (meta[ln] ??= []).push(v);
+    const dimFields = [...md.querySelectorAll('*')].filter(el => el.localName === 'field');
+    if (dimFields.length > 0) {
+      meta = dimFieldsToDc(dimFields.map(el => ({
+        mdschema: el.getAttribute('mdschema'),
+        element: el.getAttribute('element'),
+        qualifier: el.getAttribute('qualifier'),
+        value: el.textContent.trim(),
+      })));
+    } else {
+      for (const el of md.querySelectorAll('*')) {
+        const ln = el.localName;
+        if (ln === 'dc' || ln === 'metadata' || el.children.length > 0) continue;
+        const v = el.textContent.trim();
+        if (v) (meta[ln] ??= []).push(v);
+      }
     }
   }
   return {
@@ -71,10 +139,12 @@ function parseRecord(recEl) {
 // (when it was added/updated in the repo — NOT the publication year). Use the
 // universally-accepted YYYY-MM-DD form. Per spec they're only sent on the FIRST
 // request; a resumptionToken carries the bounds forward on its own.
-export async function fetchRecords(baseUrl, { max = 50, from = null, until = null, onProgress } = {}) {
+// `metadataPrefix` defaults to oai_dc because every OAI-PMH endpoint is required
+// to expose it. On DSpace, prefer `dim` when it is offered: see dimFieldsToDc().
+export async function fetchRecords(baseUrl, { max = 50, from = null, until = null, metadataPrefix = 'oai_dc', onProgress } = {}) {
   const records = [];
   let token = null;
-  const firstParams = { verb: 'ListRecords', metadataPrefix: 'oai_dc' };
+  const firstParams = { verb: 'ListRecords', metadataPrefix };
   if (from) firstParams.from = from;
   if (until) firstParams.until = until;
   do {

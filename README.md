@@ -58,6 +58,12 @@ Every record is scored against 14 FAIR sub-principles (Wilkinson et al. 2016), e
   from cheap count-only queries) so you can click a bar to focus a range. On **OAI-PMH** it filters
   by record *datestamp* (when a record was added/updated in the repo — not publication year), using
   the protocol's native `from`/`until` selective harvesting.
+- **Metadata format** (OAI-PMH) — which format to harvest, defaulting to *richest available*:
+  the app asks the endpoint what it can emit and takes the best format it can parse. This
+  matters most on **DSpace**, whose mandatory `oai_dc` output flattens every qualifier away —
+  `rights.uri`, `identifier.orcid`, `identifier.ror` and `language.iso` arrive stripped or not
+  at all — so scoring a DSpace repository on `oai_dc` reads as poorer than the repository is.
+  **DIM** (DSpace Intermediate Metadata) is parsed natively and keeps those qualifiers.
 - **Compare** — two repositories side by side (DataCite or OAI-PMH): overall, per-principle,
   concept diff, and the dual radar.
 - **How it works** — an in-app guide (its own tab): the four-step story for newcomers, then
@@ -81,7 +87,11 @@ Every analysis is captured in the URL, so results are bookmarkable and shareable
 …/fair-repo-audit/?tab=datacite&kind=clientId&q=dryad.dryad&n=25&y0=2015&y1=2020
 …/fair-repo-audit/?tab=compare&ak=clientId&av=dryad.dryad&bk=clientId&bv=gdcc.harvard-dv&n=25
 …/fair-repo-audit/?tab=datacite&kind=prefix&q=10.5281&n=100&lang=de
+…/fair-repo-audit/?tab=oai&q=https://repositorio.example.cl/oai/request&n=100&f=dim
 ```
+
+`f` pins the OAI-PMH metadata format; omit it to let the app pick the richest one the
+endpoint offers.
 
 Opening such a link runs the analysis automatically. `lang` is optional and pins the
 interface language, so a result can be shared with a colleague in their own language.
@@ -154,7 +164,7 @@ flowchart TB
 Browser (GitHub Pages, static — no build step)
 ├── src/fair.js      — the FAIR engine (14 sub-principles) — OPEN, a faithful port
 ├── src/datacite.js  — DataCite REST client (CORS-enabled → direct, no proxy)
-├── src/oaipmh.js    — OAI-PMH client (DOMParser); routes through a thin CORS relay
+├── src/oaipmh.js    — OAI-PMH client (DOMParser) + DIM crosswalk; via a thin CORS relay
 ├── src/concepts.js  — concept-completeness definitions (keys only; text lives in i18n)
 ├── src/analysis.js  — temporal trend + duplicate detection
 ├── src/charts.js    — radar, heatmap, temporal (SVG) — dependency-free
@@ -225,6 +235,19 @@ tool. Because the engine here is a faithful port, those results carry over.
 - **DataCite and OAI-PMH results are not directly comparable.** The two surfaces expose different
   things, and **Year focus** means different things on each: publication year on DataCite, record
   datestamp on OAI-PMH.
+- **Nor are two OAI-PMH runs on different metadata formats.** A format decides what the checks can
+  even see, so a score always belongs to the format it was harvested in. Pin `f=` before comparing
+  a repository against itself over time. A measured example, from a 1,958-record DSpace census:
+  `oai_dc` reports `dc:format` on 56 records where `dim` reports none, because DSpace's oai_dc
+  crosswalk synthesises that element from the bitstream MIME type while DIM carries only real
+  metadata fields. Four of those records consequently cross a scoring band. Richer is not
+  uniformly higher.
+- **A generic FAIR score is not a conformance check.** These 14 sub-principles reward having a
+  standardized protocol and populated fields; they do not ask whether the values sit in the
+  controlled vocabularies a national or regional aggregator requires (COAR resource types,
+  `info:eu-repo` access rights, ISO 639 language codes). A repository can score well here and
+  still be uncosechable by OpenAIRE or a national node. Read the concept completeness beside
+  the score, not the score alone.
 - **The radar is a shape, not a score.** With its axes in a fixed order, the polygon's area and
   outline carry no meaning — read the per-principle numbers, not the picture.
 

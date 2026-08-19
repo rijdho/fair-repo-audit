@@ -409,6 +409,22 @@ function syncOaiYearUI() { const { fromYear, untilYear } = readOaiYears(); $('#o
 ['#oai-from', '#oai-until'].forEach(id => $(id).addEventListener('change', syncOaiYearUI));
 $('#oai-year-clear').addEventListener('click', () => { $('#oai-from').value = ''; $('#oai-until').value = ''; syncOaiYearUI(); });
 
+// Which metadata format to harvest. oai_dc is mandatory for every OAI-PMH
+// endpoint but is the poorest thing a repository exposes: DSpace flattens all
+// its qualifiers into it, so `rights.uri`, `identifier.orcid` and `language.iso`
+// simply vanish. "auto" therefore asks the endpoint what it can emit and takes
+// the richest format the parser understands.
+const RICHEST_FIRST = ['dim', 'oai_dc'];
+async function resolveOaiPrefix(base, choice) {
+  if (choice && choice !== 'auto') return choice;
+  try {
+    const offered = new Set((await oai.listMetadataFormats(base)).map(f => f.prefix));
+    return RICHEST_FIRST.find(p => offered.has(p)) || 'oai_dc';
+  } catch {
+    return 'oai_dc';   // an endpoint that refuses ListMetadataFormats still owes us oai_dc
+  }
+}
+
 // ── Analyze: OAI-PMH ──
 $('#oai-analyze').addEventListener('click', busy('#oai-analyze', async () => {
   const base = $('#oai-input').value.trim();
@@ -418,6 +434,8 @@ $('#oai-analyze').addEventListener('click', busy('#oai-analyze', async () => {
   const max = parseInt($('#oai-sample').value, 10);
   const { fromYear, untilYear } = readOaiYears();
   const urlp = { tab: 'oai', q: base, n: $('#oai-sample').value, lang: currentLang };
+  const formatChoice = $('#oai-format')?.value || 'auto';
+  if (formatChoice !== 'auto') urlp.f = formatChoice;
   if (fromYear != null) urlp.y0 = fromYear;
   if (untilYear != null) urlp.y1 = untilYear;
   if (proxy) urlp.px = proxy;   // custom relay travels in the link so it reproduces
@@ -427,8 +445,9 @@ $('#oai-analyze').addEventListener('click', busy('#oai-analyze', async () => {
   status(t('status.identify'));
   let repoName = '';
   try { repoName = (await oai.identify(base)).name; } catch { /* some repos block Identify */ }
+  const metadataPrefix = await resolveOaiPrefix(base, formatChoice);
   status(t('status.harvesting'));
-  const records = await oai.fetchRecords(base, { max, from, until, onProgress: (d, tot) => status(t('status.harvested', { done: n(d), total: n(tot) }), 'info', tot ? d / tot * 100 : null) });
+  const records = await oai.fetchRecords(base, { max, from, until, metadataPrefix, onProgress: (d, tot) => status(t('status.harvested', { done: n(d), total: n(tot) }), 'info', tot ? d / tot * 100 : null) });
   if (!records.length) return status(t(oaiYearLabel() ? 'err.noRecordsInWindow' : 'err.noRecordsFromEndpoint'), 'error');
   setUrl(urlp);
   status(tn('status.scoring', records.length, { count: n(records.length) }));
@@ -816,7 +835,8 @@ function exportCSV() {
 async function fetchAndScore({ kind, value, sample }) {
   if (kind === 'oai') {
     const proxy = $('#oai-proxy')?.value.trim(); if (proxy) oai.setProxy(proxy);
-    const records = await oai.fetchRecords(value, { max: sample });
+    const metadataPrefix = await resolveOaiPrefix(value, $('#oai-format')?.value || 'auto');
+    const records = await oai.fetchRecords(value, { max: sample, metadataPrefix });
     return { assessments: records.map(assessOaiRecord), concepts: oaiConcepts(records), source: 'OAI-PMH', query: value, shown: records.length };
   }
   const r = await fetchWorks(kind, value, { pageSize: sample, page: 1 });
@@ -941,6 +961,7 @@ function cmpRow(name, pa, pb, sc, tipText) {
     $('#oai-input').value = p.get('q') || '';
     if (p.get('px')) $('#oai-proxy').value = p.get('px');
     if (p.get('n')) $('#oai-sample').value = p.get('n');
+    if (p.get('f') && $('#oai-format')) $('#oai-format').value = p.get('f');
     if (p.get('y0')) $('#oai-from').value = p.get('y0');
     if (p.get('y1')) $('#oai-until').value = p.get('y1');
     if (p.get('y0') || p.get('y1')) syncOaiYearUI();

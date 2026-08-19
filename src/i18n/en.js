@@ -53,6 +53,8 @@ export const en = {
   "ui.nav.close": "Close menu",
   "ui.nav.guide": "Guide",
   "ui.nav.menu": "Menu",
+  "ui.oai.format.auto": "Richest available",
+  "ui.oai.format.label": "Metadata format",
   "ui.oai.from.label": "From record datestamp year",
   "ui.oai.input.aria": "OAI-PMH base URL",
   "ui.oai.input.placeholder": "OAI-PMH base URL · https://zenodo.org/oai2d",

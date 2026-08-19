@@ -54,6 +54,8 @@ export const fr = {
   "ui.nav.close": "Fermer le menu",
   "ui.nav.guide": "Guide",
   "ui.nav.menu": "Menu",
+  "ui.oai.format.auto": "Le plus riche disponible",
+  "ui.oai.format.label": "Format de métadonnées",
   "ui.oai.from.label": "À partir de l'année d'horodatage de la notice",
   "ui.oai.input.aria": "URL de base OAI-PMH",
   "ui.oai.input.placeholder": "URL de base OAI-PMH · https://zenodo.org/oai2d",
