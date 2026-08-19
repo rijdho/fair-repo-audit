@@ -13,6 +13,10 @@ latest release.
 
 ## [Unreleased]
 
+## [1.4.0] — 2026-08-19
+
+Version DOI: recorded in `CITATION.cff` once Zenodo mints it for this release.
+
 ### Changed
 
 - **License: MIT -> AGPL-3.0-or-later.** The code stays fully readable, citable and
