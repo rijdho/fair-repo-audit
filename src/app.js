@@ -27,10 +27,10 @@ function tip(e, text) {
   tooltip.style.top = y + 'px';
 }
 
-// Reusable three-level legend (completeness / quality) — the thresholds are
+// Reusable three-level legend (completeness / quality): the thresholds are
 // numerals in every locale, so nothing here needs translating.
 const LEGEND = '<span class="lgnd"><i class="sw lvl-hi"></i>≥75% <i class="sw lvl-mid"></i>25–75% <i class="sw lvl-lo"></i>&lt;25%</span>';
-// Full / Partial / Not met swatches — the words DO travel, the classes don't.
+// Full / Partial / Not met swatches: the words DO travel, the classes don't.
 const scoreLegend = () => `<span class="lgnd"><i class="sw hm-pass"></i>${t('level.full')} <i class="sw hm-partial"></i>${t('level.partial')} <i class="sw hm-fail"></i>${t('level.notMet')}</span>`;
 const lvlOf = (pct) => pct >= 75 ? 'hi' : pct >= 25 ? 'mid' : 'lo';
 const shortId = (id) => String(id).replace(/^https?:\/\/(dx\.)?doi\.org\//, '').replace(/^oai:/, '').slice(0, 32);
@@ -45,12 +45,12 @@ function meterRow(name, pct, help) {
   row.innerHTML = `<span class="concept-name">${esc(name)}</span>
     <div class="bar"><div class="bar-fill lvl-${lvlOf(pct)}" style="width:${Math.max(pct, 1.5)}%"></div></div>
     <span class="concept-val">${pct}%</span>`;
-  row.addEventListener('mouseenter', e => tip(e, `${name} — ${pct}%\n${help}`));
+  row.addEventListener('mouseenter', e => tip(e, `${name}, ${pct}%\n${help}`));
   row.addEventListener('mouseleave', () => tip(null));
   return row;
 }
 
-// Reusability synthesis card — the "can others reuse this?" story (repo-metaudits framing)
+// Reusability synthesis card: the "can others reuse this?" story (repo-metaudits framing)
 function reusabilityCard(a) {
   const meters = [];
   if (a.licenseProfile) {
@@ -104,13 +104,13 @@ $$('.tab').forEach(tab => tab.addEventListener('click', () => {
   $$('.panel').forEach(p => p.classList.toggle('active', p.id === `panel-${tab.dataset.mode}`));
   const r = $('#results'), s = $('#status'), mode = tab.dataset.mode;
   if (mode === 'how') {
-    // The guide is a reading room, not an analysis source — park the results, don't burn them.
+    // The guide is a reading room, not an analysis source: park the results, don't burn them.
     r.style.display = 'none'; s.style.display = 'none';
   } else if (mode === resultsMode && r.children.length) {
     r.style.display = 'block';
     if (s.textContent) s.style.display = 'block';
   } else {
-    // Results belong to the analysis that produced them — clear them when switching sources.
+    // Results belong to the analysis that produced them: clear them when switching sources.
     r.innerHTML = ''; r.style.display = 'none'; resultsMode = null;
     status('');
   }
@@ -132,7 +132,7 @@ function renderHowChecks() {
     const head = el('div', 'cg-head');
     head.innerHTML = `<span class="cg-letter f-ink-${p}">${p}</span>`
       + `<span class="cg-name">${esc(t(`principle.${p}`))}</span>`
-      + `<span class="cg-gloss">${esc((PRINCIPLE_GLOSS[p] || '').split(' — ')[1] || '')}</span>`;
+      + `<span class="cg-gloss">${esc(PRINCIPLE_GLOSS[p] || '')}</span>`;
     box.appendChild(head);
     for (const id of ids) {
       const row = el('div', 'how-check');
@@ -186,7 +186,7 @@ langBox.addEventListener('click', (e) => {
   if (!btn || btn.dataset.code === currentLang) return;
   currentLang = setLang(btn.dataset.code);
   localStorage.setItem('fra-lang', currentLang);
-  // Keep the language in the deep-link — but only once there is a link to keep,
+  // Keep the language in the deep-link: but only once there is a link to keep,
   // so a fresh page load doesn't grow a query string just from a menu click.
   const p = new URLSearchParams(location.search);
   if ([...p.keys()].length) { p.set('lang', currentLang); setUrl(Object.fromEntries(p)); }
@@ -202,7 +202,7 @@ function rerender() {
   if (lastYearHist) drawYearPicker();
   if (lastCompare) renderCompare(lastCompare.a, lastCompare.b);
   else if (lastAggregate && lastAssessments.length) render(lastAggregate, lastMeta);
-  // Repainting forces the results visible — if the guide is open, park them again.
+  // Repainting forces the results visible: if the guide is open, park them again.
   if ($('.tab.active')?.dataset.mode === 'how') { $('#results').style.display = 'none'; $('#status').style.display = 'none'; }
 }
 
@@ -219,7 +219,7 @@ function status(msg, kind = 'info', pct = null) {
 }
 
 // One busy-guard for every async action button: ignores re-entry while running,
-// reports errors via status, and ALWAYS re-enables — so no handler can be left
+// reports errors via status, and ALWAYS re-enables: so no handler can be left
 // with a permanently disabled button by an early return.
 const busy = (sel, fn, errKey = 'status.error') => async () => {
   const btn = $(sel);
@@ -285,7 +285,7 @@ function setYears(from, until) {
 function resetYearViz() { lastYearHist = null; const b = $('#dc-yearviz'); b.hidden = true; b.innerHTML = ''; }
 ['#dc-from', '#dc-until'].forEach(id => $(id).addEventListener('change', syncYearUI));
 $('#dc-year-clear').addEventListener('click', () => setYears(null, null));
-// The histogram is repo-specific — drop it when the query target changes (keep the year selection).
+// The histogram is repo-specific: drop it when the query target changes (keep the year selection).
 $('#dc-input').addEventListener('input', resetYearViz);
 $$('#dc-mode input').forEach(r => r.addEventListener('change', resetYearViz));
 $$('#panel-datacite .example').forEach(b => b.addEventListener('click', resetYearViz));
@@ -553,7 +553,7 @@ function render(a, meta) {
     <div class="gauges">${gauges}</div>
   </div>`;
   results.appendChild(head);
-  // Inline principle panel — clicking a gauge reveals its checks here, right under the readout (no scroll).
+  // Inline principle panel: clicking a gauge reveals its checks here, right under the readout (no scroll).
   const pdetail = el('div', 'pdetail'); pdetail.style.display = 'none';
   results.appendChild(pdetail);
   const gauges2 = [...head.querySelectorAll('.gauge')];
@@ -577,7 +577,7 @@ function render(a, meta) {
       const hd = el('div', 'pdetail-head');
       hd.innerHTML = `<span class="cg-letter f-ink-${p.letter}">${p.letter}</span>
         <span class="cg-name">${esc(p.name)}</span>
-        <span class="cg-gloss">${esc((PRINCIPLE_GLOSS[p.letter] || '').split(' — ')[1] || '')}</span>
+        <span class="cg-gloss">${esc(PRINCIPLE_GLOSS[p.letter] || '')}</span>
         <span class="cg-score">${(+p.score.toFixed(1))}/${p.maxScore}</span>
         <button class="pdetail-close" aria-label="${esc(t('ui.close'))}">✕</button>`;
       hd.querySelector('.pdetail-close').addEventListener('click', toggle);
@@ -615,10 +615,10 @@ function render(a, meta) {
     results.appendChild(card);
   }
 
-  // Reusability synthesis — pulls licence + provenance + standards into one "can others reuse this?" readout
+  // Reusability synthesis: pulls licence + provenance + standards into one "can others reuse this?" readout
   { const rc = reusabilityCard(a); if (rc) results.appendChild(rc); }
 
-  // Interactive — per-record heatmap (every record × every check)
+  // Interactive: per-record heatmap (every record × every check)
   {
     const card = el('div', 'card');
     card.appendChild(el('h3', null, esc(t('heatmap.title'))));
@@ -631,7 +631,7 @@ function render(a, meta) {
     renderHeatmap(wrap, lastAssessments, tip);
   }
 
-  // FAIR profile radar — the repository's shape across all four principles (includes A)
+  // FAIR profile radar: the repository's shape across all four principles (includes A)
   {
     const card = el('div', 'card');
     card.appendChild(el('h3', null, esc(t('radar.title'))));
@@ -645,7 +645,7 @@ function render(a, meta) {
     });
   }
 
-  // Temporal — mean FAIR% by publication year
+  // Temporal: mean FAIR% by publication year
   if (lastTemporal && lastTemporal.length >= 3) {
     const card = el('div', 'card');
     card.appendChild(el('h3', null, esc(t('temporal.title'))));
@@ -668,7 +668,7 @@ function render(a, meta) {
     card.appendChild(tk);
   }
 
-  // Duplicates — records sharing a normalized title
+  // Duplicates: records sharing a normalized title
   if (lastDuplicates && lastDuplicates.length) {
     const totalDup = lastDuplicates.reduce((s, g) => s + g.ids.length, 0);
     const card = el('div', 'card');
@@ -683,7 +683,7 @@ function render(a, meta) {
     results.appendChild(card);
   }
 
-  // ── Per-check detail — full list of all 14 checks (the gauges above reveal one principle inline) ──
+  // ── Per-check detail: full list of all 14 checks (the gauges above reveal one principle inline) ──
   const checks = el('div', 'card');
   checks.appendChild(el('h3', null, esc(t('checks.title'))));
   checks.appendChild(el('p', 'muted', esc(isAgg
@@ -695,7 +695,7 @@ function render(a, meta) {
     const ph = el('div', 'cg-head');
     ph.innerHTML = `<span class="cg-letter f-ink-${p.letter}">${p.letter}</span>
       <span class="cg-name">${esc(p.name)}</span>
-      <span class="cg-gloss">${esc((PRINCIPLE_GLOSS[p.letter] || '').split(' — ')[1] || '')}</span>
+      <span class="cg-gloss">${esc(PRINCIPLE_GLOSS[p.letter] || '')}</span>
       <span class="cg-score">${(+p.score.toFixed(1))}/${p.maxScore}</span>`;
     grp.appendChild(ph);
     p.checks.forEach((c, ci) => grp.appendChild(buildCheckItem(c, li, ci)));
@@ -807,7 +807,7 @@ function download(content, filename, mime) {
 const slug = () => (lastMeta.query || 'audit').replace(/[^a-z0-9]+/gi, '-').slice(0, 40).toLowerCase();
 function exportJSON() { download(JSON.stringify({ ...lastAggregate, conceptCompleteness: lastConcepts || undefined, temporal: lastTemporal || undefined, possibleDuplicates: lastDuplicates || undefined }, null, 2), `fair-${slug()}.json`, 'application/json'); }
 
-// Actionable export: every record that isn't full on a check, with the reason — the re-curation to-do list.
+// Actionable export: every record that isn't full on a check, with the reason, the re-curation to-do list.
 function exportActionList() {
   const q = s => `"${String(s ?? '').replace(/"/g, '""')}"`;
   const rows = ['check_id,check_name,identifier,score,finding'];
@@ -899,7 +899,7 @@ function renderCompare(A, B) {
     results.appendChild(ccard);
   }
 
-  // Dual FAIR profile — both repositories' shapes overlaid on one radar
+  // Dual FAIR profile: both repositories' shapes overlaid on one radar
   {
     const card = el('div', 'card');
     card.appendChild(el('h3', null, esc(t('cmp.radar.title'))));

@@ -1,5 +1,5 @@
-// DataCite REST client — runs entirely in the browser (DataCite sends CORS headers).
-// Returns works shaped as { id, type, attributes } — exactly what fair.js expects.
+// DataCite REST client: runs entirely in the browser (DataCite sends CORS headers).
+// Returns works shaped as { id, type, attributes }: exactly what fair.js expects.
 // `affiliation=true` is REQUIRED: without it DataCite flattens creators[].affiliation
 // to bare strings and strips the ROR affiliationIdentifier (false 0% ROR otherwise).
 
@@ -7,12 +7,12 @@ const DATACITE = 'https://api.datacite.org/dois';
 const DATACITE_CLIENTS = 'https://api.datacite.org/clients';
 
 // Repository name typeahead. DataCite's `/clients` endpoint is free-text
-// searchable and CORS-enabled (same host as /dois — no proxy), and each hit
+// searchable and CORS-enabled (same host as /dois, no proxy), and each hit
 // carries the canonical `id` that feeds Client-ID mode plus a human `name`.
 // DataCite ANDs the query terms, so an over-specified or mistyped string like
 // "scielo chile" scores 0 hits. We relax progressively: search the whole string
 // first, and only if that is empty retry token-by-token (most distinctive token
-// first), merging until we have enough — so a partial name still surfaces the
+// first), merging until we have enough: so a partial name still surfaces the
 // real repository. Returns [{ id, name }], most-relevant first.
 export async function suggestClients(term, { limit = 8, signal } = {}) {
   const q = String(term || '').trim();
@@ -58,7 +58,7 @@ function buildParams({ clientId, prefix, publisher, pageSize, page, fromYear, un
   if (clientId) p.set('client-id', clientId.trim());
   else if (prefix) p.set('prefix', prefix.trim());
   else if (publisher) {
-    // publisher already rides in the query param — AND the year window in there.
+    // publisher already rides in the query param: AND the year window in there.
     p.set('query', `publisher:"${publisher.trim()}"${yc ? ` AND ${yc}` : ''}`);
     return p;
   }

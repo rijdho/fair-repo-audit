@@ -1,5 +1,5 @@
 // Regenerates the README screenshots in this folder. Puppeteer is a tooling-only
-// dependency — the app itself stays dependency-free and this is never shipped.
+// dependency: the app itself stays dependency-free and this is never shipped.
 //
 //   python3 -m http.server 8000 &          # from the repo root
 //   npm i puppeteer                        # or point CHROME_PATH at an existing Chrome
@@ -54,13 +54,13 @@ for (const [file, heading] of shots) {
     return card
   }, heading)
   const el = handle.asElement()
-  if (!el) { console.log(`SKIP ${file} — no card starting with "${heading}"`); continue }
+  if (!el) { console.log(`SKIP ${file}, no card starting with "${heading}"`); continue }
   await new Promise(r => setTimeout(r, 400))
   await el.screenshot({ path: `${OUT}/${file}` })
   console.log(`OK   ${file}`)
 }
 
-// the headline score card has no stable heading — match it by content
+// the headline score card has no stable heading: match it by content
 const scored = await page.evaluateHandle(() => {
   const card = [...document.querySelectorAll('.card')]
     .find(c => /EXCELLENT|GOOD|FAIR|POOR/.test(c.innerText) && /\d+(\.\d+)?\/14/.test(c.innerText))
@@ -72,7 +72,7 @@ if (scored.asElement()) {
   await scored.asElement().screenshot({ path: `${OUT}/score.png` })
   console.log('OK   score.png')
 } else {
-  console.log('SKIP score.png — headline card not found')
+  console.log('SKIP score.png, headline card not found')
 }
 
 await browser.close()

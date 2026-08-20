@@ -1,14 +1,14 @@
-// Concept completeness — the "share of records that carry each concept", grouped
+// Concept completeness: the "share of records that carry each concept", grouped
 // into Habermann's four FAIR use cases (Text / Identifiers / Connections / Contacts).
 // This is the actionable layer, complementary to the abstract FAIR-14 score.
 // Inspired by Metadata Game Changers' completeness tool (metadatagamechangers.com).
 //
-// Display text is NOT stored here — `key` indexes the i18n catalogue, which is the
+// Display text is NOT stored here: `key` indexes the i18n catalogue, which is the
 // single source of truth for every label and gloss. Keeping an English `name:`
 // alongside the key would just be a second place to forget to update.
 
 // Aliased: this module already has a local `has()` for Dublin Core field presence,
-// and an unaliased import would be shadowed by it — silently, since the arities differ.
+// and an unaliased import would be shadowed by it: silently, since the arities differ.
 import { t, has as hasKey } from './i18n/index.js?v=24';
 
 const arr = (x) => Array.isArray(x) ? x : [];
@@ -53,7 +53,7 @@ const DATACITE_GROUPS = [
 // ── OAI-PMH / Dublin Core concepts (operate on record.metadata) ──
 const has = (m, k) => arr(m[k]).length > 0;
 // These map 1:1 onto the 15 Dublin Core elements, which DCMI itself publishes
-// translated labels for — so localising them follows the standard, not away from it.
+// translated labels for: so localising them follows the standard, not away from it.
 const OAI_GROUPS = [
   { gkey: 'oai.text', concepts: [
     { key: 'title',       present: m => has(m, 'title') },
@@ -106,7 +106,7 @@ function tally(groups, items, pick) {
 // Plain-language help: what each concept is and why it matters for reuse.
 // Surfaced on hover. Backed by the i18n catalogue under `concept.<key>.gloss`,
 // but exposed as a plain-object-shaped Proxy so existing `GLOSS[key]` call sites
-// keep working — including the `GLOSS[k] ? … : ''` presence checks, which is why
+// keep working: including the `GLOSS[k] ? … : ''` presence checks, which is why
 // a miss must return undefined rather than t()'s echo-the-key fallback.
 const glossProxy = (prefix) => new Proxy({}, {
   get: (_, key) => {

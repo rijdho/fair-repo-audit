@@ -1,9 +1,9 @@
-/* fair-repo-audit — "violet" design language, ported from the cris-eilein house
+/* fair-repo-audit: "violet" design language, ported from the cris-eilein house
    style (same system as coara-action-planner). Chrome tokens are violet; the
    DATA palette (FAIR categorical + pass/partial/fail status) is kept separate
    and CVD-validated (dataviz validator) against each mode's card surface. */
 
-/* Self-hosted Inter (variable) — no external font CDN: a Google Fonts <link>
+/* Self-hosted Inter (variable): no external font CDN: a Google Fonts <link>
    leaks every visitor's IP to Google. Latin + latin-ext cover EN/ES/FR/DE. */
 @font-face {
   font-family: "Inter Variable"; font-style: normal; font-display: swap; font-weight: 100 900;
@@ -17,7 +17,7 @@
 }
 
 :root {
-  /* violet palette — light (default) */
+  /* violet palette: light (default) */
   --paper: #f7f6fb;
   --surface: #ffffff;
   --surface-2: #f1f0f7;
@@ -46,7 +46,7 @@
   --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
   --sans: var(--body-f);
 
-  /* data palette — FAIR categorical + status, validated per mode */
+  /* data palette: FAIR categorical + status, validated per mode */
   --f-F: #2f7bd0; --f-A: #b56c1f; --f-I: #1f9670; --f-R: #b3559a;
   --lvl-hi: #1f9670; --lvl-mid: #c08519; --lvl-lo: #c0463d;
   --lvl-hi-ink: #1f9670; --lvl-mid-ink: #c08519; --lvl-lo-ink: #c0463d;

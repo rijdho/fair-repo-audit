@@ -1,4 +1,4 @@
-// Minimal i18n — no dependencies, no build step, matching the rest of the app.
+// Minimal i18n: no dependencies, no build step, matching the rest of the app.
 //
 // Design notes:
 //  · Flat, dotted keys in a single object per locale. Easy to diff, easy to lint
@@ -7,22 +7,20 @@
 //  · English is the fallback for any key a locale hasn't translated yet, so a
 //    partial locale degrades to mixed language rather than to blank UI.
 //  · Schema-literal terms (rightsURI, subjectScheme, dc:title, SPDX ids, DCMI
-//    types) are NEVER keys here — they are data the user types into their
+//    types) are NEVER keys here: they are data the user types into their
 //    metadata editor, and they stay in English in every locale.
 
 import { en } from './en.js';
 import { es } from './es.js';
-import { fr } from './fr.js';
 import { de } from './de.js';
 
-export const LOCALES = { en, es, fr, de };
+export const LOCALES = { en, es, de };
 
-// `label` is deliberately the endonym — a reader looking for their own language
+// `label` is deliberately the endonym: a reader looking for their own language
 // scans for "Deutsch", not for "German".
 export const LANGS = [
   { code: 'en', label: 'English' },
   { code: 'es', label: 'Español' },
-  { code: 'fr', label: 'Français' },
   { code: 'de', label: 'Deutsch' },
 ];
 
@@ -32,7 +30,7 @@ const isSupported = (code) => Object.prototype.hasOwnProperty.call(LOCALES, code
 // The selected language lives on a global slot rather than in a module-local
 // `let`. ES modules are cached per resolved URL, so importing this file as
 // './i18n/index.js' from one module and './i18n/index.js?v=24' from another
-// yields TWO instances with independent state — the engine would keep rendering
+// yields TWO instances with independent state: the engine would keep rendering
 // English while the UI switched to German. Sharing through globalThis makes the
 // language a single fact no matter how the graph resolves.
 const state = (globalThis.__fraI18n ??= { lang: DEFAULT_LANG });
@@ -63,7 +61,7 @@ function interpolate(str, vars) {
 }
 
 /**
- * Translate `key`. Falls back to English, then to the key itself — a missing
+ * Translate `key`. Falls back to English, then to the key itself: a missing
  * string shows up as a visible `check.F1.name` rather than an empty element,
  * which is what you want to catch it in review.
  */
@@ -85,7 +83,7 @@ export function has(key) {
 
 /**
  * Plural-aware lookup: expects `<key>.one` and `<key>.other`. The four locales
- * here all share the one/other split, so Intl.PluralRules is overkill — but
+ * here all share the one/other split, so Intl.PluralRules is overkill: but
  * routing through it keeps the door open for locales that need more forms.
  */
 export function tn(key, count, vars) {
@@ -99,7 +97,7 @@ export function tn(key, count, vars) {
   return t(chosen, { count, ...vars });
 }
 
-/** Locale-aware number formatting — 1,234 in en, 1.234 in es/de, 1 234 in fr. */
+/** Locale-aware number formatting: 1,234 in en, 1.234 in es/de, 1 234 in fr. */
 export const n = (value) => new Intl.NumberFormat(state.lang).format(value);
 
 /**
@@ -131,7 +129,7 @@ export function applyDom(root = document) {
   }
 }
 
-/** Keys present in English but absent from `code` — used by the locale-parity test. */
+/** Keys present in English but absent from `code`: used by the locale-parity test. */
 export function missingKeys(code) {
   const table = LOCALES[code];
   if (!table) return Object.keys(LOCALES[DEFAULT_LANG]);

@@ -1,4 +1,4 @@
-// Unit tests for the FAIR engine (src/fair.js) — pure functions, no DOM needed.
+// Unit tests for the FAIR engine (src/fair.js): pure functions, no DOM needed.
 // Run with:  node --test tests/
 //
 // These double as the parity fixture against the server-side engine in

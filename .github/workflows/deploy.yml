@@ -17,7 +17,7 @@ permissions:
 
 concurrency:
   group: pages
-  # false on purpose. With true, a push cancels the in-flight deploy — and on a day
+  # false on purpose. With true, a push cancels the in-flight deploy: and on a day
   # when the Pages backend publishes slowly (2026-08-06 on coara-action-planner:
   # ~15 min instead of ~10 s), pushing more often than that means NOTHING ever
   # completes: each deploy dies mid-publish and leaves a zombie

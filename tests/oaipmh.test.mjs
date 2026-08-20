@@ -1,4 +1,4 @@
-// Unit tests for the DIM crosswalk (src/oaipmh.js) — a pure function, so it
+// Unit tests for the DIM crosswalk (src/oaipmh.js): a pure function, so it
 // runs in Node even though the rest of that module needs a DOMParser.
 //
 // Run with:  node --test tests/*.test.mjs

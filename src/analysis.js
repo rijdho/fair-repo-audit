@@ -1,4 +1,4 @@
-// Temporal trend + duplicate detection — dependency-free, runs over the fetched sample.
+// Temporal trend + duplicate detection: dependency-free, runs over the fetched sample.
 
 // Mean overall FAIR% per year. `years[i]` aligns with `assessments[i]`.
 export function temporalSeries(years, assessments) {

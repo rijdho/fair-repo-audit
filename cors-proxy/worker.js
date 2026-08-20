@@ -1,4 +1,4 @@
-// Minimal CORS relay for OAI-PMH — deploy your own so fair-repo-audit isn't tied
+// Minimal CORS relay for OAI-PMH: deploy your own so fair-repo-audit isn't tied
 // to anyone else's infrastructure. It holds NO scoring logic: it forwards a GET to
 // an OAI-PMH endpoint and adds CORS headers. That's all.
 //

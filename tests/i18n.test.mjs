@@ -1,4 +1,4 @@
-// Locale parity tests — these are the contract that keeps a translation from
+// Locale parity tests: these are the contract that keeps a translation from
 // silently degrading the UI. Run with:  node --test tests/
 //
 // A missing key is survivable (it falls back to English). A key whose
@@ -25,7 +25,7 @@ test('every declared language has a catalogue, and vice versa', () => {
 
 test('every locale covers every English key', () => {
   // Aggregate across locales before asserting. A per-locale assert would abort on
-  // the first gap and hide the state of the rest — unhelpful when several
+  // the first gap and hide the state of the rest: unhelpful when several
   // translations are in flight and you want to know which ones are actually done.
   const gaps = CODES
     .map(code => [code, missingKeys(code)])
@@ -89,34 +89,16 @@ test('no locale left an untranslated value identical to a long English string', 
   }
 });
 
-test('French keeps its narrow no-break space before : ; ? !', () => {
-  // French typography puts a no-break space before those four marks. It is easy to
-  // destroy with a careless find-and-replace and invisible in a diff, so it is
-  // pinned here. Tags, attributes and URLs are stripped first — a colon inside
-  // style="color:…" or an HTTP header literal is not French punctuation.
-  const NBSP = /[  ]/;
-  const offenders = [];
-  for (const [key, value] of Object.entries(LOCALES.fr)) {
-    const bare = String(value)
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/https?:\/\/\S+/g, ' ');
-    for (const m of bare.matchAll(/(.)([;?!:])/g)) {
-      if (m[1] === ' ' && !NBSP.test(m[1])) offenders.push(`${key} → "…${m[0]}…"`);
-    }
-  }
-  assert.deepEqual(offenders, [], `plain space before French punctuation:\n  ${offenders.join('\n  ')}`);
-});
-
-test('principle glosses keep the "Name — explanation" shape app.js splits on', () => {
+test('principle glosses are standalone explanations, not prefixed with the name', () => {
   for (const code of CODES) {
     for (const letter of ['F', 'A', 'I', 'R']) {
       const key = `principle.${letter}.gloss`;
       const value = LOCALES[code][key];
       if (value == null) continue;
-      assert.ok(value.includes(' — '),
-        `${code} / ${key} must contain " — " — app.js splits on it to peel off the principle name`);
-      assert.ok(value.split(' — ')[1]?.trim(),
-        `${code} / ${key} has nothing after the em dash`);
+      assert.ok(value.trim(), `${code} / ${key} is empty`);
+      const name = LOCALES[code][`principle.${letter}`];
+      assert.ok(!name || !value.startsWith(name),
+        `${code} / ${key} repeats the principle name; app.js renders the name separately`);
     }
   }
 });
@@ -166,8 +148,8 @@ test('tn() selects a plural form and injects {count}', () => {
 });
 
 test('resolveLang: explicit code wins, then browser, then English', () => {
-  assert.equal(resolveLang('de', ['fr-FR']), 'de');
-  assert.equal(resolveLang(null, ['fr-FR', 'en']), 'fr');
+  assert.equal(resolveLang('de', ['pt-BR']), 'de');
+  assert.equal(resolveLang(null, ['es-CL', 'en']), 'es');
   assert.equal(resolveLang(null, ['pt-BR']), 'en');
   assert.equal(resolveLang('klingon', ['es-MX']), 'es');
   assert.equal(resolveLang(undefined, []), 'en');

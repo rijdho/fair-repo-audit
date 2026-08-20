@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fair-repo-audit — FAIR metadata readout</title>
-  <meta name="description" data-i18n-attr="content:meta.description" content="Point it at a DataCite or OAI-PMH repository and read its FAIR metadata quality — 14 sub-principle scores plus field-level completeness. 100% client-side, rubric fully open." />
+  <title>fair-repo-audit: FAIR metadata readout</title>
+  <meta name="description" data-i18n-attr="content:meta.description" content="Point it at a DataCite or OAI-PMH repository and read its FAIR metadata quality: 14 sub-principle scores plus field-level completeness. 100% client-side, rubric fully open." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236d4aff'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='%23ffffff' font-family='monospace' font-weight='bold'%3EF%3C/text%3E%3C/svg%3E" />
   <link rel="stylesheet" href="./style.css?v=27" />
 </head>
@@ -49,7 +49,7 @@
         <div class="content-inner">
           <p class="eyebrow" data-i18n="ui.brand.tagline">A readout of FAIR metadata quality for research repositories</p>
           <p class="lede" data-i18n-html="ui.lede">
-            Point it at a repository and read how <b>FAIR</b> its metadata is — the 14 sub-principle score,
+            Point it at a repository and read how <b>FAIR</b> its metadata is: the 14 sub-principle score,
             then the field-level completeness behind it. Everything runs in your browser against live data;
             nothing is uploaded. The rubric is <a href="https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js" target="_blank" rel="noreferrer">fully open</a>.
           </p>
@@ -123,8 +123,8 @@
             </div>
             <details class="advanced">
               <summary data-i18n="ui.oai.proxy.summary">CORS proxy (advanced)</summary>
-              <p class="muted" data-i18n-html="ui.oai.proxy.desc">OAI-PMH endpoints rarely send CORS headers, so requests route through a thin relay
-                — no scoring logic, see <code>cors-proxy/</code>. Required for OAI-PMH: deploy your own and paste it
+              <p class="muted" data-i18n-html="ui.oai.proxy.desc">OAI-PMH endpoints rarely send CORS headers, so requests route through a thin relay,
+               with no scoring logic, see <code>cors-proxy/</code>. Required for OAI-PMH: deploy your own and paste it
                 here, so this tool depends on nobody else's infrastructure.</p>
               <input id="oai-proxy" type="text" placeholder="https://your-proxy.workers.dev/?url=" aria-label="CORS proxy URL" data-i18n-attr="aria-label:ui.oai.proxy.aria" />
             </details>
@@ -185,14 +185,14 @@
           <section id="panel-how" class="panel">
             <p class="lede" style="margin-top:0" data-i18n-html="how.lede">
               In one line: <b>it reads a repository's public metadata and grades each record against the FAIR
-              principles</b> — Findable, Accessible, Interoperable, Reusable. The four steps below are the whole
+              principles</b>: Findable, Accessible, Interoperable, Reusable. The four steps below are the whole
               story; the sections after them offer as much depth as you want.
             </p>
             <ol class="how-steps">
-              <li><b data-i18n="how.step1.title">Point it at a repository</b><span data-i18n="how.step1.text">A DataCite client ID, DOI prefix or publisher — or any OAI-PMH base URL.</span></li>
+              <li><b data-i18n="how.step1.title">Point it at a repository</b><span data-i18n="how.step1.text">A DataCite client ID, DOI prefix or publisher: or any OAI-PMH base URL.</span></li>
               <li><b data-i18n="how.step2.title">It fetches live records</b><span data-i18n="how.step2.text">Your browser downloads a sample of metadata records straight from the source. Nothing is uploaded anywhere.</span></li>
-              <li><b data-i18n="how.step3.title">Every record faces 14 checks</b><span data-i18n="how.step3.text">Each FAIR sub-principle becomes a concrete test — is there a persistent identifier? a machine-readable license? — scored Full, Partial or Not met.</span></li>
-              <li><b data-i18n="how.step4.title">You read the profile — and the fixes</b><span data-i18n="how.step4.text">Scores, charts and a prioritized to-do list of what to re-curate. Every view explains itself as you hover and click.</span></li>
+              <li><b data-i18n="how.step3.title">Every record faces 14 checks</b><span data-i18n="how.step3.text">Each FAIR sub-principle becomes a concrete test (is there a persistent identifier? a machine-readable license?), scored Full, Partial or Not met.</span></li>
+              <li><b data-i18n="how.step4.title">You read the profile: and the fixes</b><span data-i18n="how.step4.text">Scores, charts and a prioritized to-do list of what to re-curate. Every view explains itself as you hover and click.</span></li>
             </ol>
             <p class="muted" data-i18n="how.deeper">Want more depth? Each section below goes one level further.</p>
             <details class="how-sec">
@@ -222,8 +222,8 @@
           <div id="results" style="display:none"></div>
 
           <footer>
-            <p data-i18n-html="ui.footer.cite">Cite this tool: <a href="https://doi.org/10.5281/zenodo.21492530" target="_blank" rel="noreferrer">doi:10.5281/zenodo.21492530</a> — the DOI always resolves to the latest version.</p>
-            <p data-i18n-html="ui.footer.twin">Open twin of <a href="https://metaudits.rijdho.org/repo-metaudits/" target="_blank" rel="noreferrer">Repo MetAudits</a> —
+            <p data-i18n-html="ui.footer.cite">Cite this tool: <a href="https://doi.org/10.5281/zenodo.21492530" target="_blank" rel="noreferrer">doi:10.5281/zenodo.21492530</a>, the DOI always resolves to the latest version.</p>
+            <p data-i18n-html="ui.footer.twin">Open twin of <a href="https://metaudits.rijdho.org/repo-metaudits/" target="_blank" rel="noreferrer">Repo MetAudits</a>:
               the same 14-sub-principle rubric, moved client-side, plus MGC-style concept completeness.
               AGPL-3.0 · <a href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer">github.com/rijdho/fair-repo-audit</a></p>
           </footer>

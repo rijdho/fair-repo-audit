@@ -13,9 +13,30 @@ latest release.
 
 ## [Unreleased]
 
-## [1.4.0] — 2026-08-19
+### Removed
 
-Version DOI: recorded in `CITATION.cff` once Zenodo mints it for this release.
+- The French interface. The app now ships in English, Spanish and German; `src/i18n/fr.js`
+  and the French typography test are gone, and the language switcher lists three locales.
+
+### Changed
+
+- Em dashes are out of every written surface: interface strings, README, changelog, code
+  comments and workflow files. Each one became a colon, a comma, parentheses or two
+  sentences, chosen per sentence rather than swapped blindly.
+- Principle glosses no longer repeat the principle name behind an em dash delimiter.
+  `app.js` used to split them on `" — "`; the name is rendered from `principle.<letter>`
+  and the gloss is now a standalone sentence, which is also what the locale test checks.
+- README screenshots regenerated against the current build, with the alt text updated to
+  the numbers they now show (Dryad at 169,871 records, Interoperable at 87%).
+
+### Fixed
+
+- `CITATION.cff` pointed at the v1.3.0 version DOI while declaring version 1.4.0. It now
+  carries the DOI Zenodo minted for 1.4.0.
+
+## [1.4.0]: 2026-08-19
+
+Version DOI: [10.5281/zenodo.22014016](https://doi.org/10.5281/zenodo.22014016).
 
 ### Changed
 
@@ -45,14 +66,14 @@ Version DOI: recorded in `CITATION.cff` once Zenodo mints it for this release.
   legacy branch builder: the test suite gates every deploy, and the tree is uploaded
   verbatim with no Jekyll processing.
 
-## [1.3.0] — 2026-07-28
+## [1.3.0]: 2026-07-28
 
 Version DOI:
 [10.5281/zenodo.21647450](https://doi.org/10.5281/zenodo.21647450).
 
 ### Added
 
-- **How it works** — an in-app guide in its own tab: the four-step story for newcomers, then
+- **How it works**: an in-app guide in its own tab: the four-step story for newcomers, then
   expandable depth covering the 14 checks one by one (rendered from the same catalogues the
   results use), the scoring bands, and where the data comes from. Available in all four
   languages.
@@ -60,7 +81,7 @@ Version DOI:
   top-level `doi` so GitHub's "Cite this repository" widget shows it), a DOI badge under the
   README title, a `## Citation` closing section, and a cite line with the concept DOI in the
   page footer, in all four languages.
-- Screenshots in the README (`docs/`) — the headline score card and the FAIR profile radar —
+- Screenshots in the README (`docs/`): the headline score card and the FAIR profile radar,
   plus `docs/screenshots.mjs`, which regenerates them against a live Dryad query.
 - `## Caveats` section in the README, and a Mermaid diagram of how DataCite and OAI-PMH
   queries reach the scoring engine.
@@ -78,7 +99,7 @@ Version DOI:
   `cors-proxy/` and paste into *CORS proxy (advanced)*; the app shows a clear error until you
   do. Shipping a default contradicted this tool's own promise of depending on nobody else's
   infrastructure: it routed every visitor's OAI-PMH traffic through a single account and
-  hardcoded that account's hostname into a public repository. DataCite is unaffected — it
+  hardcoded that account's hostname into a public repository. DataCite is unaffected: it
   sends CORS headers and needs no relay.
 
 ### Fixed
@@ -87,27 +108,27 @@ Version DOI:
 - DOI badge URL carries a cache-bust parameter; without it GitHub's camo proxy serves a stale
   image. (Removing it was tried and had to be reverted.)
 
-## [1.2.0] — 2026-07-22
+## [1.2.0]: 2026-07-22
 
 Version DOI: [10.5281/zenodo.21492531](https://doi.org/10.5281/zenodo.21492531).
 
 ### Added
 
 - Scoring of every harvested record against **14 FAIR sub-principles** (Wilkinson et al. 2016),
-  each Full (1) / Partial (0.5) / Not met (0) — a faithful port of the Repo MetAudits engine,
+  each Full (1) / Partial (0.5) / Not met (0): a faithful port of the Repo MetAudits engine,
   so scores match.
 - Two sources: **DataCite** (by client ID, prefix or publisher, queried directly since the API
   sends CORS headers) and **OAI-PMH** (via a thin CORS relay shipped in `cors-proxy/`).
-- Concept completeness — the share of records carrying each concrete field, grouped into
+- Concept completeness: the share of records carrying each concrete field, grouped into
   Habermann's four use cases (Text / Identifiers / Connections / Contacts).
 - FAIR profile radar with the mean plus every record overlaid, per-record heatmap, reusability
   readout, FAIR-over-time trend, and possible-duplicate detection.
 - Per-check detail with a full/partial/not-met split, a fix recommendation, and a drill-down to
   the exact records below full.
-- **Year focus** — publication year on DataCite (with **Suggest years** reconstructing the
+- **Year focus**: publication year on DataCite (with **Suggest years** reconstructing the
   records-per-year distribution from count-only queries), record datestamp on OAI-PMH via
   native `from`/`until` selective harvesting.
-- **Compare** mode — two repositories side by side, including a dual radar and a concept diff.
+- **Compare** mode: two repositories side by side, including a dual radar and a concept diff.
 - Shareable, bookmarkable result URLs that re-run the analysis on open, with an optional
   `lang` parameter.
 - Full English, Spanish, French and German interface, with schema field names and export keys

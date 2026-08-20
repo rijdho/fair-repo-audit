@@ -1,11 +1,11 @@
-// OAI-PMH client — parses XML in the browser with DOMParser (no dependencies).
+// OAI-PMH client: parses XML in the browser with DOMParser (no dependencies).
 // OAI-PMH endpoints rarely send CORS headers, so requests go through a thin
-// CORS relay (a "dumb" byte proxy — it holds NO scoring logic). The proxy URL is
+// CORS relay (a "dumb" byte proxy, it holds NO scoring logic). The proxy URL is
 // configurable: deploy your own from ./cors-proxy or point at any relay you trust.
 
 // No relay is shipped as a default on purpose. Hardcoding one would point every
 // visitor's OAI-PMH traffic at a single account and publish that account's
-// hostname in this repo — the opposite of "depends on nobody else's
+// hostname in this repo: the opposite of "depends on nobody else's
 // infrastructure". Deploy ./cors-proxy and paste the URL into the app.
 let proxyBase = '';
 export function setProxy(url) { proxyBase = (url || '').trim(); }
@@ -34,13 +34,13 @@ const txt = (el, sel) => el?.querySelector(sel)?.textContent?.trim() || '';
 // ── DIM (DSpace Intermediate Metadata) ──
 // DSpace's own format, and the only lossless one it exposes. oai_dc flattens
 // qualifiers away, so `rights.uri`, `identifier.orcid`, `identifier.ror` and
-// `language.iso` all arrive as a bare `rights` / `identifier` / `language` — or
+// `language.iso` all arrive as a bare `rights` / `identifier` / `language`: or
 // not at all. Scoring a DSpace repository on oai_dc therefore reads as poorer
 // than the repository actually is: a measurement artefact, not a metadata gap.
 //
 // DIM cannot go through the generic leaf-element walk in parseRecord(), because
-// every value is carried by the SAME element name — <dim:field mdschema=
-// element= qualifier=> — so that walk collapses an entire record into one
+// every value is carried by the SAME element name: <dim:field mdschema=
+// element= qualifier=>: so that walk collapses an entire record into one
 // `field` key. Hence this crosswalk.
 
 // DSpace stores authors in contributor.author, and its own oai_dc crosswalk
@@ -136,7 +136,7 @@ function parseRecord(recEl) {
 
 // Harvest up to `max` records (follows resumptionToken as needed).
 // `from`/`until` are OAI-PMH selective-harvesting bounds on the record DATESTAMP
-// (when it was added/updated in the repo — NOT the publication year). Use the
+// (when it was added/updated in the repo, NOT the publication year). Use the
 // universally-accepted YYYY-MM-DD form. Per spec they're only sent on the FIRST
 // request; a resumptionToken carries the bounds forward on its own.
 // `metadataPrefix` defaults to oai_dc because every OAI-PMH endpoint is required
@@ -159,7 +159,7 @@ export async function fetchRecords(baseUrl, { max = 50, from = null, until = nul
       throw e;
     }
     for (const recEl of doc.querySelectorAll('record')) {
-      // skip deleted records with no metadata? keep them — A2 scoring handles status.
+      // skip deleted records with no metadata? keep them: A2 scoring handles status.
       records.push(parseRecord(recEl));
       onProgress?.(records.length, max);
       if (records.length >= max) return records;

@@ -1,4 +1,4 @@
-// Unit tests for src/analysis.js — temporal series + duplicate detection.
+// Unit tests for src/analysis.js: temporal series + duplicate detection.
 // Run with:  node --test tests/
 
 import test from 'node:test';

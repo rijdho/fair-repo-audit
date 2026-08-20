@@ -1,4 +1,4 @@
-// FAIR Assessment Engine — client-side ESM port of the repo-metaudits fair-engine.
+// FAIR Assessment Engine: client-side ESM port of the repo-metaudits fair-engine.
 // Faithfully lifted from the server Worker (same 14 sub-principle logic, identical scores).
 // This is the OPEN version: the rubric implementation is fully visible here.
 // Source of truth for the methodology: README.md.
@@ -45,7 +45,7 @@ function classifyIdentifier(id) {
 
 // ── License analysis ──
 
-// Exact SPDX-style identifier classification — used when a rights entry carries a
+// Exact SPDX-style identifier classification: used when a rights entry carries a
 // structured identifier (rightsIdentifier) or an spdx.org / opensource.org URI.
 // Matching the identifier exactly can never false-positive on prose, so it runs
 // BEFORE the free-text patterns below.
@@ -123,7 +123,7 @@ function classifyLicense(text) {
 // Every source (Dublin Core free text, DataCite rightsList, custom adapters)
 // maps its shape into this form, so the analysis is source-agnostic.
 // Distinguishes machine-readability (a license URI) from PID/vocabulary
-// declaration (rightsIdentifier + rightsIdentifierScheme, e.g. SPDX/CC) —
+// declaration (rightsIdentifier + rightsIdentifierScheme, e.g. SPDX/CC),
 // the same "present vs actionable" split used across the audit suite.
 function analyzeLicense(rawEntries) {
   const entries = (rawEntries || []).filter(
@@ -134,7 +134,7 @@ function analyzeLicense(rawEntries) {
       multi: false, primaryName: null, count: 0, entries: [] };
   }
   const classified = entries.map(e => {
-    // Structured signals first — an exact identifier or a known license URI can
+    // Structured signals first: an exact identifier or a known license URI can
     // never false-positive on prose, unlike the free-text patterns.
     const structured = classifySpdxId(e.identifier) || classifyLicenseUri(e.uri);
     const c = structured
@@ -177,7 +177,7 @@ const SUBJECT_SCHEMES = [
   { name: 'LCSH', regex: /^[A-Z][a-z]+--/ },
 ];
 
-// NOTE: the callback parameter is `v`, not `t` — `t` is the translator import.
+// NOTE: the callback parameter is `v`, not `t`, `t` is the translator import.
 function checkDcmiType(types) {
   const normalized = types.map(v => v.trim());
   const found = normalized.filter(v => DCMI_TYPES.some(d => d.toLowerCase() === v.toLowerCase()));
@@ -237,7 +237,7 @@ function inventoryDcFields(meta) {
 
 // ── Date analysis ──
 
-// `granularity` is display prose — it only ever reaches a details string — so it is
+// `granularity` is display prose (it only ever reaches a details string), so it is
 // translated. The format hints inside it (YYYY-MM-DD…) stay literal by design.
 function analyzeDateQuality(dates) {
   if (dates.length === 0) return { hasIso: false, granularity: t('date.granularity.none'), sample: '' };
@@ -602,7 +602,7 @@ function assessDataCiteWork(work) {
   const totalCreators = (a.creators ?? []).length;
 
   // Attribute inventory
-  // `name` is the DataCite schema field name — data, never translated. Only the
+  // `name` is the DataCite schema field name: data, never translated. Only the
   // human-readable `detail` counters go through the catalogue.
   const attrInventory = [
     { name: 'titles', present: (a.titles?.length ?? 0) > 0, detail: a.titles?.[0]?.title?.substring(0, 60) ?? '' },
@@ -625,7 +625,7 @@ function assessDataCiteWork(work) {
   const filledAttrs = attrInventory.filter(a => a.present);
   const missingAttrs = attrInventory.filter(a => !a.present);
 
-  // License analysis — all four DataCite rights fields, per-entry (multi-license aware)
+  // License analysis: all four DataCite rights fields, per-entry (multi-license aware)
   const lic = analyzeLicense((a.rightsList ?? []).map(r => ({
     text: r.rights,
     uri: r.rightsUri,
@@ -637,7 +637,7 @@ function assessDataCiteWork(work) {
   const schemedSubjects = (a.subjects ?? []).filter(s => s.subjectScheme);
   const unschemedSubjects = (a.subjects ?? []).filter(s => !s.subjectScheme);
 
-  // Related identifiers analysis — only entries carrying a relationType count as "typed"
+  // Related identifiers analysis: only entries carrying a relationType count as "typed"
   const typedRels = (a.relatedIdentifiers ?? []).filter(r => r.relationType);
   const relTypes = typedRels.reduce((acc, r) => {
     acc[r.relationType] = (acc[r.relationType] ?? 0) + 1;
@@ -893,7 +893,7 @@ function assessDataCiteWork(work) {
 
 // Label properties are lazy getters, not baked strings. An assessment is computed
 // once but re-rendered on every language switch, and the UI redraws from the stored
-// result rather than re-fetching — so a plain string would leave the check names
+// result rather than re-fetching: so a plain string would leave the check names
 // frozen in whatever language was active when the analysis ran. Enumerable, so
 // JSON.stringify still serialises them for the export path.
 const live = (obj, prop, key) =>
@@ -943,11 +943,11 @@ function buildAssessment(source, identifier, checks, license, connectivity) {
 // ══════════════════════════════════════
 
 // Roll a per-record license summary up into a collection-level profile.
-// Pure counting (no proprietary classification) — safe to mirror client-side.
+// Pure counting (no proprietary classification): safe to mirror client-side.
 function buildLicenseProfile(assessments) {
   const withLic = assessments.filter(a => a.license);
   if (withLic.length === 0) return undefined;
-  // `count`, not `n` — `n` is the locale number formatter imported at the top.
+  // `count`, not `n`: `n` is the locale number formatter imported at the top.
   const count = withLic.length;
   const classes = { open: 0, restricted: 0, 'all-rights-reserved': 0, none: 0 };
   const distinct = {};
@@ -1003,7 +1003,7 @@ function buildConnectivityProfile(assessments) {
 
 function aggregateAssessments(assessments) {
   if (assessments.length === 0) return undefined;
-  // `count`, not `n` — `n` is the locale number formatter imported at the top.
+  // `count`, not `n`: `n` is the locale number formatter imported at the top.
   const count = assessments.length;
   const source = assessments[0].source;
 
@@ -1022,8 +1022,8 @@ function aggregateAssessments(assessments) {
       // `detail` chains onto the per-record lazy getter instead of reading it here.
       // Reading it eagerly would freeze these strings at aggregation time, so a JSON
       // export taken after a language switch would carry current-language `name` and
-      // `details` beside stale-language `detail`. Only the export consumes this — the
-      // UI drill-down reads lastAssessments directly — but the file should be coherent.
+      // `details` beside stale-language `detail`. Only the export consumes this: the
+      // UI drill-down reads lastAssessments directly: but the file should be coherent.
       const aggregateDetails = assessments.map(a => {
         const rec = a.principles[li].checks[ci];
         const entry = { identifier: a.identifier, score: rec.score };
