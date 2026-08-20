@@ -13,6 +13,10 @@ latest release.
 
 ## [Unreleased]
 
+## [1.5.0]: 2026-08-20
+
+Version DOI: recorded in `CITATION.cff` once Zenodo mints it for this release.
+
 ### Removed
 
 - The French interface. The app now ships in English, Spanish and German; `src/i18n/fr.js`

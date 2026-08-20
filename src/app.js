@@ -1,10 +1,10 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=24';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients } from './datacite.js?v=24';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=24';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker } from './charts.js?v=24';
-import { temporalSeries, findDuplicates } from './analysis.js?v=24';
-import * as oai from './oaipmh.js?v=24';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=24';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=25';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients } from './datacite.js?v=25';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=25';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker } from './charts.js?v=25';
+import { temporalSeries, findDuplicates } from './analysis.js?v=25';
+import * as oai from './oaipmh.js?v=25';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=25';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
