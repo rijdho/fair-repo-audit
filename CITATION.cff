@@ -20,8 +20,8 @@ identifiers:
     value: 10.5281/zenodo.21492530
     description: "Concept DOI, always resolves to the latest version"
   - type: doi
-    value: 10.5281/zenodo.22014016
-    description: "Version DOI for v1.4.0"
+    value: 10.5281/zenodo.22024876
+    description: "Version DOI for v1.5.0"
 repository-code: "https://github.com/rijdho/fair-repo-audit"
 url: "https://rijdho.github.io/fair-repo-audit/"
 license: AGPL-3.0-or-later

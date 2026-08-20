@@ -15,7 +15,7 @@ latest release.
 
 ## [1.5.0]: 2026-08-20
 
-Version DOI: recorded in `CITATION.cff` once Zenodo mints it for this release.
+Version DOI: [10.5281/zenodo.22024876](https://doi.org/10.5281/zenodo.22024876).
 
 ### Removed
 
