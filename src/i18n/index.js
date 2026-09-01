@@ -35,8 +35,6 @@ const isSupported = (code) => Object.prototype.hasOwnProperty.call(LOCALES, code
 // language a single fact no matter how the graph resolves.
 const state = (globalThis.__fraI18n ??= { lang: DEFAULT_LANG });
 
-export const getLang = () => state.lang;
-
 export function setLang(code) {
   if (isSupported(code)) state.lang = code;
   return state.lang;

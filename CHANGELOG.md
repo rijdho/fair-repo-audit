@@ -13,6 +13,12 @@ latest release.
 
 ## [Unreleased]
 
+### Removed
+
+- Two exported functions nobody called: `getLang` in `src/i18n/index.js` and `getProxy` in
+  `src/oaipmh.js`. Both appeared exactly once in the repository, at their own definition. An
+  export that is never imported reads as a supported entry point and is not one.
+
 ### Security
 
 - **The OAI-PMH relay refuses four more classes of internal address.** The guard matched

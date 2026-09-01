@@ -9,7 +9,6 @@
 // infrastructure". Deploy ./cors-proxy and paste the URL into the app.
 let proxyBase = '';
 export function setProxy(url) { proxyBase = (url || '').trim(); }
-export function getProxy() { return proxyBase; }
 
 async function oaiFetch(baseUrl, params) {
   if (!proxyBase) {
