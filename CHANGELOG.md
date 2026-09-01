@@ -13,6 +13,32 @@ latest release.
 
 ## [Unreleased]
 
+### Security
+
+- **The OAI-PMH relay refuses four more classes of internal address.** The guard matched
+  strings against the hostname, which the URL parser had already normalised for numeric
+  IPv4 in any base, so that part was sound. It was not sound for IPv6: unique-local
+  (`fc00::/7`), link-local (`fe80::/10`), the unspecified `0.0.0.0`, and the IPv4-mapped
+  form the parser produces for `::ffff:127.0.0.1`, which is loopback in a notation no
+  amount of matching on `127.` would catch. CGNAT and multicast are refused too. What it
+  still cannot do is stated in the code rather than assumed away: a public name that
+  resolves to a private address is invisible to any check on the hostname.
+- **The relay caps and times out the upstream read.** `await res.text()` pulled an entire
+  response into memory, so one enormous or hostile endpoint could spend the isolate. Now
+  8 MB and 20 seconds, both refused as a 502 that says which happened.
+- **The rate limiter says what it is.** The counter lives in one isolate's memory and
+  Cloudflare runs as many as it likes, so the real ceiling is an unknowable multiple of
+  600. It stops a loop, not an adversary, and the comment now says so instead of implying
+  a guarantee.
+- **The relay has tests.** It is the one piece here that runs on someone else's account
+  and takes a URL from a stranger, and it had none. Fifteen now, each confirmed to fail
+  when the check it covers is removed.
+- **A Content-Security-Policy.** GitHub Pages sends no security headers at all, so a meta
+  policy is the only one available: `default-src 'none'` with scripts pinned to this
+  origin. Two compromises are named in the page rather than hidden. `style-src` keeps
+  `'unsafe-inline'` because the bars and charts build style attributes as they go, and
+  `connect-src` cannot be an allowlist while the relay URL is the user's to choose.
+
 ## [1.5.0]: 2026-08-20
 
 Version DOI: [10.5281/zenodo.22024876](https://doi.org/10.5281/zenodo.22024876).
