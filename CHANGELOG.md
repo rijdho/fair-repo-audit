@@ -13,6 +13,8 @@ latest release.
 
 ## [1.7.0]: 2026-09-02
 
+Version DOI: [10.5281/zenodo.22253780](https://doi.org/10.5281/zenodo.22253780).
+
 ### Changed
 
 - **Source vs published runs in your browser now, and there is no hosted service left.** It was
