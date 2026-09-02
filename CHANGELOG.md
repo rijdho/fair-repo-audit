@@ -11,6 +11,22 @@ latest release.
 > History before 1.2.0 was squashed when the repository was made public; the pre-squash
 > commits are preserved on the `pre-squash-backup` tag.
 
+## [Unreleased]
+
+### Removed
+
+- **Dead code found in a sweep after 1.7.0.** Three exports nobody imported (`ELEMENTS` in
+  `src/analyze.js`, `fetchActivities` in `src/recuration.js`, `DEFAULT_LANG` in
+  `src/i18n/index.js`): each is used inside its own module and by nothing else, and an export
+  that is never imported reads as a supported entry point when it is not. And four CSS rules
+  whose classes exist nowhere, neither written in the markup nor built by the code:
+  `.check-group.flash` with its `cg-flash` keyframes, `.kv`, a `.bar-row` media query and
+  `.fade-in` with its `fadeIn` keyframes.
+
+  The i18n catalogue came back clean: zero keys with no reference, checked with a detector
+  that accounts for keys built at runtime (`lede.${mode}`, `check.dc.${id}`, `rating-${band}`)
+  and proved non-vacuous against an invented key.
+
 ## [1.7.0]: 2026-09-02
 
 Version DOI: [10.5281/zenodo.22253780](https://doi.org/10.5281/zenodo.22253780).

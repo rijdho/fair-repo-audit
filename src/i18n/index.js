@@ -10,9 +10,9 @@
 //    types) are NEVER keys here: they are data the user types into their
 //    metadata editor, and they stay in English in every locale.
 
-import { en } from './en.js?v=33';
-import { es } from './es.js?v=33';
-import { de } from './de.js?v=33';
+import { en } from './en.js?v=34';
+import { es } from './es.js?v=34';
+import { de } from './de.js?v=34';
 
 export const LOCALES = { en, es, de };
 
@@ -24,7 +24,7 @@ export const LANGS = [
   { code: 'de', label: 'Deutsch' },
 ];
 
-export const DEFAULT_LANG = 'en';
+const DEFAULT_LANG = 'en';
 const isSupported = (code) => Object.prototype.hasOwnProperty.call(LOCALES, code);
 
 // The selected language lives on a global slot rather than in a module-local

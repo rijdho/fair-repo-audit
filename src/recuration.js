@@ -36,7 +36,7 @@ const IGNORE = new Set([
 
 export const bareDoi = (d) => String(d || '').trim().replace(/^https?:\/\/(dx\.)?doi\.org\//i, '');
 
-export async function fetchActivities(doi) {
+async function fetchActivities(doi) {
   const id = bareDoi(doi);
   if (!id) throw new Error('empty');
   const res = await fetch(`${DATACITE}/dois/${encodeURIComponent(id)}/activities?page[size]=1000`);

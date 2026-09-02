@@ -31,7 +31,7 @@
 // cached per browser for six hours. That is weaker than a shared cache and it
 // is the honest cost of the move.
 
-import { assessDataCiteWork, aggregateAssessments } from './fair.js?v=33';
+import { assessDataCiteWork, aggregateAssessments } from './fair.js?v=34';
 
 const R2R = 'https://service.rvdata.us/api';
 const DATACITE = 'https://api.datacite.org/dois';
@@ -211,7 +211,7 @@ const orcidSet = (a) => new Set(agents(a).flatMap(e => arr(e.nameIdentifiers)
   .filter(ni => /orcid/i.test(ni.nameIdentifierScheme || '') || /orcid\.org/i.test(ni.nameIdentifier || ''))
   .map(ni => String(ni.nameIdentifier).toLowerCase().split('orcid.org/').pop().replace(/\/+$/, ''))));
 
-export const ELEMENTS = [
+const ELEMENTS = [
   { key: 'title', pointer: 'titles[].title', fair: ['F2'],
     count: a => arr(a.titles).filter(t => t.title).length,
     // A title is never "missing" in these records, it is SUBSTITUTED, so a bare
