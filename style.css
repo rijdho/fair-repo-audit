@@ -538,6 +538,47 @@ footer p { margin: 4px 0; }
   .cx-links { grid-column: 1 / -1; }
 }
 
+/* ── History and re-curation ───────────────────────────────────────────── */
+/* The ink variables existed; these are the classes that spend them on text. */
+.lvl-hi-ink { color: var(--lvl-hi-ink); }
+.lvl-mid-ink { color: var(--lvl-mid-ink); }
+.lvl-lo-ink { color: var(--lvl-lo-ink); }
+
+.hx-table .cx-row { grid-template-columns: 74px 90px 84px 92px minmax(120px, 1fr); }
+/* Four small columns, one per FAIR principle: a sparkline for the shape of a
+   cohort, so a flat overall that hides a moving I or R is still visible. */
+.hx-fair { display: inline-flex; align-items: flex-end; gap: 3px; height: 20px; }
+.hx-p { display: block; width: 9px; border-radius: 2px 2px 0 0; height: var(--h); min-height: 2px;
+  background: var(--muted); }
+.hx-p[data-l="F"] { background: var(--f-F); }
+.hx-p[data-l="A"] { background: var(--f-A); }
+.hx-p[data-l="I"] { background: var(--f-I); }
+.hx-p[data-l="R"] { background: var(--f-R); }
+
+.rc-warn { margin: 10px 0 0; padding: 10px 13px; border-radius: var(--r-sm, 9px);
+  background: color-mix(in srgb, var(--lvl-mid) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lvl-mid) 30%, transparent);
+  color: var(--text); font-size: .8rem; }
+.rc-list { display: flex; flex-direction: column; }
+.rc-item { display: grid; grid-template-columns: 46px 88px 74px 96px minmax(150px, 1fr);
+  gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--hair);
+  font-size: .82rem; }
+.rc-item:last-child { border-bottom: 0; }
+.rc-v { font-family: var(--mono); font-weight: 650; }
+.rc-when { font-family: var(--mono); font-size: .76rem; color: var(--muted); }
+.rc-score { font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .8rem; }
+.rc-delta { font-style: normal; font-size: .72rem; }
+.rc-delta.up { color: var(--lvl-hi-ink); }
+.rc-delta.down { color: var(--lvl-lo-ink); }
+.rc-fields { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.rc-fields code { font-family: var(--mono); font-size: .7rem; padding: 2px 6px; border-radius: 5px;
+  background: var(--surface-alt); border: 1px solid var(--border); color: var(--text); }
+.rc-unmapped { font-size: .7rem; font-style: normal; }
+@media (max-width: 760px) {
+  .hx-table .cx-row, .rc-item { grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+  .rc-fields { grid-column: 1 / -1; }
+}
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .fade-in { animation: fadeIn 0.3s ease-out; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

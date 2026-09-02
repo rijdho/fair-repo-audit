@@ -29,6 +29,28 @@ into the browser where it is fully visible: inspired by the open, client-side ph
 [Metadata Game Changers](https://metadatagamechangers.com/). The scoring logic in
 [`src/fair.js`](src/fair.js) is a faithful port of the production engine, so scores match.
 
+## Watching a repository over time
+
+Two views ask a different question from "how good is this metadata": they ask whether anyone is
+still working on it.
+
+- **History** scores each *registration* cohort separately. Publication year says when the science
+  happened; `registered` says when the DOI was minted, which is when the metadata was written. A
+  repository whose 2015 and 2025 cohorts score the same is minting from an unchanged template, and
+  a single overall score cannot tell that apart from steady improvement. Alongside it, a curation
+  activity chart counts records registered against records edited in each year: registration
+  without editing is a deposit-and-forget collection.
+- **Re-curation** replays a single DOI's audit log (`/dois/{doi}/activities`), showing what changed
+  at each revision and what the record scored at each one. Metadata curation leaves no trace in the
+  record you see today, so this is the view that makes it visible, and it is also the one that
+  catches an edit that made a record worse.
+
+  DataCite does not always retain the `create` entry. Where the log starts mid-life the changes are
+  still exact, but the scores are withheld rather than computed from a partial reconstruction: that
+  would report a decent record as a terrible one, with a number that looks entirely plausible.
+
+Both run in your browser against the public DataCite API.
+
 ## What runs where
 
 Almost everything here runs in your browser, and that is a promise rather than an

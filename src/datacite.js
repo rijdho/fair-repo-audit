@@ -129,3 +129,78 @@ export async function fetchYearHistogram(mode, value, { from = 2000, to = new Da
   if (firstHit === -1) return [];               // repo has no dated records in range
   return rows.slice(firstHit, lastHit + 1);     // span only the populated years
 }
+
+// ── Registration cohorts and curation activity ─────────────────────────────
+//
+// publicationYear says when the science happened. `registered` says when the
+// DOI was minted, and `updated` when the record was last touched. Those are the
+// two that describe CURATION rather than research, and they answer a different
+// question: not "how good is this repository's metadata" but "is it getting
+// better, and is anyone still working on it".
+//
+// A repository whose 2015 cohort scores the same as its 2025 cohort is minting
+// from an unchanged template. One whose recent cohorts climb has changed
+// something, and it is worth finding out what.
+
+// `registered` and `updated` are dates, not years, so the range needs full
+// ISO days. The selector rides in `query`, which is already taken when the mode
+// is publisher, hence the AND.
+function scopedQuery(mode, value, clause) {
+  return mode === 'publisher' ? `publisher:"${value.trim()}" AND ${clause}` : clause;
+}
+function scopeParams(mode, value) {
+  const p = new URLSearchParams();
+  if (mode === 'clientId') p.set('client-id', value.trim());
+  else if (mode === 'prefix') p.set('prefix', value.trim());
+  return p;
+}
+const dayRange = (field, year) => `${field}:[${year}-01-01 TO ${year}-12-31]`;
+
+/** One registration-year cohort: the records whose DOI was minted that year. */
+export async function fetchRegisteredCohort(mode, value, year, { pageSize = 25 } = {}) {
+  const p = scopeParams(mode, value);
+  p.set('affiliation', 'true');
+  p.set('page[size]', String(pageSize));
+  p.set('sort', '-created');
+  p.set('query', scopedQuery(mode, value, dayRange('registered', year)));
+  const res = await fetch(`${DATACITE}?${p}`);
+  if (!res.ok) throw new Error(`DataCite API returned ${res.status}`);
+  const json = await res.json();
+  return { works: json.data || [], total: json.meta?.total ?? 0 };
+}
+
+/** Count-only: how many records were registered, and updated, in each year. */
+export async function fetchCurationHistogram(mode, value, {
+  from = 2011, to = new Date().getFullYear(), onProgress, concurrency = 6,
+} = {}) {
+  const years = [];
+  for (let y = from; y <= to; y++) years.push(y);
+
+  const count = async (field, year) => {
+    const p = scopeParams(mode, value);
+    p.set('page[size]', '0');
+    p.set('query', scopedQuery(mode, value, dayRange(field, year)));
+    try {
+      const res = await fetch(`${DATACITE}?${p}`);
+      if (!res.ok) return 0;
+      return (await res.json()).meta?.total ?? 0;
+    } catch { return 0; }
+  };
+
+  const rows = new Array(years.length);
+  let done = 0, i = 0;
+  await Promise.all(Array.from({ length: Math.min(concurrency, years.length) }, async () => {
+    while (i < years.length) {
+      const idx = i++, year = years[idx];
+      const [registered, updated] = await Promise.all([count('registered', year), count('updated', year)]);
+      rows[idx] = { year, registered, updated };
+      onProgress?.(++done, years.length);
+    }
+  }));
+  // Trim leading and trailing years with no activity at all, so the chart spans
+  // only where this repository actually existed.
+  let a = 0, b = rows.length - 1;
+  while (a < b && !rows[a].registered && !rows[a].updated) a++;
+  while (b > a && !rows[b].registered && !rows[b].updated) b--;
+  return rows.slice(a, b + 1);
+}

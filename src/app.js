@@ -1,11 +1,12 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=26';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients } from './datacite.js?v=26';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=26';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker } from './charts.js?v=26';
-import { temporalSeries, findDuplicates } from './analysis.js?v=26';
-import * as oai from './oaipmh.js?v=26';
-import * as crossing from './analyze.js?v=26';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=26';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=27';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=27';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=27';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity } from './charts.js?v=27';
+import { temporalSeries, findDuplicates } from './analysis.js?v=27';
+import * as oai from './oaipmh.js?v=27';
+import * as crossing from './analyze.js?v=27';
+import * as recuration from './recuration.js?v=27';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=27';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -203,6 +204,8 @@ function rerender() {
   if (lastYearHist) drawYearPicker();
   if (lastCompare) renderCompare(lastCompare.a, lastCompare.b);
   if (lastCrossing) renderCrossing(lastCrossing);
+  if (lastHistory) renderHistory(lastHistory);
+  if (lastRecuration) renderRecuration(lastRecuration.doi, lastRecuration.h);
   else if (lastAggregate && lastAssessments.length) render(lastAggregate, lastMeta);
   // Repainting forces the results visible: if the guide is open, park them again.
   if ($('.tab.active')?.dataset.mode === 'how') { $('#results').style.display = 'none'; $('#status').style.display = 'none'; }
@@ -1068,6 +1071,201 @@ function renderCrossing(d) {
   results.appendChild(rcard);
 }
 
+// ══ History: registration cohorts and curation activity ═════════════════
+// publicationYear describes the research; `registered` describes the metadata,
+// because it is when the record was written. Scoring cohort by cohort separates
+// a repository that has improved its practice from one minting every year from
+// the same template. The two look identical in a single overall score.
+
+let lastHistory = null;
+
+(function initHistoryYears() {
+  const now = new Date().getFullYear();
+  const from = $('#hx-from'), until = $('#hx-until');
+  if (!from || !until) return;
+  for (let y = now; y >= 2011; y--) {
+    from.appendChild(new Option(y, y));
+    until.appendChild(new Option(y, y));
+  }
+  from.value = String(Math.max(2011, now - 11));
+  until.value = String(now);
+})();
+
+attachRepoTypeahead({
+  input: $('#hx-input'), list: $('#hx-suggest-list'), idPrefix: 'hx-sugg',
+  enabled: () => $('#hx-mode').value !== 'publisher',
+  onPick: () => { $('#hx-mode').value = 'clientId'; },
+});
+
+$$('.hx-example').forEach(b => b.addEventListener('click', () => {
+  $('#hx-mode').value = b.dataset.mode; $('#hx-input').value = b.dataset.value;
+}));
+
+$('#hx-analyze')?.addEventListener('click', busy('#hx-analyze', async () => {
+  const mode = $('#hx-mode').value, value = $('#hx-input').value.trim();
+  const sample = parseInt($('#hx-sample').value, 10);
+  const from = parseInt($('#hx-from').value, 10), until = parseInt($('#hx-until').value, 10);
+  if (!value) return status(t('err.enterValue'), 'error');
+  if (from > until) return status(t('err.yearOrder'), 'error');
+
+  const years = [];
+  for (let y = from; y <= until; y++) years.push(y);
+
+  // Cohorts first: they are the answer. The activity histogram is context and
+  // costs two count-only queries per year, so it runs after and never blocks.
+  const cohorts = [];
+  for (let i = 0; i < years.length; i++) {
+    status(t('status.cohort', { year: String(years[i]) }), 'info', Math.round(100 * i / years.length));
+    let r;
+    try { r = await fetchRegisteredCohort(mode, value, years[i], { pageSize: sample }); }
+    catch { continue; }
+    if (!r.works.length) { cohorts.push({ year: years[i], n: 0, total: r.total, agg: null }); continue; }
+    const assessments = r.works.map(w => assessDataCiteWork({ id: w.id, type: w.type, attributes: w.attributes }));
+    cohorts.push({ year: years[i], n: r.works.length, total: r.total, agg: aggregateAssessments(assessments) });
+  }
+  if (!cohorts.some(c => c.agg)) return status(t('err.noDatedRecords'), 'error');
+
+  status(t('status.activity'));
+  let activity = [];
+  try { activity = await fetchCurationHistogram(mode, value, { from, to: until }); } catch { /* context only */ }
+
+  setUrl({ tab: 'history', hm: mode, hv: value, hf: String(from), hu: String(until), n: String(sample), lang: currentLang });
+  status('');
+  renderHistory({ mode, value, sample, cohorts, activity });
+  $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+
+function renderHistory(d) {
+  lastHistory = d;
+  const results = $('#results'); results.innerHTML = ''; results.style.display = 'block';
+  { const m = $('.tab.active')?.dataset.mode; if (m && m !== 'how') resultsMode = m; }
+  const scored = d.cohorts.filter(c => c.agg);
+
+  // Headline: has anything changed between the oldest and newest cohort?
+  const first = scored[0], last = scored[scored.length - 1];
+  const drift = last.agg.overallPercent - first.agg.overallPercent;
+  const head = el('div', 'card');
+  head.innerHTML = `<h3>${esc(t('hx.trend.title'))}</h3>
+    <p class="muted">${esc(t('hx.trend.desc', {
+      a: String(first.year), b: String(last.year),
+      pa: String(first.agg.overallPercent), pb: String(last.agg.overallPercent),
+      drift: (drift > 0 ? '+' : '') + drift,
+    }))}</p>`;
+  const chart = el('div'); head.appendChild(chart); results.appendChild(head);
+  {
+    const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
+    renderTemporal(chart, scored.map(c => ({ year: c.year, n: c.n, mean: c.agg.overallPercent })),
+      { colors: { hi: v('--lvl-hi'), mid: v('--lvl-mid'), lo: v('--lvl-lo') }, axis: v('--muted'), grid: v('--border'), tip });
+  }
+
+  // Cohort table: overall plus each principle, so a flat overall that hides a
+  // moving I or R is visible rather than averaged away.
+  const tcard = el('div', 'card');
+  tcard.innerHTML = `<h3>${esc(t('hx.cohorts.title'))}</h3>`;
+  const tbl = el('div', 'cx-table hx-table');
+  tbl.innerHTML = `<div class="cx-row cx-head"><span>${esc(t('hx.col.year'))}</span>
+    <span class="num">${esc(t('hx.col.total'))}</span><span class="num">${esc(t('hx.col.sampled'))}</span>
+    <span class="num">${esc(t('hx.col.overall'))}</span><span>${esc(t('hx.col.profile'))}</span></div>`;
+  d.cohorts.forEach(c => {
+    const row = el('div', 'cx-row');
+    if (!c.agg) {
+      row.innerHTML = `<span class="cx-el">${c.year}</span><span class="num">${n(c.total || 0)}</span>
+        <span class="num">—</span><span class="num muted">${esc(t('hx.noRecords'))}</span><span></span>`;
+    } else {
+      const p = c.agg.principles.map(x => Math.round(x.score / x.maxScore * 100));
+      row.innerHTML = `<span class="cx-el">${c.year}</span>
+        <span class="num">${n(c.total)}</span><span class="num">${n(c.n)}</span>
+        <span class="num"><b class="lvl-${lvlOf(c.agg.overallPercent)}-ink">${c.agg.overallPercent}%</b></span>
+        <span class="hx-fair">${c.agg.principles.map((x, i) =>
+          `<i class="hx-p" data-l="${x.letter}" style="--h:${p[i]}%" title="${esc(x.letter)} ${p[i]}%"></i>`).join('')}</span>`;
+    }
+    tbl.appendChild(row);
+  });
+  tcard.appendChild(tbl);
+  results.appendChild(tcard);
+
+  if (d.activity.length) {
+    const acard = el('div', 'card');
+    const sc = seriesColors();
+    acard.innerHTML = `<h3>${esc(t('hx.activity.title'))}
+      <span class="chart-legend cmp-lgd"><span><i class="sw" style="background:${sc.a}"></i>${esc(t('hx.registered'))}</span><span><i class="sw" style="background:${sc.b}"></i>${esc(t('hx.updated'))}</span></span></h3>
+      <p class="muted">${esc(t('hx.activity.desc'))}</p>`;
+    const wrap = el('div'); acard.appendChild(wrap); results.appendChild(acard);
+    const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
+    renderActivity(wrap, d.activity, { colors: sc, axis: v('--muted'), grid: v('--border'), tip });
+  }
+}
+
+// ══ Re-curation: what changed in one record, and when ═══════════════════
+
+let lastRecuration = null;
+
+$$('.rc-example').forEach(b => b.addEventListener('click', () => { $('#rc-input').value = b.dataset.value; }));
+
+$('#rc-analyze')?.addEventListener('click', busy('#rc-analyze', async () => {
+  const doi = $('#rc-input').value.trim();
+  if (!doi) return status(t('err.enterDoi'), 'error');
+  status(t('status.recuration'));
+  let h;
+  try { h = await recuration.fetchHistory(doi); }
+  catch (e) { return status(e.message === 'notfound' ? t('err.doiNotFound') : `${t('status.error')}: ${e.message}`, 'error'); }
+  if (!h.versions.length) return status(t('err.noHistory'), 'error');
+  setUrl({ tab: 'recuration', rd: recuration.bareDoi(doi), lang: currentLang });
+  status('');
+  renderRecuration(recuration.bareDoi(doi), h);
+  $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+
+function renderRecuration(doi, h) {
+  lastRecuration = { doi, h };
+  const results = $('#results'); results.innerHTML = ''; results.style.display = 'block';
+  { const m = $('.tab.active')?.dataset.mode; if (m && m !== 'how') resultsMode = m; }
+
+  // Score every revision, but only where the walk began at `create`. A partial
+  // log reconstructs a partial record, and a score on that would read as a bad
+  // repository rather than as a short log. Wrong in a way that looks plausible.
+  const scored = h.complete
+    ? h.versions.map(v => assessDataCiteWork(v.work).overallPercent)
+    : h.versions.map(() => null);
+
+  const head = el('div', 'card');
+  head.innerHTML = `<h3>${esc(t('rc.title'))}</h3>
+    <p class="cmp-q"><a href="https://doi.org/${esc(doi)}" target="_blank" rel="noreferrer">${esc(doi)}</a></p>
+    <p class="muted">${esc(tn('rc.summary', h.versions.length, {
+      count: n(h.versions.length),
+      first: (h.versions[0].timestamp || '').slice(0, 10),
+      last: (h.versions[h.versions.length - 1].timestamp || '').slice(0, 10),
+    }))}</p>`;
+  if (!h.complete) {
+    const warn = el('p', 'rc-warn');
+    warn.textContent = t('rc.partial', { v: String(h.firstVersion) });
+    head.appendChild(warn);
+  }
+  results.appendChild(head);
+
+  const card = el('div', 'card');
+  card.innerHTML = `<h3>${esc(t('rc.versions.title'))}</h3>`;
+  const list = el('div', 'rc-list');
+  h.versions.forEach((v, i) => {
+    const prev = i > 0 ? scored[i - 1] : null, now = scored[i];
+    const delta = (now != null && prev != null) ? now - prev : null;
+    const row = el('div', 'rc-item');
+    row.innerHTML = `
+      <span class="rc-v">v${v.version}</span>
+      <span class="rc-when">${esc((v.timestamp || '').slice(0, 10))}</span>
+      <span class="chip ${v.action === 'create' ? 'ok' : 'part'}">${esc(v.action)}</span>
+      <span class="rc-score">${now == null ? '<i class="muted">—</i>'
+        : `<b class="lvl-${lvlOf(now)}-ink">${now}%</b>${delta ? ` <i class="rc-delta ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${delta}</i>` : ''}`}</span>
+      <span class="rc-fields">${v.changed.length
+        ? v.changed.map(f => `<code>${esc(f)}</code>`).join('')
+        : `<i class="muted">${esc(t('rc.noFields'))}</i>`}${
+        v.unmapped.length ? `<i class="muted rc-unmapped">${esc(t('rc.unmapped', { list: v.unmapped.join(', ') }))}</i>` : ''}</span>`;
+    list.appendChild(row);
+  });
+  card.appendChild(list);
+  results.appendChild(card);
+}
+
 // ── Deep-link bootstrap: run the analysis described by the URL on load ──
 (function applyUrlParams() {
   const p = new URLSearchParams(location.search);
@@ -1092,6 +1290,16 @@ function renderCrossing(d) {
     if (p.get('y1')) $('#oai-until').value = p.get('y1');
     if (p.get('y0') || p.get('y1')) syncOaiYearUI();
     if (p.get('q')) $('#oai-analyze').click();
+  } else if (tab === 'history') {
+    if (p.get('hm')) $('#hx-mode').value = p.get('hm');
+    $('#hx-input').value = p.get('hv') || '';
+    if (p.get('hf')) $('#hx-from').value = p.get('hf');
+    if (p.get('hu')) $('#hx-until').value = p.get('hu');
+    if (p.get('n')) $('#hx-sample').value = p.get('n');
+    if (p.get('hv')) $('#hx-analyze').click();
+  } else if (tab === 'recuration') {
+    $('#rc-input').value = p.get('rd') || '';
+    if (p.get('rd')) $('#rc-analyze').click();
   } else if (tab === 'crossing') {
     if (p.get('cs')) $('#cx-source').value = p.get('cs');
     $('#cx-input').value = p.get('cv') || '';

@@ -2,7 +2,7 @@
 // The heatmap and radar show the DISTRIBUTION across records, not just the
 // averages: every record × every check, and the profile shape plus its spread.
 
-import { t, tn, n as fmtNum } from './i18n/index.js?v=26';
+import { t, tn, n as fmtNum } from './i18n/index.js?v=27';
 
 const pctOf = (grp) => grp.score / grp.maxScore;
 
@@ -242,3 +242,51 @@ function cell(cls, text, title) {
   return d;
 }
 const shortId = (id) => String(id).replace(/^https?:\/\/(dx\.)?doi\.org\//, '').replace(/^oai:/, '').slice(0, 28);
+
+// ── Curation activity: DOIs registered vs records updated, per year ──
+// Two series on ONE count axis, which is legitimate because both are counts of
+// records. The shape is the message: registration without updating is a
+// deposit-and-forget collection; updating that outlives registration is a
+// collection someone is still curating.
+// rows: [{year, registered, updated}] ascending.
+export function renderActivity(container, rows, opts) {
+  const { colors, axis, grid, tip } = opts;
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = container.clientWidth || 760, H = 230, padL = 42, padR = 12, padT = 14, padB = 26;
+  const iw = W - padL - padR, ih = H - padT - padB, n = rows.length || 1;
+  const mk = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H });
+  const mono = 'ui-monospace, SF Mono, Menlo, monospace';
+
+  const max = Math.max(1, ...rows.flatMap(r => [r.registered, r.updated]));
+  // A round ceiling so the gridline labels are readable numbers.
+  const step = Math.pow(10, Math.floor(Math.log10(max)));
+  const top = Math.ceil(max / step) * step;
+  const y = (v) => padT + ih - (v / top) * ih;
+  const fmt = (v) => v >= 1000 ? `${Math.round(v / 100) / 10}k` : String(v);
+
+  for (const v of [0, top / 2, top]) {
+    svg.appendChild(mk('line', { x1: padL, y1: y(v), x2: W - padR, y2: y(v), stroke: grid, 'stroke-width': 1 }));
+    const lb = mk('text', { x: padL - 6, y: y(v) + 3, fill: axis, 'font-size': 9, 'text-anchor': 'end', 'font-family': mono });
+    lb.textContent = fmt(v); svg.appendChild(lb);
+  }
+
+  const gap = iw / n, bw = Math.min(20, gap * 0.36);
+  rows.forEach((r, i) => {
+    const cx = padL + gap * i + gap / 2;
+    [['registered', colors.a, -1], ['updated', colors.b, 1]].forEach(([key, col, side]) => {
+      const v = r[key], h = Math.max((v / top) * ih, v > 0 ? 1.5 : 0);
+      if (h <= 0) return;
+      const x = cx + (side < 0 ? -bw - 1 : 1);
+      const rect = mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 2, fill: col, style: 'cursor:pointer' });
+      rect.addEventListener('mouseenter', e => tip(e, `${r.year}\n${t('chart.activity.' + key, { count: fmtNum(v) })}`));
+      rect.addEventListener('mouseleave', () => tip(null));
+      svg.appendChild(rect);
+    });
+    if (n <= 18 || i % Math.ceil(n / 18) === 0) {
+      const lb = mk('text', { x: cx, y: H - 7, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
+      lb.textContent = `'${String(r.year).slice(2)}`; svg.appendChild(lb);
+    }
+  });
+  container.appendChild(svg);
+}

@@ -34,6 +34,23 @@ latest release.
 
   The first repository supported is R2R (Rolling Deck to Repository).
 
+- **A "History" view: FAIR score per registration cohort, plus curation activity.** Publication
+  year describes the research; `registered` describes the metadata, because it is when the record
+  was written. Scoring cohort by cohort separates a repository that has improved its practice from
+  one minting every year out of the same template, which a single overall score cannot do. The
+  activity chart counts records registered against records edited per year, both from count-only
+  queries. Running it against R2R shows the 2016 and 2021 cohorts scoring identically and a mass
+  re-curation of roughly 35,000 records in 2020.
+
+- **A "Re-curation" view: what changed in one record, and when.** Replays a DOI's DataCite audit
+  log, reconstructing the record at every revision and scoring each one, so an edit that improved a
+  record and an edit that damaged it are both visible.
+
+  Where DataCite's log does not reach back to the `create` entry, the reconstruction is partial and
+  the scores are **withheld** rather than computed. Scoring a partial reconstruction would report a
+  decent record as a terrible one, and the figure would look plausible, which is the dangerous kind
+  of wrong. The change history is exact either way and is still shown.
+
 - The analysis service address is read from a `fair-analyze-endpoint` meta tag that **ships empty**
   and is filled by the deploy workflow from a repository variable. No deployment's infrastructure
   hostname is published in source, and a fork or a bare checkout gets a working tree with this one

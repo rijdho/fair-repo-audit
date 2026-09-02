@@ -29,7 +29,7 @@
        the deploy workflow fills it from a repository variable, so no deployment's
        hostname is published in source and a fork works with the mode switched off. -->
   <meta name="fair-analyze-endpoint" content="" />
-  <link rel="stylesheet" href="./style.css?v=29" />
+  <link rel="stylesheet" href="./style.css?v=30" />
 </head>
 <body>
   <div class="app" id="app">
@@ -47,6 +47,8 @@
         <button class="nav-item tab" data-mode="oai"><span class="nav-step">OA</span><span class="nav-lbl">OAI-PMH</span></button>
         <button class="nav-item tab" data-mode="compare"><span class="nav-step">VS</span><span class="nav-lbl" data-i18n="ui.tabs.compare">Compare</span></button>
         <button class="nav-item tab" data-mode="crossing"><span class="nav-step">SP</span><span class="nav-lbl" data-i18n="ui.tabs.crossing">Source vs published</span></button>
+        <button class="nav-item tab" data-mode="history"><span class="nav-step">HX</span><span class="nav-lbl" data-i18n="ui.tabs.history">History</span></button>
+        <button class="nav-item tab" data-mode="recuration"><span class="nav-step">RC</span><span class="nav-lbl" data-i18n="ui.tabs.recuration">Re-curation</span></button>
       </nav>
       <div class="nav-label" data-i18n="ui.nav.guide">Guide</div>
       <nav aria-label="Guide" data-i18n-attr="aria-label:ui.nav.guide">
@@ -239,6 +241,66 @@
             </p>
           </section>
 
+          <!-- History: registration cohorts and curation activity -->
+          <section id="panel-history" class="panel">
+            <p class="lede" style="margin-top:0" data-i18n-html="hx.lede">
+              Publication year says when the science happened. <b>Registration year</b> says when the
+              DOI was minted, which is when the metadata was written. Scoring each registration
+              cohort separately shows whether a repository's practice is improving, or whether every
+              year is being minted from the same unchanged template.
+            </p>
+            <div class="input-row">
+              <select id="hx-mode" title="Lookup type" aria-label="Lookup type" data-i18n-attr="title:ui.dc.mode.aria;aria-label:ui.dc.mode.aria">
+                <option value="clientId" data-i18n="ui.kind.clientId">Client ID</option>
+                <option value="prefix" data-i18n="ui.kind.prefix">DOI prefix</option>
+                <option value="publisher" data-i18n="ui.kind.publisher">Publisher</option>
+              </select>
+              <div class="dc-input-wrap">
+                <input id="hx-input" type="text" placeholder="dryad.dryad" aria-label="Repository"
+                       data-i18n-attr="aria-label:ui.cx.source.label" />
+                <ul id="hx-suggest-list" class="suggest-list" role="listbox" aria-label="Suggestions"></ul>
+              </div>
+              <select id="hx-sample" title="Records per cohort" aria-label="Records per cohort" data-i18n-attr="title:ui.hx.sample.label;aria-label:ui.hx.sample.label">
+                <option value="10">10</option>
+                <option value="25" selected>25</option>
+              </select>
+              <button id="hx-analyze" class="btn" data-i18n="ui.btn.analyze">Analyze</button>
+            </div>
+            <div class="year-row">
+              <span class="eyebrow" data-i18n="ui.years.label">Years</span>
+              <select id="hx-from" title="From registration year" aria-label="From registration year" data-i18n-attr="title:ui.hx.from.label;aria-label:ui.hx.from.label"></select>
+              <span class="year-dash">–</span>
+              <select id="hx-until" title="Until registration year" aria-label="Until registration year" data-i18n-attr="title:ui.hx.until.label;aria-label:ui.hx.until.label"></select>
+            </div>
+            <div class="examples">
+              <span class="eyebrow" data-i18n="ui.try">Try</span>
+              <button class="example hx-example" data-mode="prefix" data-value="10.7284">R2R</button>
+              <button class="example hx-example" data-mode="clientId" data-value="dryad.dryad">Dryad</button>
+              <button class="example hx-example" data-mode="prefix" data-value="10.5281">Zenodo</button>
+            </div>
+          </section>
+
+          <!-- Re-curation: what changed in one record, and when -->
+          <section id="panel-recuration" class="panel">
+            <p class="lede" style="margin-top:0" data-i18n-html="rc.lede">
+              Metadata curation is invisible work: it leaves no trace in the record you see today.
+              DataCite keeps an audit log for every DOI, so the edits can be replayed. This shows
+              what changed at each revision, and where the log reaches back far enough, what the
+              record scored at each one.
+            </p>
+            <div class="input-row">
+              <input id="rc-input" type="text" placeholder="DOI · 10.7284/911349" aria-label="DOI"
+                     data-i18n-attr="placeholder:ui.rc.input.placeholder;aria-label:ui.rc.input.aria" />
+              <button id="rc-analyze" class="btn" data-i18n="ui.btn.analyze">Analyze</button>
+            </div>
+            <div class="examples">
+              <span class="eyebrow" data-i18n="ui.try">Try</span>
+              <button class="example rc-example" data-value="10.7284/911349">R2R cruise</button>
+              <button class="example rc-example" data-value="10.5281/zenodo.21492530">Zenodo software</button>
+              <button class="example rc-example" data-value="10.5061/dryad.8515">Dryad (partial log)</button>
+            </div>
+          </section>
+
           <!-- How it works -->
           <section id="panel-how" class="panel">
             <p class="lede" style="margin-top:0" data-i18n-html="how.lede">
@@ -290,6 +352,6 @@
     </div>
   </div>
 
-  <script type="module" src="./src/app.js?v=28"></script>
+  <script type="module" src="./src/app.js?v=29"></script>
 </body>
 </html>
