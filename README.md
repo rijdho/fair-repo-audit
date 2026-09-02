@@ -29,79 +29,6 @@ into the browser where it is fully visible: inspired by the open, client-side ph
 [Metadata Game Changers](https://metadatagamechangers.com/). The scoring logic in
 [`src/fair.js`](src/fair.js) is a faithful port of the production engine, so scores match.
 
-## Watching a repository over time
-
-Two views ask a different question from "how good is this metadata": they ask whether anyone is
-still working on it.
-
-- **History** scores each *registration* cohort separately. Publication year says when the science
-  happened; `registered` says when the DOI was minted, which is when the metadata was written. A
-  repository whose 2015 and 2025 cohorts score the same is minting from an unchanged template, and
-  a single overall score cannot tell that apart from steady improvement. Alongside it, a curation
-  activity chart counts records registered against records edited in each year: registration
-  without editing is a deposit-and-forget collection.
-- **Re-curation** replays a single DOI's audit log (`/dois/{doi}/activities`), showing what changed
-  at each revision and what the record scored at each one. Metadata curation leaves no trace in the
-  record you see today, so this is the view that makes it visible, and it is also the one that
-  catches an edit that made a record worse.
-
-  DataCite does not always retain the `create` entry. Where the log starts mid-life the changes are
-  still exact, but the scores are withheld rather than computed from a partial reconstruction: that
-  would report a decent record as a terrible one, with a number that looks entirely plausible.
-
-Both run in your browser against the public DataCite API.
-
-## Watching it change: metrics-watch
-
-A one-off audit says where you are. It cannot say whether you are getting better, and it cannot
-show a funder or a director that a curation effort worked. `metrics-watch` turns the same rubric
-into a time series that lives in your own repository.
-
-1. Fork this repository.
-2. Copy `metrics-watch.example.json` to `metrics-watch.json` and edit the targets.
-3. That is the whole setup. On the first of every month the workflow scores each target and commits
-   `metrics-history.json` back to your fork.
-
-No account, no key, no service: the scorer is [`scripts/metrics-watch.mjs`](scripts/metrics-watch.mjs),
-it has no dependencies, and it imports the same `src/fair.js` the page uses, so a scheduled score
-and a score you read in the browser cannot drift apart. It also runs by hand:
-
-```sh
-node scripts/metrics-watch.mjs --mode prefix --value 10.7284 --out metrics-history.json
-```
-
-The **Metrics** view reads any such history, by URL or from a local file, and plots the trend. More
-than one target in a config makes a set, and the view compares them on one axis.
-
-A history file holds runs, not records: date, sample size, the overall score, all fourteen
-sub-principle scores and the concept percentages. It stays small enough to accumulate for years,
-and keeping the sub-principle scores means an old history can be re-analysed later in ways nobody
-has thought of yet.
-
-## What runs where
-
-Almost everything here runs in your browser, and that is a promise rather than an
-implementation detail, so it is worth being precise about the one exception.
-
-| Mode | Where the analysis runs | What leaves your browser |
-|---|---|---|
-| DataCite | your browser | nothing |
-| OAI-PMH | your browser (records may pass through a CORS relay that holds no scoring logic) | the endpoint URL you typed |
-| Compare | your browser | nothing |
-| **Source vs published** | **a hosted service** | **the repository and value you chose** |
-
-The scoring rubric is the same in all four: [`src/fair.js`](src/fair.js), fully
-visible, 14 sub-principles. What the service adds is the connectors that read a
-repository's *native* API and the element ledger that compares the two sides.
-Those are not in this repository.
-
-Why the split. Every FAIR auditing tool, this one included, reads the record a
-repository *publishes*. That is the thin side. A repository usually knows a good
-deal more about a dataset than it writes into the record, and the difference is
-invisible to anything that only sees the output. Reading both sides needs a
-connector per repository, which is ongoing work rather than a rubric, and it is
-where this project earns its keep.
-
 ## What it measures
 
 Every record is scored against 14 FAIR sub-principles (Wilkinson et al. 2016), each **Full (1)**,
@@ -173,6 +100,55 @@ endpoint offers.
 Opening such a link runs the analysis automatically. `lang` is optional and pins the
 interface language, so a result can be shared with a colleague in their own language.
 
+## Watching a repository over time
+
+Two views ask a different question from "how good is this metadata": they ask whether anyone is
+still working on it.
+
+- **History** scores each *registration* cohort separately. Publication year says when the science
+  happened; `registered` says when the DOI was minted, which is when the metadata was written. A
+  repository whose 2015 and 2025 cohorts score the same is minting from an unchanged template, and
+  a single overall score cannot tell that apart from steady improvement. Alongside it, a curation
+  activity chart counts records registered against records edited in each year: registration
+  without editing is a deposit-and-forget collection.
+- **Re-curation** replays a single DOI's audit log (`/dois/{doi}/activities`), showing what changed
+  at each revision and what the record scored at each one. Metadata curation leaves no trace in the
+  record you see today, so this is the view that makes it visible, and it is also the one that
+  catches an edit that made a record worse.
+
+  DataCite does not always retain the `create` entry. Where the log starts mid-life the changes are
+  still exact, but the scores are withheld rather than computed from a partial reconstruction: that
+  would report a decent record as a terrible one, with a number that looks entirely plausible.
+
+Both run in your browser against the public DataCite API.
+
+## Watching it change: metrics-watch
+
+A one-off audit says where you are. It cannot say whether you are getting better, and it cannot
+show a funder or a director that a curation effort worked. `metrics-watch` turns the same rubric
+into a time series that lives in your own repository.
+
+1. Fork this repository.
+2. Copy `metrics-watch.example.json` to `metrics-watch.json` and edit the targets.
+3. That is the whole setup. On the first of every month the workflow scores each target and commits
+   `metrics-history.json` back to your fork.
+
+No account, no key, no service: the scorer is [`scripts/metrics-watch.mjs`](scripts/metrics-watch.mjs),
+it has no dependencies, and it imports the same `src/fair.js` the page uses, so a scheduled score
+and a score you read in the browser cannot drift apart. It also runs by hand:
+
+```sh
+node scripts/metrics-watch.mjs --mode prefix --value 10.7284 --out metrics-history.json
+```
+
+The **Metrics** view reads any such history, by URL or from a local file, and plots the trend. More
+than one target in a config makes a set, and the view compares them on one axis.
+
+A history file holds runs, not records: date, sample size, the overall score, all fourteen
+sub-principle scores and the concept percentages. It stays small enough to accumulate for years,
+and keeping the sub-principle scores means an old history can be re-analysed later in ways nobody
+has thought of yet.
+
 ## Languages
 
 The interface, the per-check explanations and the fix recommendations are available in
@@ -203,6 +179,30 @@ partial locale degrades to mixed language rather than to blank UI.
 
 To add a language: copy `en.js`, translate the values, register the code and its endonym
 in `LANGS` in `src/i18n/index.js`, and import it into `LOCALES`.
+
+## What runs where
+
+Almost everything here runs in your browser, and that is a promise rather than an
+implementation detail, so it is worth being precise about the one exception.
+
+| Mode | Where the analysis runs | What leaves your browser |
+|---|---|---|
+| DataCite | your browser | nothing |
+| OAI-PMH | your browser (records may pass through a CORS relay that holds no scoring logic) | the endpoint URL you typed |
+| Compare | your browser | nothing |
+| **Source vs published** | **a hosted service** | **the repository and value you chose** |
+
+The scoring rubric is the same in all four: [`src/fair.js`](src/fair.js), fully
+visible, 14 sub-principles. What the service adds is the connectors that read a
+repository's *native* API and the element ledger that compares the two sides.
+Those are not in this repository.
+
+Why the split. Every FAIR auditing tool, this one included, reads the record a
+repository *publishes*. That is the thin side. A repository usually knows a good
+deal more about a dataset than it writes into the record, and the difference is
+invisible to anything that only sees the output. Reading both sides needs a
+connector per repository, which is ongoing work rather than a rubric, and it is
+where this project earns its keep.
 
 ## Architecture
 
@@ -260,6 +260,13 @@ cors-proxy/          : a ~40-line CORS relay, required for OAI-PMH (no scoring l
   [`cors-proxy/`](cors-proxy/) and paste its URL into the app's *CORS proxy* field, so this tool
   never depends on anyone else's infrastructure. DataCite needs no relay and is unaffected.
 
+## Methodology & validation
+
+The rubric, the Full/Partial/None bands, and the source-capability-aware scoring are documented
+in [Repo MetAudits' METHODOLOGY.md](https://metaudits.rijdho.org/repo-metaudits/) and
+cross-validated against the independent [FAIR-Checker](https://fair-checker.france-bioinformatique.fr/)
+tool. Because the engine here is a faithful port, those results carry over.
+
 ## Tests
 
 The engine and analysis modules are pure functions, covered by unit tests (Node's built-in
@@ -292,13 +299,6 @@ npx wrangler deploy            # prints https://…workers.dev
 ```
 
 Paste `https://…workers.dev/?url=` into the app's *CORS proxy (advanced)* field.
-
-## Methodology & validation
-
-The rubric, the Full/Partial/None bands, and the source-capability-aware scoring are documented
-in [Repo MetAudits' METHODOLOGY.md](https://metaudits.rijdho.org/repo-metaudits/) and
-cross-validated against the independent [FAIR-Checker](https://fair-checker.france-bioinformatique.fr/)
-tool. Because the engine here is a faithful port, those results carry over.
 
 ## Caveats
 
