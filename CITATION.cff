@@ -5,9 +5,12 @@ abstract: >-
   A static, client-side web tool that scores the FAIR metadata quality of any
   DataCite or OAI-PMH repository against 14 FAIR sub-principles, with
   concept-completeness profiles, per-record heatmaps, temporal trends and a
-  side-by-side compare mode. Multilingual (EN/ES/FR/DE). The open twin of the
-  hosted Repo MetAudits service: the scoring engine is a faithful,
-  fully-readable port, so scores match across both tools.
+  side-by-side compare mode. It also scores a repository's own API against what
+  it publishes, scores each registration cohort separately, replays the audit
+  log of a single DOI, and reads a monthly scoring history produced by a
+  scheduled job the user runs in their own repository. Multilingual (EN/ES/DE).
+  The open twin of the hosted Repo MetAudits service: the scoring engine is a
+  faithful, fully-readable port, so scores match across both tools.
 type: software
 authors:
   - family-names: "Hartley Belmar"
@@ -19,14 +22,11 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.21492530
     description: "Concept DOI, always resolves to the latest version"
-  - type: doi
-    value: 10.5281/zenodo.22024876
-    description: "Version DOI for v1.5.0"
 repository-code: "https://github.com/rijdho/fair-repo-audit"
 url: "https://rijdho.github.io/fair-repo-audit/"
 license: AGPL-3.0-or-later
-version: "1.5.0"
-date-released: "2026-08-20"
+version: "1.6.0"
+date-released: "2026-09-02"
 keywords:
   - FAIR principles
   - research data management
