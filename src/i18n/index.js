@@ -102,7 +102,7 @@ export const n = (value) => new Intl.NumberFormat(state.lang).format(value);
  * Apply the current locale to a DOM tree.
  *   <h1 data-i18n="ui.title">           → textContent
  *   <input data-i18n-attr="placeholder:ui.dc.ph;aria-label:ui.dc.aria">
- *   <p data-i18n-html="ui.lede">        → innerHTML, for strings carrying <a>/<b>
+ *   <p data-i18n-html="lede.datacite">  → innerHTML, for strings carrying <a>/<b>
  */
 export function applyDom(root = document) {
   for (const node of root.querySelectorAll('[data-i18n]')) {

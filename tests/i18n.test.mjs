@@ -8,6 +8,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { LOCALES, LANGS, t, tn, setLang, resolveLang, missingKeys, has } from '../src/i18n/index.js';
 
 const CODES = Object.keys(LOCALES);
@@ -153,4 +154,34 @@ test('resolveLang: explicit code wins, then browser, then English', () => {
   assert.equal(resolveLang(null, ['pt-BR']), 'en');
   assert.equal(resolveLang('klingon', ['es-MX']), 'es');
   assert.equal(resolveLang(undefined, []), 'en');
+});
+
+// ── The page's side of the contract ──
+// The catalogue tests above compare locales against each other. These two
+// compare the catalogue against the markup that consumes it: a key renamed in
+// one place and not the other renders the key string itself, in every language,
+// which no parity test can see.
+
+const HTML = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+
+test('every key index.html asks for is defined in English', () => {
+  const keys = new Set();
+  for (const m of HTML.matchAll(/data-i18n(?:-html)?="([\w.]+)"/g)) keys.add(m[1]);
+  for (const m of HTML.matchAll(/data-i18n-attr="([^"]+)"/g))
+    for (const pair of m[1].split(';')) {
+      const key = pair.slice(pair.indexOf(':') + 1).trim();
+      if (key) keys.add(key);
+    }
+  assert.ok(keys.size > 50, 'the scan found suspiciously few keys in the markup');
+  const missing = [...keys].filter(k => EN[k] == null);
+  assert.deepEqual(missing, [], `index.html asks for undefined key(s): ${missing.join(', ')}`);
+});
+
+test('every rail tab has a lede for its mode', () => {
+  // app.js builds the key as `lede.${mode}` on each tab switch, so the mode
+  // names in the markup and the lede.* keys are one contract with no compiler.
+  const modes = [...HTML.matchAll(/class="nav-item tab[^"]*" data-mode="(\w+)"/g)].map(m => m[1]);
+  assert.ok(modes.length >= 7, `expected the full rail, found ${modes.length} tabs`);
+  for (const mode of modes)
+    assert.ok(EN[`lede.${mode}`], `the ${mode} tab has no lede.${mode}`);
 });

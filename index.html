@@ -56,9 +56,12 @@
         <button class="nav-item tab" data-mode="how"><span class="nav-step">?</span><span class="nav-lbl" data-i18n="ui.tabs.how">How it works</span></button>
       </nav>
       <div class="rail-foot">
-        <span data-i18n-html="ui.footer.contact">For questions about data usage or attribution: <a href="https://rijdho.github.io" target="_blank" rel="noreferrer">@rijdho</a></span>
-        <br />
-        AGPL-3.0 · <a href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer">github</a>
+        <span data-i18n="ui.rail.data">Data from DataCite and OAI-PMH repositories</span><br />
+        by <a href="https://rijdho.github.io" target="_blank" rel="noreferrer">@rijdho</a>
+        · AGPL-3.0
+        · <a href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer">github</a><br />
+        <a href="https://doi.org/10.5281/zenodo.21492530" target="_blank" rel="noreferrer"
+           data-i18n-attr="title:ui.rail.cite" title="Cite this tool">DOI 10.5281/zenodo.21492530</a>
       </div>
     </aside>
     <button class="rail-backdrop" id="rail-backdrop" aria-label="Close menu" data-i18n-attr="aria-label:ui.nav.close" tabindex="-1"></button>
@@ -75,10 +78,14 @@
       <main class="content">
         <div class="content-inner">
           <p class="eyebrow" data-i18n="ui.brand.tagline">A readout of FAIR metadata quality for research repositories</p>
-          <p class="lede" data-i18n-html="ui.lede">
-            Point it at a repository and read how <b>FAIR</b> its metadata is: the 14 sub-principle score,
-            then the field-level completeness behind it. Everything runs in your browser against live data;
-            nothing is uploaded. The rubric is <a href="https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js" target="_blank" rel="noreferrer">fully open</a>.
+          <!-- One lede slot, swapped per mode by app.js. The eyebrow above is the page's
+               identity and never changes; this paragraph says what the open tab reads, so no
+               visitor meets a description of a mode they are not looking at. The key is rewritten
+               on every tab switch, which is also what makes a language switch re-render it. -->
+          <p class="lede" id="lede" data-i18n-html="lede.datacite">
+            Scores a DataCite repository's published records against the 14 FAIR sub-principles, and then
+            the field-level completeness behind that score. It runs in your browser against the live API,
+            uploads nothing, and its <a href="https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js" target="_blank" rel="noreferrer">rubric is open</a>.
           </p>
 
           <!-- DataCite -->
@@ -210,12 +217,6 @@
 
           <!-- Source vs published -->
           <section id="panel-crossing" class="panel">
-            <p class="lede" style="margin-top:0" data-i18n-html="cx.lede">
-              Every other mode here reads the record a repository <b>publishes</b>. That is the thin side.
-              A repository usually knows more about a dataset than it puts in the record, and the difference
-              is invisible to anything that only sees the output. This mode reads <b>both sides</b> with one
-              scorer and reports the crossing.
-            </p>
             <div class="input-row">
               <select id="cx-source" title="Repository" aria-label="Repository" data-i18n-attr="title:ui.cx.source.label;aria-label:ui.cx.source.label">
                 <option value="rvdata">R2R · Rolling Deck to Repository</option>
@@ -244,12 +245,6 @@
 
           <!-- History: registration cohorts and curation activity -->
           <section id="panel-history" class="panel">
-            <p class="lede" style="margin-top:0" data-i18n-html="hx.lede">
-              Publication year says when the science happened. <b>Registration year</b> says when the
-              DOI was minted, which is when the metadata was written. Scoring each registration
-              cohort separately shows whether a repository's practice is improving, or whether every
-              year is being minted from the same unchanged template.
-            </p>
             <div class="input-row">
               <select id="hx-mode" title="Lookup type" aria-label="Lookup type" data-i18n-attr="title:ui.dc.mode.aria;aria-label:ui.dc.mode.aria">
                 <option value="clientId" data-i18n="ui.kind.clientId">Client ID</option>
@@ -283,12 +278,6 @@
 
           <!-- Re-curation: what changed in one record, and when -->
           <section id="panel-recuration" class="panel">
-            <p class="lede" style="margin-top:0" data-i18n-html="rc.lede">
-              Metadata curation is invisible work: it leaves no trace in the record you see today.
-              DataCite keeps an audit log for every DOI, so the edits can be replayed. This shows
-              what changed at each revision, and where the log reaches back far enough, what the
-              record scored at each one.
-            </p>
             <div class="input-row">
               <input id="rc-input" type="text" placeholder="DOI · 10.7284/911349" aria-label="DOI"
                      data-i18n-attr="placeholder:ui.rc.input.placeholder;aria-label:ui.rc.input.aria" />
@@ -304,12 +293,6 @@
 
           <!-- Metrics: score histories built by the metrics-watch action -->
           <section id="panel-metrics" class="panel">
-            <p class="lede" style="margin-top:0" data-i18n-html="mw.lede">
-              A one-off audit says where you are. It cannot say whether you are <b>getting better</b>,
-              and it cannot show anyone that a curation effort worked. <code>metrics-watch</code> is a
-              scheduled job you run in your own repository: it scores with this same rubric once a
-              month and commits the history. This view reads that history.
-            </p>
             <div class="input-row">
               <input id="mw-url" type="text" placeholder="URL of a metrics-history.json" aria-label="History URL"
                      data-i18n-attr="placeholder:ui.mw.url.placeholder;aria-label:ui.mw.url.aria" />
@@ -327,11 +310,6 @@
 
           <!-- How it works -->
           <section id="panel-how" class="panel">
-            <p class="lede" style="margin-top:0" data-i18n-html="how.lede">
-              In one line: <b>it reads a repository's public metadata and grades each record against the FAIR
-              principles</b>: Findable, Accessible, Interoperable, Reusable. The four steps below are the whole
-              story; the sections after them offer as much depth as you want.
-            </p>
             <ol class="how-steps">
               <li><b data-i18n="how.step1.title">Point it at a repository</b><span data-i18n="how.step1.text">A DataCite client ID, DOI prefix or publisher: or any OAI-PMH base URL.</span></li>
               <li><b data-i18n="how.step2.title">It fetches live records</b><span data-i18n="how.step2.text">Your browser downloads a sample of metadata records straight from the source. Nothing is uploaded anywhere.</span></li>
@@ -359,18 +337,12 @@
             <details class="how-sec">
               <summary data-i18n="how.open.title">Open by design</summary>
               <p data-i18n-html="how.open.body"></p>
+              <p data-i18n-html="how.open.twin"></p>
             </details>
           </section>
 
           <div id="status" class="status" style="display:none" role="status" aria-live="polite"></div>
           <div id="results" style="display:none"></div>
-
-          <footer>
-            <p data-i18n-html="ui.footer.cite">Cite this tool: <a href="https://doi.org/10.5281/zenodo.21492530" target="_blank" rel="noreferrer">doi:10.5281/zenodo.21492530</a>, the DOI always resolves to the latest version.</p>
-            <p data-i18n-html="ui.footer.twin">Open twin of <a href="https://metaudits.rijdho.org/repo-metaudits/" target="_blank" rel="noreferrer">Repo MetAudits</a>:
-              the same 14-sub-principle rubric, moved client-side, plus MGC-style concept completeness.
-              AGPL-3.0 · <a href="https://github.com/rijdho/fair-repo-audit" target="_blank" rel="noreferrer">github.com/rijdho/fair-repo-audit</a></p>
-          </footer>
         </div>
       </main>
     </div>

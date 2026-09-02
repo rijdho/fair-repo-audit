@@ -101,6 +101,14 @@ let lastCompare = null;
 
 // ── Tabs (rail nav) ──
 const updateCmdTitle = () => { const a = $('.tab.active .nav-lbl'); if (a) $('#cmd-title').textContent = a.textContent; };
+// One lede slot for eight modes. The key stays on the element rather than the
+// text, so applyDom() re-renders the open tab's lede on a language switch.
+const setLede = (mode) => {
+  const p = $('#lede');
+  if (!p) return;
+  p.dataset.i18nHtml = `lede.${mode}`;
+  p.innerHTML = t(`lede.${mode}`);
+};
 let resultsMode = null; // which tab produced what's in #results
 $$('.tab').forEach(tab => tab.addEventListener('click', () => {
   $$('.tab').forEach(x => x.classList.toggle('active', x === tab));
@@ -118,6 +126,7 @@ $$('.tab').forEach(tab => tab.addEventListener('click', () => {
     status('');
   }
   updateCmdTitle();
+  setLede(mode);
   $('#app').classList.remove('rail-open'); // mobile: picking a source closes the drawer
 }));
 

@@ -476,10 +476,6 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
   .cmp-prow { grid-template-columns: 110px 1fr 64px; }
 }
 
-footer { margin: 26px 0 0; padding: 18px 0 8px; color: var(--muted); font-size: .8rem;
-  border-top: 1px solid var(--hair); }
-footer p { margin: 4px 0; }
-
 /* ── Responsive shell ── */
 @media (max-width: 880px) {
   .app { grid-template-columns: 1fr; }
