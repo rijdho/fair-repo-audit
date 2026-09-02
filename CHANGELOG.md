@@ -13,6 +13,8 @@ latest release.
 
 ## [1.6.0]: 2026-09-02
 
+Version DOI: [10.5281/zenodo.22250697](https://doi.org/10.5281/zenodo.22250697).
+
 ### Added
 
 - **A "Source vs published" mode.** Every other mode here reads the record a repository
