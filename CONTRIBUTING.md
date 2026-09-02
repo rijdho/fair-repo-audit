@@ -23,6 +23,21 @@ If you would rather not grant point 2, say so in the pull request. A bug report
 or a precise description of the fix is genuinely useful on its own, and the fix
 can be written separately.
 
+## Scope: this measures, it does not remediate
+
+The tool reads metadata and reports on it. It does not write metadata, look identifiers up, or
+propose corrections, and that boundary is deliberate rather than a gap waiting to be filled.
+
+A tool that both measures a repository and fixes it has a harder time being believed about either.
+The score has to mean "this is what your published metadata says", full stop, and it stops meaning
+that as soon as the same tool is also in the business of changing what it says. Keeping the audit
+clean is worth more than the convenience of doing both in one place, and remediation is well served
+by other tools.
+
+So a pull request that adds identifier lookup, a metadata editor, or a "fix this for me" button
+will be declined however well it is written. Please raise an issue before building anything in that
+direction. Reporting a NEW thing worth measuring, on the other hand, is always in scope.
+
 ## Running the tests
 
 No dependencies and no build step. The suite runs on Node's own test runner:
