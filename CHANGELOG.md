@@ -13,6 +13,55 @@ latest release.
 
 ## [Unreleased]
 
+### Added
+
+- **A "Source vs published" mode.** Every other mode here reads the record a repository
+  *publishes*, which is the thin side. A repository usually knows more about a dataset than it
+  writes into the record, and that difference is invisible to anything that only sees the output.
+  The new mode reads a repository's own API alongside its published DataCite records, scores both
+  with the same 14-sub-principle rubric, and reports the crossing: an element ledger showing what
+  the source holds, what reaches the published record, and what share survives.
+
+  The ledger carries the **DataCite pointer for every element** (`titles[].title`,
+  `creators/contributors[].nameIdentifiers[scheme=ORCID]`, `geoLocations[].geoLocationBox`...).
+  The people who can act on a finding are the ones who maintain a minting template, and a
+  percentage they cannot locate in their own schema is not actionable. Every record links to both
+  sides so any row can be checked against the live APIs.
+
+  Two elements are measured by identity rather than by count, because counting would score them
+  wrong: a title replaced by a generated string, and ORCIDs where the published record carries one
+  of the five the source holds. Both would otherwise read as full carriage.
+
+  The first repository supported is R2R (Rolling Deck to Repository).
+
+- The analysis service address is read from a `fair-analyze-endpoint` meta tag that **ships empty**
+  and is filled by the deploy workflow from a repository variable. No deployment's infrastructure
+  hostname is published in source, and a fork or a bare checkout gets a working tree with this one
+  mode switched off rather than a button that can only fail. The pre-commit guard caught the first
+  attempt, which had the hostname inline; it was right to.
+
+- `CONTRIBUTING.md`, which states plainly what contributing means for licensing here, including
+  why the relicensing grant is asked for and what to do if you would rather not give it.
+
+- `tests/analyze.test.mjs`: the service client is thin, so what is tested is what is easy to get
+  wrong, namely endpoint addressing and telling three kinds of failure apart. A user who cannot
+  reach the service needs to hear that the other modes still work, which is not the same message
+  as "your input was rejected".
+
+### Changed
+
+- **The client-side claim is now scoped rather than absolute, in all three locales.** The README,
+  the meta description, the page lede and the "How it works" step said computation runs entirely
+  in the browser and nothing is uploaded. That stays true of the DataCite, OAI-PMH and Compare
+  modes, and it is not true of the new one, which sends the repository and value you chose to its
+  analysis service. Naming the exception is the honest fix; deleting the promise would have been
+  the lazy one. A new "What runs where" table in the README says which mode runs where and what
+  leaves the browser.
+
+  The OAI-PMH CORS relay is unaffected and its own promise still holds: it forwards a GET and adds
+  headers, and holds no scoring logic.
+
+
 ### Removed
 
 - Two exported functions nobody called: `getLang` in `src/i18n/index.js` and `getProxy` in

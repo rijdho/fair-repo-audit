@@ -8,6 +8,10 @@ A static, dependency-free web app. Point it at a DataCite client / prefix / publ
 OAI-PMH base URL, and it harvests live metadata and scores every record against **14 FAIR
 sub-principles**. Nothing is uploaded or stored; all computation runs client-side.
 
+One mode is the exception, and it says so on the page: **Source vs published** reads a
+repository's own API alongside its published DataCite records, and that comparison runs in a
+service rather than in your browser. See [What runs where](#what-runs-where).
+
 Built for repository managers, data stewards and research-data support staff: anyone who has to
 answer "how good is our metadata, really?", ideally before someone else asks.
 
@@ -24,6 +28,30 @@ That tool keeps its scoring engine server-side (protected); this one moves the *
 into the browser where it is fully visible: inspired by the open, client-side philosophy of
 [Metadata Game Changers](https://metadatagamechangers.com/). The scoring logic in
 [`src/fair.js`](src/fair.js) is a faithful port of the production engine, so scores match.
+
+## What runs where
+
+Almost everything here runs in your browser, and that is a promise rather than an
+implementation detail, so it is worth being precise about the one exception.
+
+| Mode | Where the analysis runs | What leaves your browser |
+|---|---|---|
+| DataCite | your browser | nothing |
+| OAI-PMH | your browser (records may pass through a CORS relay that holds no scoring logic) | the endpoint URL you typed |
+| Compare | your browser | nothing |
+| **Source vs published** | **a hosted service** | **the repository and value you chose** |
+
+The scoring rubric is the same in all four: [`src/fair.js`](src/fair.js), fully
+visible, 14 sub-principles. What the service adds is the connectors that read a
+repository's *native* API and the element ledger that compares the two sides.
+Those are not in this repository.
+
+Why the split. Every FAIR auditing tool, this one included, reads the record a
+repository *publishes*. That is the thin side. A repository usually knows a good
+deal more about a dataset than it writes into the record, and the difference is
+invisible to anything that only sees the output. Reading both sides needs a
+connector per repository, which is ongoing work rather than a rubric, and it is
+where this project earns its keep.
 
 ## What it measures
 

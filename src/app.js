@@ -1,10 +1,11 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=25';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients } from './datacite.js?v=25';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=25';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker } from './charts.js?v=25';
-import { temporalSeries, findDuplicates } from './analysis.js?v=25';
-import * as oai from './oaipmh.js?v=25';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=25';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=26';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients } from './datacite.js?v=26';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=26';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker } from './charts.js?v=26';
+import { temporalSeries, findDuplicates } from './analysis.js?v=26';
+import * as oai from './oaipmh.js?v=26';
+import * as crossing from './analyze.js?v=26';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=26';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -201,6 +202,7 @@ langBox.addEventListener('click', (e) => {
 function rerender() {
   if (lastYearHist) drawYearPicker();
   if (lastCompare) renderCompare(lastCompare.a, lastCompare.b);
+  if (lastCrossing) renderCrossing(lastCrossing);
   else if (lastAggregate && lastAssessments.length) render(lastAggregate, lastMeta);
   // Repainting forces the results visible: if the guide is open, park them again.
   if ($('.tab.active')?.dataset.mode === 'how') { $('#results').style.display = 'none'; $('#status').style.display = 'none'; }
@@ -942,6 +944,130 @@ function cmpRow(name, pa, pb, sc, tipText) {
   return row;
 }
 
+// ══ Source vs published ══════════════════════════════════════════════
+// The one mode whose analysis does not run in this file. It posts a repository
+// and a value to the analysis service and renders what comes back: aggregate
+// views for both sides, the element ledger, and per-record scores. The ledger
+// carries the DataCite pointer for every element on purpose. The audience for
+// this is people who will have to change a minting template, and a percentage
+// they cannot locate in their own schema is not something they can act on.
+
+let lastCrossing = null;
+
+// With no analysis service configured (a fork, or a local checkout), the mode
+// cannot work, so it is removed rather than left as a button that only fails.
+if (!crossing.isConfigured()) {
+  $('.tab[data-mode="crossing"]')?.remove();
+  $('#panel-crossing')?.remove();
+}
+
+$$('.cx-example').forEach(b => b.addEventListener('click', () => { $('#cx-input').value = b.dataset.value; }));
+
+$('#cx-analyze')?.addEventListener('click', busy('#cx-analyze', async () => {
+  const source = $('#cx-source').value;
+  const value = $('#cx-input').value.trim();
+  const n = parseInt($('#cx-sample').value, 10);
+  if (!value) return status(t('err.enterValue'), 'error');
+  status(t('status.crossing'));
+  let data;
+  try {
+    data = await crossing.analyze(source, value, n);
+  } catch (e) {
+    return status(e.message === 'unreachable' ? t('err.serviceDown') : `${t('status.error')}: ${e.message}`, 'error');
+  }
+  setUrl({ tab: 'crossing', cs: source, cv: value, n: String(n), lang: currentLang });
+  status('');
+  renderCrossing(data);
+  $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+
+const CX_STATUS = { carried: 'ok', partial: 'part', replaced: 'lost', dropped: 'lost', added: 'ok', absent: 'gap' };
+
+function renderCrossing(d) {
+  lastCrossing = d;
+  const results = $('#results'); results.innerHTML = ''; results.style.display = 'block';
+  { const m = $('.tab.active')?.dataset.mode; if (m && m !== 'how') resultsMode = m; }
+  const sc = seriesColors();
+  const lgd = `<span class="chart-legend cmp-lgd"><span><i class="sw" style="background:${sc.a}"></i>${esc(t('cx.side.source'))}</span><span><i class="sw" style="background:${sc.b}"></i>${esc(t('cx.side.published'))}</span></span>`;
+
+  // Headline: the same records, the same rubric, two sides of one pipeline.
+  const head = el('div', 'card');
+  const gap = d.views.source.percent - d.views.published.percent;
+  head.innerHTML = `<div class="cmp-heads">
+      <div class="cmp-head">
+        <div class="cmp-tag" style="color:${sc.a}">${esc(t('cx.side.source'))}</div>
+        <div class="cmp-pct" style="color:${sc.a}">${d.views.source.percent}<span>%</span></div>
+        <div class="cmp-q">${esc(d.meta.sourceApi)}</div>
+        <div class="muted">${esc(tn('readout.records', d.meta.paired, { count: n(d.meta.paired) }))}</div>
+      </div>
+      <div class="cmp-head">
+        <div class="cmp-tag" style="color:${sc.b}">${esc(t('cx.side.published'))}</div>
+        <div class="cmp-pct" style="color:${sc.b}">${d.views.published.percent}<span>%</span></div>
+        <div class="cmp-q">${esc(d.meta.publishedApi)}</div>
+        <div class="muted">${esc(t('cx.gap', { gap: String(Math.round(gap * 10) / 10) }))}</div>
+      </div>
+    </div>`;
+  results.appendChild(head);
+
+  // FAIR principles, both sides
+  const pcard = el('div', 'card');
+  pcard.innerHTML = `<h3>${esc(t('cx.principles.title'))} ${lgd}</h3>`;
+  d.views.source.principles.forEach((p, i) => {
+    const q = d.views.published.principles[i];
+    const pa = Math.round(p.score / p.max * 100), pb = Math.round(q.score / q.max * 100);
+    pcard.appendChild(cmpRow(`${p.letter} · ${p.name}`, pa, pb, sc, `${p.letter} · ${p.name}\n${t('cx.side.source')} ${pa}%  ·  ${t('cx.side.published')} ${pb}%\n${PRINCIPLE_GLOSS[p.letter]}`));
+  });
+  results.appendChild(pcard);
+
+  // The ledger. Held, published, carried, with the pointer that locates each row.
+  const lcard = el('div', 'card');
+  lcard.innerHTML = `<h3>${esc(t('cx.ledger.title'))}</h3><p class="muted">${esc(t('cx.ledger.desc'))}</p>`;
+  const tbl = el('div', 'cx-table');
+  tbl.innerHTML = `<div class="cx-row cx-head">
+      <span>${esc(t('cx.col.element'))}</span><span>${esc(t('cx.col.pointer'))}</span>
+      <span class="num">${esc(t('cx.col.held'))}</span><span class="num">${esc(t('cx.col.published'))}</span>
+      <span>${esc(t('cx.col.carried'))}</span></div>`;
+  d.ledger.forEach(r => {
+    const row = el('div', 'cx-row');
+    const rate = r.carryRate;
+    const cls = rate === null ? 'gap' : rate === 0 ? 'lost' : rate >= 99 ? 'ok' : 'part';
+    row.innerHTML = `<span class="cx-el">${esc(t('cx.el.' + r.element))}
+        ${r.fair.map(f => `<i class="cx-fair" data-l="${esc(f[0])}">${esc(f)}</i>`).join('')}</span>
+      <code class="cx-ptr">${esc(r.pointer)}</code>
+      <span class="num">${n(r.srcValues)}</span>
+      <span class="num">${n(r.pubValues)}</span>
+      <span class="cx-carry"><span class="bar"><span class="bar-fill lvl-${cls === 'ok' ? 'hi' : cls === 'part' ? 'mid' : 'lo'}" style="width:${Math.max(rate ?? 0, 1.5)}%"></span></span>
+        <b class="cx-${cls}">${rate === null ? '—' : rate + '%'}</b></span>`;
+    row.addEventListener('mouseenter', e => tip(e, `${r.pointer}\n${t('cx.tip.cruises', { s: String(r.srcCruises), p: String(r.pubCruises) })}${r.exact ? '\n' + t('cx.tip.exact') : ''}`));
+    row.addEventListener('mouseleave', () => tip(null));
+    tbl.appendChild(row);
+  });
+  lcard.appendChild(tbl);
+  results.appendChild(lcard);
+
+  // Per-record: where the two sides land for each item, with links to both.
+  const rcard = el('div', 'card');
+  rcard.innerHTML = `<h3>${esc(t('cx.records.title'))} ${lgd}</h3>`;
+  const rt = el('div', 'cx-table cx-records');
+  rt.innerHTML = `<div class="cx-row cx-head"><span>${esc(t('cx.col.record'))}</span>
+      <span class="num">${esc(t('cx.side.source'))}</span><span class="num">${esc(t('cx.side.published'))}</span>
+      <span>${esc(t('cx.col.links'))}</span></div>`;
+  d.records.forEach(r => {
+    const row = el('div', 'cx-row');
+    row.innerHTML = `<span class="cx-el">${esc(r.label)} <i class="muted">${esc(r.vessel || '')} ${esc((r.departDate || '').slice(0, 4))}</i></span>
+      <span class="num" style="color:${sc.a}">${r.sourcePercent}%</span>
+      <span class="num" style="color:${sc.b}">${r.publishedPercent}%</span>
+      <span class="cx-links">
+        <a href="${esc(r.links.doi)}" target="_blank" rel="noreferrer">DOI</a>
+        <a href="${esc(r.links.datacite)}" target="_blank" rel="noreferrer">DataCite JSON</a>
+        <a href="${esc(r.links.cruise)}" target="_blank" rel="noreferrer">${esc(t('cx.link.source'))}</a>
+      </span>`;
+    rt.appendChild(row);
+  });
+  rcard.appendChild(rt);
+  results.appendChild(rcard);
+}
+
 // ── Deep-link bootstrap: run the analysis described by the URL on load ──
 (function applyUrlParams() {
   const p = new URLSearchParams(location.search);
@@ -966,6 +1092,11 @@ function cmpRow(name, pa, pb, sc, tipText) {
     if (p.get('y1')) $('#oai-until').value = p.get('y1');
     if (p.get('y0') || p.get('y1')) syncOaiYearUI();
     if (p.get('q')) $('#oai-analyze').click();
+  } else if (tab === 'crossing') {
+    if (p.get('cs')) $('#cx-source').value = p.get('cs');
+    $('#cx-input').value = p.get('cv') || '';
+    if (p.get('n')) $('#cx-sample').value = p.get('n');
+    if (p.get('cv')) $('#cx-analyze').click();
   } else if (tab === 'compare') {
     $('#cmp-a-kind').value = p.get('ak') || 'clientId'; $('#cmp-a-input').value = p.get('av') || '';
     $('#cmp-b-kind').value = p.get('bk') || 'clientId'; $('#cmp-b-input').value = p.get('bv') || '';

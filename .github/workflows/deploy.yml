@@ -36,6 +36,27 @@ jobs:
           node-version: 20
       # No package.json: the suite runs on Node's built-in runner, dependency-free.
       - run: node --test tests/*.test.mjs
+      # The analysis service address is a deployment detail, not source. It is
+      # injected here from a repository variable so the checked-in tree carries
+      # no infrastructure hostname. Unset means the mode ships switched off,
+      # which is the correct behaviour for a fork.
+      - name: Inject the analysis service endpoint
+        env:
+          ENDPOINT: ${{ vars.ANALYZE_ENDPOINT }}
+        run: |
+          if [ -n "$ENDPOINT" ]; then
+            python3 - <<'PY'
+          import os, pathlib, re
+          p = pathlib.Path('index.html')
+          p.write_text(re.sub(
+              r'(<meta name="fair-analyze-endpoint" content=")"',
+              lambda m: m.group(1) + os.environ['ENDPOINT'] + '"',
+              p.read_text(), count=1))
+          PY
+            echo "endpoint injected"
+          else
+            echo "no ANALYZE_ENDPOINT variable set: shipping with the mode off"
+          fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: .

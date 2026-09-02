@@ -495,6 +495,49 @@ footer p { margin: 4px 0; }
   .bar-row { grid-template-columns: 110px 1fr 52px; }
 }
 
+/* ── Source vs published ────────────────────────────────────────────────
+   The ledger is a table of field paths, read by people who will have to edit a
+   minting template. So the pointer column gets the monospace and the room, and
+   the percentage is the thing that yields space when the viewport is narrow. */
+.cx-table { display: flex; flex-direction: column; }
+.cx-row { display: grid; grid-template-columns: 190px minmax(200px, 1fr) 62px 74px 128px;
+  gap: 12px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--hair);
+  font-size: .82rem; }
+.cx-row:last-child { border-bottom: 0; }
+.cx-head { font-size: .68rem; letter-spacing: .07em; text-transform: uppercase; color: var(--muted);
+  font-weight: 650; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+.cx-row .num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--mono);
+  font-size: .78rem; }
+.cx-el { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cx-el .muted { font-size: .72rem; }
+.cx-ptr { font-family: var(--mono); font-size: .72rem; color: var(--muted); word-break: break-all;
+  line-height: 1.35; }
+.cx-fair { font-family: var(--mono); font-style: normal; font-size: .62rem; font-weight: 650;
+  padding: 1px 4px; border-radius: 4px; border: 1px solid var(--border); color: var(--muted); }
+.cx-fair[data-l="F"] { color: var(--f-F); border-color: color-mix(in srgb, var(--f-F) 34%, transparent); }
+.cx-fair[data-l="A"] { color: var(--f-A); border-color: color-mix(in srgb, var(--f-A) 34%, transparent); }
+.cx-fair[data-l="I"] { color: var(--f-I); border-color: color-mix(in srgb, var(--f-I) 34%, transparent); }
+.cx-fair[data-l="R"] { color: var(--f-R); border-color: color-mix(in srgb, var(--f-R) 34%, transparent); }
+.cx-carry { display: flex; align-items: center; gap: 8px; }
+.cx-carry .bar { flex: 1; height: 6px; }
+/* The fill is a span here, and height:100% does not resolve on an inline box. */
+.cx-carry .bar-fill { display: block; }
+.cx-carry b { font-family: var(--mono); font-size: .76rem; font-variant-numeric: tabular-nums;
+  min-width: 40px; text-align: right; }
+.cx-ok { color: var(--lvl-hi); } .cx-part { color: var(--lvl-mid); }
+.cx-lost { color: var(--lvl-lo); } .cx-gap { color: var(--muted); }
+.cx-records .cx-row { grid-template-columns: minmax(150px, 1fr) 74px 84px 220px; }
+.cx-links { display: flex; gap: 10px; flex-wrap: wrap; font-size: .72rem; }
+.cx-links a { color: var(--accent); text-decoration: none; }
+.cx-links a:hover { text-decoration: underline; }
+@media (max-width: 760px) {
+  .cx-row { grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+  .cx-ptr { grid-column: 1 / -1; }
+  .cx-head { display: none; }
+  .cx-records .cx-row { grid-template-columns: 1fr 1fr; }
+  .cx-links { grid-column: 1 / -1; }
+}
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .fade-in { animation: fadeIn 0.3s ease-out; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
