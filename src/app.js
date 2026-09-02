@@ -86,8 +86,9 @@ function reusabilityCard(a) {
     <p class="muted" style="margin-top:-6px">${esc(t('reuse.desc'))}</p>`;
   for (const [name, p, h] of meters) card.appendChild(meterRow(name, p, h));
   const weakest = meters.reduce((m, x) => x[1] < m[1] ? x : m);
-  const verdict = el('div', 'verdict');
-  verdict.innerHTML = meters.every(m => m[1] >= 75)
+  const strong = meters.every(m => m[1] >= 75);
+  const verdict = el('div', `verdict ${strong ? 'lvl-hi' : 'lvl-mid'}`);
+  verdict.innerHTML = strong
     ? t('reuse.verdict.strong')
     : t('reuse.verdict.gap', { name: esc(weakest[0]), pct: weakest[1], help: esc(weakest[2]) });
   card.appendChild(verdict);
@@ -770,7 +771,8 @@ function render(a, meta) {
       card.appendChild(el('p', 'muted', esc(t('conn.none'))));
     }
     if (cp.recordsWithUnidentifiedCreators) {
-      const v = el('div', 'verdict');
+      // A quick win is a gap that is cheap to close, not a failure: mid, not lo.
+      const v = el('div', 'verdict lvl-mid');
       v.innerHTML = tn('conn.quickWins', cp.recordsWithUnidentifiedCreators, { count: n(cp.recordsWithUnidentifiedCreators) });
       card.appendChild(v);
     }

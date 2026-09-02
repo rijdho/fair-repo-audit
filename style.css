@@ -442,8 +442,14 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
   box-shadow: var(--shadow); }
 
 /* ── Reusability verdict ── */
+/* The 3px left border is the house signal for "this item carries a verdict", so
+   it takes the status palette and never the brand: chrome must not encode
+   meaning. The default is mid, the reading a verdict gets before anything has
+   classified it; both render sites set the level explicitly. */
 .verdict { margin-top: 14px; padding: 11px 14px; border-radius: var(--r-sm); font-size: .86rem;
-  background: var(--surface-alt); border-left: 3px solid var(--brand); }
+  background: var(--surface-alt); border-left: 3px solid var(--lvl-mid); }
+.verdict.lvl-hi { border-left-color: var(--lvl-hi); }
+.verdict.lvl-mid { border-left-color: var(--lvl-mid); }
 .verdict b { color: var(--text); }
 
 /* ── Compare panel + view ── */
