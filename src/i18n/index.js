@@ -10,9 +10,9 @@
 //    types) are NEVER keys here: they are data the user types into their
 //    metadata editor, and they stay in English in every locale.
 
-import { en } from './en.js';
-import { es } from './es.js';
-import { de } from './de.js';
+import { en } from './en.js?v=32';
+import { es } from './es.js?v=32';
+import { de } from './de.js?v=32';
 
 export const LOCALES = { en, es, de };
 
@@ -29,8 +29,8 @@ const isSupported = (code) => Object.prototype.hasOwnProperty.call(LOCALES, code
 
 // The selected language lives on a global slot rather than in a module-local
 // `let`. ES modules are cached per resolved URL, so importing this file as
-// './i18n/index.js' from one module and './i18n/index.js?v=24' from another
-// yields TWO instances with independent state: the engine would keep rendering
+// './i18n/index.js' from one module and with a ?v= query from another yields
+// TWO instances with independent state: the engine would keep rendering
 // English while the UI switched to German. Sharing through globalThis makes the
 // language a single fact no matter how the graph resolves.
 const state = (globalThis.__fraI18n ??= { lang: DEFAULT_LANG });

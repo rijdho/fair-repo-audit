@@ -2,7 +2,7 @@
 // The heatmap and radar show the DISTRIBUTION across records, not just the
 // averages: every record × every check, and the profile shape plus its spread.
 
-import { t, tn, n as fmtNum } from './i18n/index.js?v=28';
+import { t, tn, n as fmtNum } from './i18n/index.js?v=32';
 
 const pctOf = (grp) => grp.score / grp.maxScore;
 
