@@ -45,7 +45,6 @@ export const es = {
   "ui.kind.prefix": "Prefijo DOI",
   "ui.kind.publisher": "Editor",
   "ui.lang.aria": "Idioma",
-  "ui.lang.title": "Idioma",
   "ui.nav.close": "Cerrar el menú",
   "ui.nav.guide": "Guía",
   "ui.nav.menu": "Menú",

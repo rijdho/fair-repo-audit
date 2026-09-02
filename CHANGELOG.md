@@ -23,9 +23,21 @@ latest release.
   `.check-group.flash` with its `cg-flash` keyframes, `.kv`, a `.bar-row` media query and
   `.fade-in` with its `fadeIn` keyframes.
 
-  The i18n catalogue came back clean: zero keys with no reference, checked with a detector
-  that accounts for keys built at runtime (`lede.${mode}`, `check.dc.${id}`, `rating-${band}`)
-  and proved non-vacuous against an invented key.
+  One orphaned i18n key, `ui.lang.title`, in all three locales. The language buttons take
+  their tooltip from `LANGS[].label`, so nothing had asked for it.
+
+- **`tests/deadcode.test.mjs`, so the sweep does not have to be reinvented.** It fails on an
+  export nothing imports, a key nothing asks for and a CSS class nothing wears, and it pins
+  the runtime prefixes that make the whole exercise tractable: `rating-`, `cls-`, `f-ink-`,
+  `chk-`, `cx-`, `lede.`. Those are why a naive sweep is dangerous rather than merely wrong.
+  Run without them it reported 91 dead keys and 31 dead classes, against real numbers of 1
+  and 4, and deleting that list would have taken half the interface's colour with it.
+
+  Both failure directions were hit while writing it, which is why it is worth having. Excluding
+  the locale files reported 91 false positives; including them made the check vacuous, because
+  every key then appears in its own definition and no orphan can ever be found. It passed a
+  deliberately orphaned key before that was fixed. All four checks were then confirmed to fail
+  against an injected defect.
 
 ## [1.7.0]: 2026-09-02
 

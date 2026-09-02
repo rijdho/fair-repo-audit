@@ -31,7 +31,7 @@
 // cached per browser for six hours. That is weaker than a shared cache and it
 // is the honest cost of the move.
 
-import { assessDataCiteWork, aggregateAssessments } from './fair.js?v=34';
+import { assessDataCiteWork, aggregateAssessments } from './fair.js?v=35';
 
 const R2R = 'https://service.rvdata.us/api';
 const DATACITE = 'https://api.datacite.org/dois';

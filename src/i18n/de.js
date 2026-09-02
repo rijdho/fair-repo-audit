@@ -45,7 +45,6 @@ export const de = {
   "ui.kind.prefix": "DOI-Präfix",
   "ui.kind.publisher": "Verlag",
   "ui.lang.aria": "Sprache",
-  "ui.lang.title": "Sprache",
   "ui.nav.close": "Menü schließen",
   "ui.nav.guide": "Leitfaden",
   "ui.nav.menu": "Menü",

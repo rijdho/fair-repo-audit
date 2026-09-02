@@ -45,7 +45,6 @@ export const en = {
   "ui.kind.prefix": "DOI prefix",
   "ui.kind.publisher": "Publisher",
   "ui.lang.aria": "Language",
-  "ui.lang.title": "Language",
   "ui.nav.close": "Close menu",
   "ui.nav.guide": "Guide",
   "ui.nav.menu": "Menu",
