@@ -1,12 +1,12 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=32';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=32';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=32';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=32';
-import { temporalSeries, findDuplicates } from './analysis.js?v=32';
-import * as oai from './oaipmh.js?v=32';
-import * as crossing from './analyze.js?v=32';
-import * as recuration from './recuration.js?v=32';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=32';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=33';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=33';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=33';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=33';
+import { temporalSeries, findDuplicates } from './analysis.js?v=33';
+import * as oai from './oaipmh.js?v=33';
+import * as crossing from './analyze.js?v=33';
+import * as recuration from './recuration.js?v=33';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=33';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -969,13 +969,6 @@ function cmpRow(name, pa, pb, sc, tipText) {
 
 let lastCrossing = null;
 
-// With no analysis service configured (a fork, or a local checkout), the mode
-// cannot work, so it is removed rather than left as a button that only fails.
-if (!crossing.isConfigured()) {
-  $('.tab[data-mode="crossing"]')?.remove();
-  $('#panel-crossing')?.remove();
-}
-
 $$('.cx-example').forEach(b => b.addEventListener('click', () => { $('#cx-input').value = b.dataset.value; }));
 
 $('#cx-analyze')?.addEventListener('click', busy('#cx-analyze', async () => {
@@ -988,7 +981,11 @@ $('#cx-analyze')?.addEventListener('click', busy('#cx-analyze', async () => {
   try {
     data = await crossing.analyze(source, value, n);
   } catch (e) {
-    return status(e.message === 'unreachable' ? t('err.serviceDown') : `${t('status.error')}: ${e.message}`, 'error');
+    // The three empty outcomes are different things to tell the user: nothing
+    // matched the query, nothing the source holds is minted, or nothing minted
+    // came back from DataCite. Anything else is a genuine fault.
+    const known = { 'no-records': 'err.cx.noRecords', 'no-doi': 'err.cx.noDoi', 'no-pairs': 'err.cx.noPairs' };
+    return status(known[e.message] ? t(known[e.message]) : `${t('status.error')}: ${e.message}`, 'error');
   }
   setUrl({ tab: 'crossing', cs: source, cv: value, n: String(n), lang: currentLang });
   status('');

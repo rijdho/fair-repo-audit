@@ -580,7 +580,7 @@ export const en = {
   "how.score.title": "How the score is computed",
   "how.step1.text": "A DataCite client ID, DOI prefix or publisher: or any OAI-PMH base URL.",
   "how.step1.title": "Point it at a repository",
-  "how.step2.text": "Your browser downloads a sample of metadata records straight from the source. Nothing is uploaded anywhere, except in the Source vs published mode, which sends the repository and value you chose to its analysis service.",
+  "how.step2.text": "Your browser downloads a sample of metadata records straight from the source. Nothing is uploaded anywhere, in any mode.",
   "how.step2.title": "It fetches live records",
   "how.step3.text": "Each FAIR sub-principle becomes a concrete test (is there a persistent identifier? a machine-readable license?), scored Full, Partial or Not met.",
   "how.step3.title": "Every record faces 14 checks",
@@ -675,7 +675,7 @@ export const en = {
   "ui.cx.input.placeholder": "Vessel or cruise ID · Sharp",
   "ui.cx.input.aria": "Vessel or cruise ID",
   "ui.cx.sample.label": "Cruises to analyse",
-  "ui.cx.note": "This mode is the exception: its connectors and the comparison run in a service, so the vessel or cruise you type is sent there. Nothing else is, and the other modes still upload nothing.",
+  "ui.cx.note": "This mode reads two public APIs from your browser, R2R and DataCite, and scores both sides here with the same rubric. Nothing is uploaded. Results are kept in this browser for six hours so a second look costs the research API nothing.",
   "cx.principles.title": "FAIR principles, both sides",
   "cx.side.source": "Source record",
   "cx.side.published": "Published record",
@@ -709,7 +709,9 @@ export const en = {
   "cx.el.licence": "Licence",
   "status.crossing": "Reading both sides…",
   "err.enterValue": "Enter a vessel or cruise ID.",
-  "err.serviceDown": "The analysis service is not reachable. The other modes still work: they run in your browser.",
+  "err.cx.noRecords": "No cruises found for that vessel or cruise ID.",
+  "err.cx.noDoi": "Those records carry no DOI, so there is no published side to compare against.",
+  "err.cx.noPairs": "None of those DOIs could be retrieved from DataCite, so no pair could be formed.",
 
   // ── history and re-curation ──
   "ui.tabs.history": "History",

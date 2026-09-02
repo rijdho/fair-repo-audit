@@ -580,7 +580,7 @@ export const es = {
   "how.score.title": "Cómo se calcula la puntuación",
   "how.step1.text": "Un client ID de DataCite, un prefijo DOI o un editor: o cualquier URL base de OAI-PMH.",
   "how.step1.title": "Apúntelo a un repositorio",
-  "how.step2.text": "Su navegador descarga una muestra de registros de metadatos directamente de la fuente. No se sube nada a ningún sitio, salvo en el modo Fuente vs publicado, que envía a su servicio de análisis el repositorio y el valor que usted eligió.",
+  "how.step2.text": "Su navegador descarga una muestra de registros de metadatos directamente de la fuente. No se sube nada a ninguna parte, en ningún modo.",
   "how.step2.title": "Descarga registros en vivo",
   "how.step3.text": "Cada subprincipio FAIR se convierte en una prueba concreta (¿hay identificador persistente?, ¿licencia legible por máquina?), puntuada como completa, parcial o no cumplida.",
   "how.step3.title": "Cada registro pasa 14 comprobaciones",
@@ -675,7 +675,7 @@ export const es = {
   "ui.cx.input.placeholder": "Buque o ID de campaña · Sharp",
   "ui.cx.input.aria": "Buque o ID de campaña",
   "ui.cx.sample.label": "Campañas a analizar",
-  "ui.cx.note": "Este modo es la excepción: sus conectores y la comparación se ejecutan en un servicio, así que el buque o la campaña que escriba se envía allí. Nada más se envía, y los demás modos siguen sin subir nada.",
+  "ui.cx.note": "Este modo lee dos API públicas desde su navegador, R2R y DataCite, y puntúa aquí ambos lados con la misma rúbrica. No se sube nada. Los resultados se guardan seis horas en este navegador, para que una segunda consulta no cueste nada a la API de investigación.",
   "cx.principles.title": "Principios FAIR, los dos lados",
   "cx.side.source": "Registro fuente",
   "cx.side.published": "Registro publicado",
@@ -709,7 +709,9 @@ export const es = {
   "cx.el.licence": "Licencia",
   "status.crossing": "Leyendo los dos lados…",
   "err.enterValue": "Escribe un buque o un ID de campaña.",
-  "err.serviceDown": "El servicio de análisis no responde. Los otros modos siguen funcionando: corren en tu navegador.",
+  "err.cx.noRecords": "No se encontraron campañas para ese buque o identificador.",
+  "err.cx.noDoi": "Esos registros no llevan DOI, así que no hay lado publicado con el que comparar.",
+  "err.cx.noPairs": "Ninguno de esos DOI pudo recuperarse de DataCite, así que no se pudo formar ningún par.",
 
   // ── history and re-curation ──
   "ui.tabs.history": "Historial",

@@ -580,7 +580,7 @@ export const de = {
   "how.score.title": "Wie der Wert berechnet wird",
   "how.step1.text": "Eine DataCite-Client-ID, ein DOI-Präfix oder ein Verlag: oder eine beliebige OAI-PMH-Basis-URL.",
   "how.step1.title": "Auf ein Repositorium richten",
-  "how.step2.text": "Ihr Browser lädt eine Stichprobe von Metadatensätzen direkt von der Quelle. Nichts wird irgendwohin hochgeladen, außer im Modus Quelle vs. veröffentlicht, der das gewählte Repositorium und den gewählten Wert an seinen Analysedienst sendet.",
+  "how.step2.text": "Ihr Browser lädt eine Stichprobe von Metadatensätzen direkt von der Quelle. Es wird nichts hochgeladen, in keinem Modus.",
   "how.step2.title": "Es holt Datensätze live",
   "how.step3.text": "Jedes FAIR-Teilprinzip wird zu einem konkreten Test (persistenter Identifikator? maschinenlesbare Lizenz?), bewertet als erfüllt, teilweise oder nicht erfüllt.",
   "how.step3.title": "Jeder Datensatz durchläuft 14 Prüfungen",
@@ -675,7 +675,7 @@ export const de = {
   "ui.cx.input.placeholder": "Schiff oder Fahrt-ID · Sharp",
   "ui.cx.input.aria": "Schiff oder Fahrt-ID",
   "ui.cx.sample.label": "Zu analysierende Fahrten",
-  "ui.cx.note": "Dieser Modus ist die Ausnahme: Seine Konnektoren und der Vergleich laufen in einem Dienst, an den das eingegebene Schiff bzw. die Fahrt gesendet wird. Sonst wird nichts gesendet, und die anderen Modi laden weiterhin nichts hoch.",
+  "ui.cx.note": "Dieser Modus liest zwei öffentliche APIs aus Ihrem Browser, R2R und DataCite, und bewertet hier beide Seiten mit demselben Regelwerk. Es wird nichts hochgeladen. Ergebnisse bleiben sechs Stunden in diesem Browser, damit ein zweiter Blick die Forschungs-API nichts kostet.",
   "cx.principles.title": "FAIR-Prinzipien, beide Seiten",
   "cx.side.source": "Quelldatensatz",
   "cx.side.published": "Veröffentlichter Datensatz",
@@ -709,7 +709,9 @@ export const de = {
   "cx.el.licence": "Lizenz",
   "status.crossing": "Beide Seiten werden gelesen…",
   "err.enterValue": "Bitte ein Schiff oder eine Fahrt-ID eingeben.",
-  "err.serviceDown": "Der Analysedienst ist nicht erreichbar. Die anderen Modi funktionieren weiter: Sie laufen in Ihrem Browser.",
+  "err.cx.noRecords": "Keine Fahrten für dieses Schiff oder diese Fahrtkennung gefunden.",
+  "err.cx.noDoi": "Diese Datensätze tragen keinen DOI, es gibt also keine veröffentlichte Seite zum Vergleich.",
+  "err.cx.noPairs": "Keiner dieser DOIs war über DataCite abrufbar, es konnte also kein Paar gebildet werden.",
 
   // ── history and re-curation ──
   "ui.tabs.history": "Verlauf",

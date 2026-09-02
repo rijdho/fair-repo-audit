@@ -11,6 +11,51 @@ latest release.
 > History before 1.2.0 was squashed when the repository was made public; the pre-squash
 > commits are preserved on the `pre-squash-backup` tag.
 
+## [Unreleased]
+
+### Changed
+
+- **Source vs published runs in your browser now, and there is no hosted service left.** It was
+  the one exception to the claim this whole tool is built on, and the exception is gone: the
+  connectors, the element ledger and the field map moved into `src/analyze.js`, under the same
+  AGPL as everything else here, and both sides are scored by the `src/fair.js` the other modes
+  already use rather than by a service binding to a private engine.
+
+  What forced the question was a ceiling, not a principle. A Cloudflare Worker on the free plan
+  may make 50 subrequests per invocation, and this analysis costs about five reads per cruise:
+  measured at 46 for a sample of 8, 51 at 9, 56 at 10, 131 at 25. The default sample of 10 was
+  therefore returning a 502 in production while the same code passed its end-to-end test in Node,
+  where no such ceiling exists. That is the shape of the bug worth remembering: a test that runs
+  the code somewhere without the limit cannot see the limit. Moving the work into the browser
+  removes the ceiling rather than raising it, and a sample of 25 now completes in about 24
+  seconds against live APIs.
+
+  Nothing stood in the way once the question was asked: R2R answers
+  `Access-Control-Allow-Origin: *` on GET and on preflight, DataCite answers with the page's own
+  origin, and the rubric was already here.
+
+  The service's shared cache is the real loss. Ten people analysing the same vessel used to cost
+  R2R one round of reads and now cost ten, so the politeness it enforced is kept client-side:
+  detail reads three cruises at a time, DOI lookups five, and a six-hour per-browser cache. Both
+  batch widths are pinned by tests, because they are now the only thing between a public research
+  API funded by a research programme and one visitor's twenty-five cruises.
+
+- **The client-side claim is unscoped again, in all three locales.** v1.6.0 had to qualify it in
+  the README, the meta description, the page and the "How it works" step, and every one of those
+  qualifications is now false, which is worse than an inaccurate promise. The "What runs where"
+  table says browser in all four rows.
+
+- **Three errors instead of one.** The service returned "unreachable" for everything that went
+  wrong. The three ways of finding nothing are now told apart: no cruises matched, the records
+  carry no DOI, or none of those DOIs came back from DataCite. Each is a different thing for the
+  reader to do next.
+
+### Removed
+
+- The `analyze` Worker's endpoint, the `<meta name="fair-analyze-endpoint">` tag it was injected
+  into, the `ANALYZE_ENDPOINT` repository variable and the deploy step that filled it. A fork gets
+  the mode working with no configuration at all, where before it got the tab switched off.
+
 ## [1.6.0]: 2026-09-02
 
 Version DOI: [10.5281/zenodo.22250697](https://doi.org/10.5281/zenodo.22250697).
