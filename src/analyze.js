@@ -328,9 +328,6 @@ function cachePut(key, data) {
 
 // ── The public API of this module ──
 
-/** Kept so app.js reads the same way it did: the mode no longer needs configuring. */
-export const isConfigured = () => true;
-
 /**
  * Cross one repository's own records against what it published.
  *
