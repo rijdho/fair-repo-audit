@@ -1,0 +1,65 @@
+name: metrics-watch
+
+# Fork and forget: fork this repository, add a `metrics-watch.json` at the root
+# naming the repositories you want scored, and this runs on the first of every
+# month and commits the score history back to your fork. Nothing else to set up,
+# no account, no key, no service.
+#
+# In a fork with no config file the job exits immediately, which is why this can
+# live in the origin repository without doing anything there.
+#
+# See metrics-watch.example.json for the config shape, and scripts/metrics-watch.mjs
+# for what it actually does.
+
+on:
+  schedule:
+    # 04:17 on the 1st. Off the hour on purpose: scheduled jobs at :00 queue
+    # behind everyone else's, and DataCite is a shared public API.
+    - cron: '17 4 1 * *'
+  workflow_dispatch:
+
+# The job writes a history file back to the repository. Nothing else.
+permissions:
+  contents: write
+
+concurrency:
+  group: metrics-watch
+  cancel-in-progress: false
+
+jobs:
+  score:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        run: |
+          if [ -f metrics-watch.json ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No metrics-watch.json at the repository root, so there is nothing to score."
+            echo "Copy metrics-watch.example.json to metrics-watch.json and edit it to switch this on."
+            echo "run=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.run == 'true'
+        with:
+          node-version: 20
+
+      # The scorer imports the same src/fair.js the browser app uses, so a
+      # scheduled score and a score read on the page cannot drift apart.
+      - if: steps.check.outputs.run == 'true'
+        run: node scripts/metrics-watch.mjs --config metrics-watch.json --out metrics-history.json
+
+      - if: steps.check.outputs.run == 'true'
+        run: |
+          if git diff --quiet -- metrics-history.json; then
+            echo "Scores are unchanged from the last run; nothing to commit."
+            exit 0
+          fi
+          git config user.name  "metrics-watch"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add metrics-history.json
+          git commit -m "metrics-watch: score run $(date -u +%Y-%m-%d)"
+          git push

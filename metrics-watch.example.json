@@ -1,0 +1,9 @@
+{
+  "_comment": "Copy this to metrics-watch.json to switch on the monthly scoring workflow. Each target is one DataCite repository; more than one makes a set, which the Metrics view can compare side by side.",
+  "sample": 100,
+  "targets": [
+    { "label": "R2R",              "mode": "prefix",   "value": "10.7284" },
+    { "label": "Dryad",            "mode": "clientId", "value": "dryad.dryad" },
+    { "label": "Harvard Dataverse","mode": "clientId", "value": "gdcc.harvard-dv" }
+  ]
+}

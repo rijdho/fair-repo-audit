@@ -2,7 +2,7 @@
 // The heatmap and radar show the DISTRIBUTION across records, not just the
 // averages: every record × every check, and the profile shape plus its spread.
 
-import { t, tn, n as fmtNum } from './i18n/index.js?v=27';
+import { t, tn, n as fmtNum } from './i18n/index.js?v=28';
 
 const pctOf = (grp) => grp.score / grp.maxScore;
 
@@ -287,6 +287,59 @@ export function renderActivity(container, rows, opts) {
       const lb = mk('text', { x: cx, y: H - 7, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
       lb.textContent = `'${String(r.year).slice(2)}`; svg.appendChild(lb);
     }
+  });
+  container.appendChild(svg);
+}
+
+// ── Score trend over time: one line per repository ──
+// series: [{ label, color, points: [{date, value}] }], dates ISO, ascending.
+// A shared time axis, because comparing repositories only means anything when
+// the runs line up; a per-series axis would let two different histories look
+// like the same story.
+export function renderTrend(container, series, opts) {
+  const { axis, grid, tip, surface } = opts;
+  const NS = 'http://www.w3.org/2000/svg';
+  const W = container.clientWidth || 760, H = 250, padL = 38, padR = 14, padT = 16, padB = 30;
+  const iw = W - padL - padR, ih = H - padT - padB;
+  const mk = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H });
+  const mono = 'ui-monospace, SF Mono, Menlo, monospace';
+
+  const dates = [...new Set(series.flatMap(s => s.points.map(p => p.date)))].sort();
+  if (!dates.length) return;
+  const x = (d) => dates.length === 1 ? padL + iw / 2 : padL + (dates.indexOf(d) / (dates.length - 1)) * iw;
+  const y = (v) => padT + ih - (v / 100) * ih;
+
+  for (const v of [0, 50, 100]) {
+    svg.appendChild(mk('line', { x1: padL, y1: y(v), x2: W - padR, y2: y(v), stroke: grid, 'stroke-width': 1 }));
+    const lb = mk('text', { x: padL - 6, y: y(v) + 3, fill: axis, 'font-size': 9, 'text-anchor': 'end', 'font-family': mono });
+    lb.textContent = v; svg.appendChild(lb);
+  }
+  // Label the ends, and the middle when there is room, rather than every run:
+  // a monthly history overruns the axis within two years.
+  const marks = dates.length <= 8 ? dates.map((_, i) => i) : [0, Math.floor(dates.length / 2), dates.length - 1];
+  marks.forEach(i => {
+    const lb = mk('text', { x: x(dates[i]), y: H - 9, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
+    lb.textContent = dates[i].slice(2, 7); svg.appendChild(lb);
+  });
+
+  series.forEach(s => {
+    const pts = [...s.points].sort((a, b) => a.date.localeCompare(b.date));
+    if (pts.length > 1) {
+      svg.appendChild(mk('path', {
+        d: pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.date)},${y(p.value)}`).join(' '),
+        fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+      }));
+    }
+    pts.forEach(p => {
+      // A ring in the surface colour keeps overlapping series readable where
+      // two repositories happen to land on the same score.
+      const c = mk('circle', { cx: x(p.date), cy: y(p.value), r: 4, fill: s.color,
+        stroke: surface || '#fff', 'stroke-width': 1.5, style: 'cursor:pointer' });
+      c.addEventListener('mouseenter', e => tip(e, `${s.label}\n${p.date}\n${p.value}%${p.note ? '\n' + p.note : ''}`));
+      c.addEventListener('mouseleave', () => tip(null));
+      svg.appendChild(c);
+    });
   });
   container.appendChild(svg);
 }

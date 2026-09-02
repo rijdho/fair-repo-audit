@@ -1,12 +1,12 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=27';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=27';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=27';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity } from './charts.js?v=27';
-import { temporalSeries, findDuplicates } from './analysis.js?v=27';
-import * as oai from './oaipmh.js?v=27';
-import * as crossing from './analyze.js?v=27';
-import * as recuration from './recuration.js?v=27';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=27';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=28';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=28';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=28';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=28';
+import { temporalSeries, findDuplicates } from './analysis.js?v=28';
+import * as oai from './oaipmh.js?v=28';
+import * as crossing from './analyze.js?v=28';
+import * as recuration from './recuration.js?v=28';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=28';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -206,6 +206,7 @@ function rerender() {
   if (lastCrossing) renderCrossing(lastCrossing);
   if (lastHistory) renderHistory(lastHistory);
   if (lastRecuration) renderRecuration(lastRecuration.doi, lastRecuration.h);
+  if (lastMetrics) renderMetrics(lastMetrics);
   else if (lastAggregate && lastAssessments.length) render(lastAggregate, lastMeta);
   // Repainting forces the results visible: if the guide is open, park them again.
   if ($('.tab.active')?.dataset.mode === 'how') { $('#results').style.display = 'none'; $('#status').style.display = 'none'; }
@@ -1266,6 +1267,113 @@ function renderRecuration(doi, h) {
   results.appendChild(card);
 }
 
+// ══ Metrics: the score history metrics-watch builds ═════════════════════
+// A history file is a small JSON of runs. Reading it needs no service and no
+// account: the file lives in the user's own repository, and this page just
+// plots it. That is the whole point of the design, so the viewer stays dumb.
+
+let lastMetrics = null;
+
+// Categorical series colours, assigned in fixed order so a target keeps its
+// colour when another is added or filtered out.
+const SERIES_ORDER = ['--f-F', '--f-A', '--f-I', '--f-R', '--brand'];
+const seriesColor = (i) => getComputedStyle(document.documentElement)
+  .getPropertyValue(SERIES_ORDER[i % SERIES_ORDER.length]).trim();
+
+function validateHistory(h) {
+  if (!h || typeof h !== 'object' || !Array.isArray(h.targets)) return null;
+  const targets = h.targets.filter(x => x && Array.isArray(x.runs) && x.runs.length);
+  return targets.length ? { ...h, targets } : null;
+}
+
+$('#mw-load')?.addEventListener('click', busy('#mw-load', async () => {
+  const url = $('#mw-url').value.trim();
+  if (!url) return status(t('err.enterUrl'), 'error');
+  status(t('status.loadingHistory'));
+  let h;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(String(res.status));
+    h = validateHistory(await res.json());
+  } catch (e) {
+    return status(t('err.historyFetch', { reason: e.message }), 'error');
+  }
+  if (!h) return status(t('err.historyShape'), 'error');
+  setUrl({ tab: 'metrics', mu: url, lang: currentLang });
+  status(''); renderMetrics(h);
+  $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+
+$('#mw-file')?.addEventListener('change', async (ev) => {
+  const file = ev.target.files?.[0];
+  if (!file) return;
+  try {
+    const h = validateHistory(JSON.parse(await file.text()));
+    if (!h) return status(t('err.historyShape'), 'error');
+    status(''); renderMetrics(h);
+    $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  } catch { status(t('err.historyShape'), 'error'); }
+  ev.target.value = '';   // let the same file be reopened after an edit
+});
+
+function renderMetrics(h) {
+  lastMetrics = h;
+  const results = $('#results'); results.innerHTML = ''; results.style.display = 'block';
+  { const m = $('.tab.active')?.dataset.mode; if (m && m !== 'how') resultsMode = m; }
+
+  const series = h.targets.map((tg, i) => ({
+    label: tg.label || tg.value, color: seriesColor(i),
+    points: tg.runs.map(r => ({ date: r.date, value: r.overall, note: tn('readout.records', r.sampled, { count: n(r.sampled) }) })),
+  }));
+
+  const card = el('div', 'card');
+  const legend = series.map(s => `<span><i class="sw" style="background:${s.color}"></i>${esc(s.label)}</span>`).join('');
+  card.innerHTML = `<h3>${esc(t('mw.trend.title'))} <span class="chart-legend cmp-lgd">${legend}</span></h3>
+    <p class="muted">${esc(tn('mw.trend.desc', series.length, {
+      count: String(series.length),
+      from: series.flatMap(s => s.points.map(p => p.date)).sort()[0],
+      to: series.flatMap(s => s.points.map(p => p.date)).sort().pop(),
+    }))}</p>`;
+  const wrap = el('div'); card.appendChild(wrap); results.appendChild(card);
+  {
+    const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
+    renderTrend(wrap, series, { axis: v('--muted'), grid: v('--border'), surface: v('--surface'), tip });
+  }
+
+  // Per target: the runs, and the movement since the first one. A history whose
+  // last column is all zeros is the finding, not a rendering failure.
+  h.targets.forEach((tg, i) => {
+    const c = el('div', 'card');
+    const first = tg.runs[0], last = tg.runs[tg.runs.length - 1];
+    const drift = last.overall - first.overall;
+    c.innerHTML = `<h3><i class="sw" style="background:${seriesColor(i)}"></i> ${esc(tg.label || tg.value)}</h3>
+      <p class="muted">${esc(tn('mw.target.desc', tg.runs.length, {
+        count: n(tg.runs.length), kind: tg.mode, query: tg.value,
+        drift: (drift > 0 ? '+' : '') + drift,
+      }))}</p>`;
+    const tbl = el('div', 'cx-table mw-table');
+    tbl.innerHTML = `<div class="cx-row cx-head"><span>${esc(t('mw.col.date'))}</span>
+      <span class="num">${esc(t('hx.col.sampled'))}</span><span class="num">${esc(t('mw.col.total'))}</span>
+      <span class="num">${esc(t('hx.col.overall'))}</span><span class="num">${esc(t('mw.col.change'))}</span>
+      <span>${esc(t('hx.col.profile'))}</span></div>`;
+    tg.runs.forEach((r, j) => {
+      const d = j > 0 ? r.overall - tg.runs[j - 1].overall : null;
+      const row = el('div', 'cx-row');
+      row.innerHTML = `<span class="cx-el">${esc(r.date)}</span>
+        <span class="num">${n(r.sampled)}</span><span class="num">${n(r.total ?? 0)}</span>
+        <span class="num"><b class="lvl-${lvlOf(r.overall)}-ink">${r.overall}%</b></span>
+        <span class="num">${d == null ? '<i class="muted">—</i>'
+          : d === 0 ? '<i class="muted">0</i>'
+          : `<i class="rc-delta ${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : ''}${d}</i>`}</span>
+        <span class="hx-fair">${(r.principles || []).map(x =>
+          `<i class="hx-p" data-l="${esc(x.letter)}" style="--h:${Math.round(x.score / x.max * 100)}%" title="${esc(x.letter)} ${Math.round(x.score / x.max * 100)}%"></i>`).join('')}</span>`;
+      tbl.appendChild(row);
+    });
+    c.appendChild(tbl);
+    results.appendChild(c);
+  });
+}
+
 // ── Deep-link bootstrap: run the analysis described by the URL on load ──
 (function applyUrlParams() {
   const p = new URLSearchParams(location.search);
@@ -1290,6 +1398,9 @@ function renderRecuration(doi, h) {
     if (p.get('y1')) $('#oai-until').value = p.get('y1');
     if (p.get('y0') || p.get('y1')) syncOaiYearUI();
     if (p.get('q')) $('#oai-analyze').click();
+  } else if (tab === 'metrics') {
+    $('#mw-url').value = p.get('mu') || '';
+    if (p.get('mu')) $('#mw-load').click();
   } else if (tab === 'history') {
     if (p.get('hm')) $('#hx-mode').value = p.get('hm');
     $('#hx-input').value = p.get('hv') || '';

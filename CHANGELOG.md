@@ -34,6 +34,20 @@ latest release.
 
   The first repository supported is R2R (Rolling Deck to Repository).
 
+- **`metrics-watch`: scheduled scoring, and a Metrics view that reads the history.** A one-off audit
+  cannot show that a curation effort worked. `scripts/metrics-watch.mjs` scores any set of DataCite
+  repositories and appends to a history file; the workflow in `.github/workflows/metrics-watch.yml`
+  runs it on the first of every month and commits the result. Setup is forking this repository and
+  copying one example config, with no account, key or service anywhere in it.
+
+  The scorer imports the same `src/fair.js` the browser uses, so a scheduled score and a score read
+  on the page cannot drift. It runs on Node's built-ins alone. Re-running on a date that already has
+  a run replaces it rather than appending, so a re-run after a fix cannot double-count the trend.
+
+  A history holds runs and never records: date, sample, overall, all fourteen sub-principle scores
+  and the concept percentages. Small enough to accumulate for years, and complete enough that an old
+  history can be re-analysed in ways nobody has thought of yet.
+
 - **A "History" view: FAIR score per registration cohort, plus curation activity.** Publication
   year describes the research; `registered` describes the metadata, because it is when the record
   was written. Scoring cohort by cohort separates a repository that has improved its practice from

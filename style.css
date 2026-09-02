@@ -579,6 +579,12 @@ footer p { margin: 4px 0; }
   .rc-fields { grid-column: 1 / -1; }
 }
 
+.mw-table .cx-row { grid-template-columns: 100px 78px 92px 74px 74px minmax(90px, 1fr); }
+/* The file input is hidden and driven by its label, so the label needs the
+   affordance the input would have had. */
+label.btn { cursor: pointer; }
+@media (max-width: 760px) { .mw-table .cx-row { grid-template-columns: 1fr 1fr; } }
+
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 .fade-in { animation: fadeIn 0.3s ease-out; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

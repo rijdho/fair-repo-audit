@@ -51,6 +51,33 @@ still working on it.
 
 Both run in your browser against the public DataCite API.
 
+## Watching it change: metrics-watch
+
+A one-off audit says where you are. It cannot say whether you are getting better, and it cannot
+show a funder or a director that a curation effort worked. `metrics-watch` turns the same rubric
+into a time series that lives in your own repository.
+
+1. Fork this repository.
+2. Copy `metrics-watch.example.json` to `metrics-watch.json` and edit the targets.
+3. That is the whole setup. On the first of every month the workflow scores each target and commits
+   `metrics-history.json` back to your fork.
+
+No account, no key, no service: the scorer is [`scripts/metrics-watch.mjs`](scripts/metrics-watch.mjs),
+it has no dependencies, and it imports the same `src/fair.js` the page uses, so a scheduled score
+and a score you read in the browser cannot drift apart. It also runs by hand:
+
+```sh
+node scripts/metrics-watch.mjs --mode prefix --value 10.7284 --out metrics-history.json
+```
+
+The **Metrics** view reads any such history, by URL or from a local file, and plots the trend. More
+than one target in a config makes a set, and the view compares them on one axis.
+
+A history file holds runs, not records: date, sample size, the overall score, all fourteen
+sub-principle scores and the concept percentages. It stays small enough to accumulate for years,
+and keeping the sub-principle scores means an old history can be re-analysed later in ways nobody
+has thought of yet.
+
 ## What runs where
 
 Almost everything here runs in your browser, and that is a promise rather than an
