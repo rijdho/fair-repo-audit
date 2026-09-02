@@ -11,7 +11,7 @@ latest release.
 > History before 1.2.0 was squashed when the repository was made public; the pre-squash
 > commits are preserved on the `pre-squash-backup` tag.
 
-## [Unreleased]
+## [1.7.0]: 2026-09-02
 
 ### Changed
 
@@ -348,7 +348,8 @@ Version DOI: [10.5281/zenodo.21492531](https://doi.org/10.5281/zenodo.21492531).
   no dependencies).
 - `CITATION.cff` with citation metadata, MIT licence.
 
-[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.7.0
 [1.6.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.6.0
 [1.5.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.5.0
 [1.4.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.4.0
