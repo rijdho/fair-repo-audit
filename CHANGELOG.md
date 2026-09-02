@@ -92,6 +92,52 @@ latest release.
   The OAI-PMH CORS relay is unaffected and its own promise still holds: it forwards a GET and adds
   headers, and holds no scoring logic.
 
+- **The README follows the house order.** Setup and operational sections (`metrics-watch`, "What
+  runs where") came before "What it measures", so a reader met configuration before learning what
+  the tool measures, and the methodology sat after the deployment instructions. The order now runs
+  what it measures, the views, the languages, the architecture, the methodology, then tests, run,
+  deploy and caveats.
+
+- **The rail foot and the page footer follow the family shape.** The attribution lived in two
+  places and in neither of the family's forms: a contact line plus a licence line in the rail, and
+  a separate page footer at the end of the content carrying the DOI and the open-twin sentence.
+  The rail now reads what the family's rails read, in three lines, and says the same thing on
+  every view rather than only where the content happens to end: what the data is, `by @rijdho ·
+  AGPL-3.0 · github`, then the concept DOI with "Cite this tool" as its title. The page footer is
+  gone, and the open-twin sentence moved into "Open by design", next to the openness statement it
+  elaborates, without the licence and repository link the rail already carries.
+
+- **One lede per mode, in one slot, instead of a page lede repeated under every tab.** A fixed
+  paragraph sat above all eight tabs and described the DataCite mode, its privacy scope and the
+  rubric, whatever tab was open; five tabs then added a lede of their own underneath it. On the
+  Metrics tab that meant 115 words of prose, half of it about modes the reader was not looking
+  at, before the first control. The eyebrow stays as the page's identity and a single slot below
+  it now carries one lede for the open tab, 21 to 40 words, saying what that mode reads and where
+  it runs. The key lives on the element rather than the text, so a language switch re-renders
+  whichever mode is open. `ui.cx.note` lost the quotation of a page lede that no longer exists,
+  and its Spanish dropped a stray second person the rest of the locale does not use.
+
+  Two tests now hold the markup and the catalogue together: every key `index.html` asks for is
+  defined in English, and every tab in the rail has a `lede.<mode>` to render. The keys are built
+  as `lede.${mode}` at runtime, so a renamed tab would otherwise print the key string itself, in
+  every language, and no locale-parity test would see it.
+
+### Fixed
+
+- **Every asset is versioned, at one number, and a test keeps it that way.** With no bundler
+  here, nothing content-hashes the files, so the `?v=` on a URL is the only thing that reaches a
+  browser holding an old copy. Four numbers were live at once: the stylesheet at 31, the entry
+  module at 30, the modules at 28, and the three locale files with no version at all. A browser
+  could therefore serve a cached module against a fresh one importing a symbol the cached copy
+  does not export, which aborts the whole graph with no visible error and leaves a blank page that
+  looks deployed. Everything now sits at one version, and `tests/cachebust.test.mjs` fails if a
+  relative import loses its version or a number drifts out of step.
+
+- **The reusability verdict takes the status palette, not the brand.** The 3px left border is the
+  house signal for "this item carries a verdict", and it was painted brand violet, which makes
+  chrome encode meaning. Both verdict boxes now colour it by what they are actually saying: green
+  when every reuse meter clears 75%, amber when one lags or when unidentified creators are flagged
+  as a quick win.
 
 ### Removed
 
