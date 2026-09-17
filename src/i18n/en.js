@@ -680,7 +680,7 @@ export const en = {
   "cx.side.published": "Published record",
   "cx.gap": "{gap} points below the source",
   "cx.ledger.title": "What the source holds, and what reaches the published record",
-  "cx.ledger.desc": "Values counts metadata instances, not records: a record can publish one ORCID while dropping the other four it holds. Carried is the share of what the source holds that survives.",
+  "cx.ledger.desc": "Held and Published count values, not records. A single record that holds five ORCIDs and publishes one counts as five held and one published. Carried is how many of the held values come through.",
   "cx.records.title": "Record by record",
   "cx.col.element": "Element",
   "cx.col.pointer": "DataCite pointer",

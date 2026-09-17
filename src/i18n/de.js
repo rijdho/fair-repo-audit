@@ -680,7 +680,7 @@ export const de = {
   "cx.side.published": "Veröffentlichter Datensatz",
   "cx.gap": "{gap} Punkte unter der Quelle",
   "cx.ledger.title": "Was die Quelle hält und was den veröffentlichten Datensatz erreicht",
-  "cx.ledger.desc": "Werte zählt Metadaten-Instanzen, nicht Datensätze: Ein Datensatz kann eine ORCID veröffentlichen und die vier anderen weglassen, die er hält. Übertragen ist der Anteil dessen, was die Quelle hält und was überlebt.",
+  "cx.ledger.desc": "Vorhanden und Veröffentlicht zählen Werte, keine Datensätze. Ein Datensatz mit fünf ORCIDs, der eine veröffentlicht, zählt als fünf vorhanden und eine veröffentlicht. Übertragen ist, wie viele dieser Werte ankommen.",
   "cx.records.title": "Datensatz für Datensatz",
   "cx.col.element": "Element",
   "cx.col.pointer": "DataCite-Pfad",

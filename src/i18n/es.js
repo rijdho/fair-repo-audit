@@ -680,7 +680,7 @@ export const es = {
   "cx.side.published": "Registro publicado",
   "cx.gap": "{gap} puntos por debajo de la fuente",
   "cx.ledger.title": "Lo que tiene la fuente y lo que llega al registro publicado",
-  "cx.ledger.desc": "Valores cuenta instancias de metadatos, no registros: un registro puede publicar un ORCID y dejar fuera los otros cuatro que tiene. Transferido es la parte de lo que tiene la fuente que sobrevive.",
+  "cx.ledger.desc": "Tiene y Publica cuentan valores, no registros. Un registro que tiene cinco ORCID y publica uno cuenta como cinco en Tiene y uno en Publica. Transferido es cuántos de esos valores llegan al otro lado.",
   "cx.records.title": "Registro por registro",
   "cx.col.element": "Elemento",
   "cx.col.pointer": "Ruta DataCite",
