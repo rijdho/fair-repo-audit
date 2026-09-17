@@ -1,12 +1,12 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=37';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=37';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=37';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=37';
-import { temporalSeries, findDuplicates } from './analysis.js?v=37';
-import * as oai from './oaipmh.js?v=37';
-import * as crossing from './analyze.js?v=37';
-import * as recuration from './recuration.js?v=37';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=37';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=38';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=38';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=38';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=38';
+import { temporalSeries, findDuplicates } from './analysis.js?v=38';
+import * as oai from './oaipmh.js?v=38';
+import * as crossing from './analyze.js?v=38';
+import * as recuration from './recuration.js?v=38';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=38';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];

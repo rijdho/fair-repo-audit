@@ -564,9 +564,12 @@ export const de = {
 
   // ── level ──
   "how.checks.intro": "Nach Prinzip gruppiert. Der angezeigte Wortlaut ist die DataCite-Variante; das OAI-PMH-Audit wendet dieselben 14 Prüfungen auf ihre Dublin-Core-Äquivalente an. Nach einer Analyse wendet die Karte <b>Detail je Prüfung</b> genau diese Definitionen auf Ihre Datensätze an: mit einer Korrekturempfehlung zu jeder.",
+  "how.modes.title": "Die sieben Modi",
+  "how.modes.body": "Sieben Modi teilen dasselbe Regelwerk. <b>DataCite</b> und <b>OAI-PMH</b> lesen ein Repositorium. <b>Compare</b> stellt zwei nebeneinander. <b>Quelle vs. veröffentlicht</b> liest beide Seiten eines. <b>History</b> und <b>Re-curation</b> zeigen, wie sich Datensätze über die Zeit geändert haben, und <b>Metrics</b> verfolgt ein Repositorium Monat für Monat.",
   "how.checks.title": "Die 14 Prüfungen, einzeln",
   "how.data.datacite": "<b>DataCite</b>: direkt aus Ihrem Browser abgefragt (die API sendet CORS-Header). Anfragen setzen immer <code>affiliation=true</code>; ohne dies lässt DataCite die ROR-Affiliations-Identifikatoren weg.",
   "how.data.oai": "<b>OAI-PMH</b>: die meisten Endpunkte senden keine CORS-Header, daher laufen Anfragen über ein stummes Byte-Relais, das die Anfrage nur weiterreicht und diese Header ergänzt; es enthält keine Logik. Sie können Ihr eigenes betreiben und unter <i>CORS-Proxy (erweitert)</i> eintragen.",
+  "how.data.native": "<b>Die eigene API eines Repositoriums</b>: nur in Quelle vs. veröffentlicht, das die native API zusammen mit den veröffentlichten Datensätzen liest, damit beide vergleichbar sind. Die Konnektoren stehen in <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/analyze.js\" target=\"_blank\" rel=\"noreferrer\">src/analyze.js</a> und laufen im Browser, wie alles andere.",
   "how.data.privacy": "Alles läuft clientseitig: Datensätze werden im Browser geholt, bewertet und dargestellt. Nichts wird hochgeladen, gespeichert oder getrackt.",
   "how.data.title": "Woher die Daten kommen",
   "how.deeper": "Mehr Tiefe gefällig? Jeder Abschnitt geht eine Ebene weiter.",
@@ -577,7 +580,7 @@ export const de = {
   "how.score.capability": "Die Bewertung ist <b>quellenbewusst</b>: Was die Quelle selbst garantiert, wird automatisch angerechnet, z. B. liefert DataCite Metadaten per HTTPS über eine dokumentierte API und bewahrt sie unabhängig von den Daten auf, was sich in A1 und A2 niederschlägt. Ein Datensatz wird nie für die Tugenden seines Protokolls bestraft und nie für etwas belohnt, das er nicht deklariert.",
   "how.score.mean": "Der Wert eines Prinzips ist der Mittelwert seiner Prüfungen, der Gesamtwert der Mittelwert aller 14: ohne versteckte Gewichte. Aggregierte Ansichten führen zusätzlich den ungerundeten Mittelwert (<code>rawMean</code>), damit exportierte Zahlen sich nicht hinter den Bändern 0 / 50 / 100 verstecken.",
   "how.score.title": "Wie der Wert berechnet wird",
-  "how.step1.text": "Eine DataCite-Client-ID, ein DOI-Präfix oder ein Verlag: oder eine beliebige OAI-PMH-Basis-URL.",
+  "how.step1.text": "Eine DataCite-Client-ID, ein DOI-Präfix oder ein Verlag; eine beliebige OAI-PMH-Basis-URL; oder, in Quelle vs. veröffentlicht, ein Schiff oder eine Fahrt-ID.",
   "how.step1.title": "Auf ein Repositorium richten",
   "how.step2.text": "Ihr Browser lädt eine Stichprobe von Metadatensätzen direkt von der Quelle. Es wird nichts hochgeladen, in keinem Modus.",
   "how.step2.title": "Es holt Datensätze live",

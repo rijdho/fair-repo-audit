@@ -564,9 +564,12 @@ export const es = {
 
   // ── level ──
   "how.checks.intro": "Agrupadas por principio. El texto mostrado es la variante DataCite; la auditoría OAI-PMH aplica las mismas 14 comprobaciones sobre sus equivalentes en Dublin Core. Tras un análisis, la tarjeta <b>Detalle por comprobación</b> aplica exactamente estas definiciones a sus registros, con una recomendación de arreglo para cada una.",
+  "how.modes.title": "Los siete modos",
+  "how.modes.body": "Siete modos comparten la misma rúbrica. <b>DataCite</b> y <b>OAI-PMH</b> leen un repositorio. <b>Compare</b> pone dos en paralelo. <b>Fuente vs publicado</b> lee los dos lados de uno. <b>History</b> y <b>Re-curation</b> miran cómo cambiaron los registros con el tiempo, y <b>Metrics</b> sigue un repositorio mes a mes.",
   "how.checks.title": "Las 14 comprobaciones, una a una",
   "how.data.datacite": "<b>DataCite</b>: se consulta directamente desde su navegador (la API envía cabeceras CORS). Las peticiones siempre llevan <code>affiliation=true</code>; sin ello, DataCite omite los identificadores ROR de afiliación.",
   "how.data.oai": "<b>OAI-PMH</b>: la mayoría de los endpoints no envían cabeceras CORS, así que las peticiones pasan por un relé de bytes tonto que solo reenvía la petición y añade esas cabeceras; no contiene lógica. Puede desplegar el suyo y pegarlo en <i>Proxy CORS (avanzado)</i>.",
+  "how.data.native": "<b>La propia API de un repositorio</b>: solo en Fuente vs publicado, que lee la API nativa junto a los registros publicados para poder compararlos. Los conectores están en <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/analyze.js\" target=\"_blank\" rel=\"noreferrer\">src/analyze.js</a> y corren en su navegador, como el resto.",
   "how.data.privacy": "Todo se ejecuta en el cliente: los registros se descargan, se puntúan y se muestran en su navegador. No se sube, almacena ni rastrea nada.",
   "how.data.title": "De dónde salen los datos",
   "how.deeper": "¿Quiere más profundidad? Cada sección va un nivel más allá.",
@@ -577,7 +580,7 @@ export const es = {
   "how.score.capability": "La puntuación es <b>consciente de la fuente</b>: lo que la propia fuente garantiza se acredita automáticamente, p. ej., DataCite sirve los metadatos por HTTPS mediante una API documentada y los conserva con independencia de los datos, y A1 y A2 lo reflejan. Un registro nunca se penaliza por las virtudes de su protocolo, ni se premia por lo que no declara.",
   "how.score.mean": "La puntuación de un principio es la media de sus comprobaciones, y la global, la media de las 14: sin pesos ocultos. Las vistas agregadas llevan además la media sin redondear (<code>rawMean</code>), para que los números exportados no se escondan tras las bandas 0 / 50 / 100.",
   "how.score.title": "Cómo se calcula la puntuación",
-  "how.step1.text": "Un client ID de DataCite, un prefijo DOI o un editor: o cualquier URL base de OAI-PMH.",
+  "how.step1.text": "Un client ID de DataCite, un prefijo DOI o un editor; cualquier URL base de OAI-PMH; o, en Fuente vs publicado, un buque o un ID de crucero.",
   "how.step1.title": "Apúntelo a un repositorio",
   "how.step2.text": "Su navegador descarga una muestra de registros de metadatos directamente de la fuente. No se sube nada a ninguna parte, en ningún modo.",
   "how.step2.title": "Descarga registros en vivo",

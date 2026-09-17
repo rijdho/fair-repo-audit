@@ -564,9 +564,12 @@ export const en = {
 
   // ── level ──
   "how.checks.intro": "Grouped by principle. The wording shown is the DataCite variant; the OAI-PMH audit runs the same 14 checks against their Dublin Core equivalents. After an analysis, the <b>Per-check detail</b> card applies exactly these definitions to your records: with a fix recommendation for each.",
+  "how.modes.title": "The seven modes",
+  "how.modes.body": "Seven modes share the same rubric. <b>DataCite</b> and <b>OAI-PMH</b> read one repository. <b>Compare</b> puts two side by side. <b>Source vs published</b> reads both sides of one. <b>History</b> and <b>Re-curation</b> look at how records changed over time, and <b>Metrics</b> tracks a repository month by month.",
   "how.checks.title": "The 14 checks, one by one",
   "how.data.datacite": "<b>DataCite</b>: queried directly from your browser (the API sends CORS headers). Requests always set <code>affiliation=true</code>; without it, DataCite strips the ROR affiliation identifiers.",
   "how.data.oai": "<b>OAI-PMH</b>: most endpoints don't send CORS headers, so requests pass through a dumb byte relay that only forwards the request and adds those headers; it holds no logic. You can deploy your own and paste it under <i>CORS proxy (advanced)</i>.",
+  "how.data.native": "<b>A repository's own API</b>: only in Source vs published, which reads the native API alongside the published records so the two can be compared. The connectors live in <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/analyze.js\" target=\"_blank\" rel=\"noreferrer\">src/analyze.js</a> and run in your browser, like the rest.",
   "how.data.privacy": "Everything runs client-side: records are fetched, scored and rendered in your browser. Nothing is uploaded, stored or tracked.",
   "how.data.title": "Where the data comes from",
   "how.deeper": "Want more depth? Each section below goes one level further.",
@@ -577,7 +580,7 @@ export const en = {
   "how.score.capability": "Scoring is <b>source-aware</b>: what the source itself guarantees is credited automatically, e.g. DataCite serves metadata over HTTPS through a documented API and preserves it independently of the data, and A1 and A2 reflect that. A record is never punished for its protocol's virtues, nor rewarded for what it doesn't declare.",
   "how.score.mean": "A principle's score is the average of its checks, and the overall score is the average of all 14: no hidden weights. Aggregate views also carry the unrounded mean (<code>rawMean</code>) so exported numbers don't hide behind the 0 / 50 / 100 bands.",
   "how.score.title": "How the score is computed",
-  "how.step1.text": "A DataCite client ID, DOI prefix or publisher: or any OAI-PMH base URL.",
+  "how.step1.text": "A DataCite client ID, DOI prefix or publisher; any OAI-PMH base URL; or, in Source vs published, a vessel or cruise ID.",
   "how.step1.title": "Point it at a repository",
   "how.step2.text": "Your browser downloads a sample of metadata records straight from the source. Nothing is uploaded anywhere, in any mode.",
   "how.step2.title": "It fetches live records",
