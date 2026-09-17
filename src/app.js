@@ -1,12 +1,12 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=35';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=35';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=35';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=35';
-import { temporalSeries, findDuplicates } from './analysis.js?v=35';
-import * as oai from './oaipmh.js?v=35';
-import * as crossing from './analyze.js?v=35';
-import * as recuration from './recuration.js?v=35';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=35';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=36';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=36';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=36';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=36';
+import { temporalSeries, findDuplicates } from './analysis.js?v=36';
+import * as oai from './oaipmh.js?v=36';
+import * as crossing from './analyze.js?v=36';
+import * as recuration from './recuration.js?v=36';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=36';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -1050,7 +1050,7 @@ function renderCrossing(d) {
       <span class="num">${n(r.pubValues)}</span>
       <span class="cx-carry"><span class="bar"><span class="bar-fill lvl-${cls === 'ok' ? 'hi' : cls === 'part' ? 'mid' : 'lo'}" style="width:${Math.max(rate ?? 0, 1.5)}%"></span></span>
         <b class="cx-${cls}">${rate === null ? '—' : rate + '%'}</b></span>`;
-    row.addEventListener('mouseenter', e => tip(e, `${r.pointer}\n${t('cx.tip.cruises', { s: String(r.srcCruises), p: String(r.pubCruises) })}${r.exact ? '\n' + t('cx.tip.exact') : ''}`));
+    row.addEventListener('mouseenter', e => tip(e, `${r.pointer}\n${t('cx.tip.cruises', { s: String(r.srcCruises), p: String(r.pubCruises) })}${r.exact ? '\n' + t('cx.tip.exact') + (r.carryRate === 0 ? '\n' + t('cx.tip.exactNone', { p: String(r.pubValues) }) : '') : ''}`));
     row.addEventListener('mouseleave', () => tip(null));
     tbl.appendChild(row);
   });
