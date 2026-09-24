@@ -15,6 +15,8 @@ latest release.
 
 ## [1.7.1]: 2026-09-24
 
+Version DOI: [10.5281/zenodo.22933593](https://doi.org/10.5281/zenodo.22933593).
+
 ### Fixed
 
 - **A declared identifier is no longer counted as an identifier.** DataCite accepts any string
