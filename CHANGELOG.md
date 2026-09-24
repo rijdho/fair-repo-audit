@@ -31,6 +31,8 @@ latest release.
 
 ## [1.9.0]: 2026-09-24
 
+Version DOI: [10.5281/zenodo.22939379](https://doi.org/10.5281/zenodo.22939379).
+
 ### Changed
 
 - **I3 asks for a reference to another work.** A typed relation now earns the full point only
