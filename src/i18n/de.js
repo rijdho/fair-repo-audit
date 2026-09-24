@@ -15,7 +15,7 @@ export const de = {
 
   // ── Document metadata ──
   "meta.description": "Richten Sie es auf ein DataCite- oder OAI-PMH-Repositorium und lesen Sie die FAIR-Qualität seiner Metadaten: 14 Teilprinzipien plus Vollständigkeit auf Feldebene. Standardmäßig clientseitig, Bewertungsschema offen.",
-  "meta.title": "fair-repo-audit: FAIR-Metadaten-Auswertung",
+  "meta.title": "FAIR Readout: die Metadaten, die ein Repositorium veröffentlicht, bewertet",
 
   // ── Interface chrome ──
   "ui.brand.source": "Quellcode ↗",
@@ -514,8 +514,8 @@ export const de = {
   "conn.funders.help": "Anteil der Fördereinrichtungen mit einem Identifikator: macht Förderung über Datensätze hinweg aggregierbar.",
   "conn.none": "In diesen Datensätzen sind keine Felder zu Personen oder Organisationen vorhanden.",
   "conn.ofTotal": "{identified} von {total}.",
-  "conn.quickWins.one": "<b>Schnelle Erfolge:</b> Bei {count} Datensatz haben die Ersteller keine ORCID. Das sind die schnellsten Gewinne bei der Nachkuratierung: lösbar mit dem Remediate-Werkzeug in Repo MetAudits.",
-  "conn.quickWins.other": "<b>Schnelle Erfolge:</b> Bei {count} Datensätzen haben die Ersteller keine ORCID. Das sind die schnellsten Gewinne bei der Nachkuratierung: lösbar mit dem Remediate-Werkzeug in Repo MetAudits.",
+  "conn.quickWins.one": "<b>Schnelle Erfolge:</b> Bei {count} Datensatz haben die Ersteller keine ORCID. Das sind die schnellsten Gewinne bei der Nachkuratierung: lösbar mit dem Remediate-Werkzeug in FAIR Readout Server.",
+  "conn.quickWins.other": "<b>Schnelle Erfolge:</b> Bei {count} Datensätzen haben die Ersteller keine ORCID. Das sind die schnellsten Gewinne bei der Nachkuratierung: lösbar mit dem Remediate-Werkzeug in FAIR Readout Server.",
   "conn.title": "Vernetzung: PIDs für Personen & Organisationen",
 
   // ── date ──
@@ -580,9 +580,9 @@ export const de = {
   "how.data.privacy": "Alles läuft clientseitig: Datensätze werden im Browser geholt, bewertet und dargestellt. Nichts wird hochgeladen, gespeichert oder getrackt.",
   "how.data.title": "Woher die Daten kommen",
   "how.deeper": "Mehr Tiefe gefällig? Jeder Abschnitt geht eine Ebene weiter.",
-  "how.open.body": "Das vollständige Regelwerk ist in <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js\" target=\"_blank\" rel=\"noreferrer\">src/fair.js</a> lesbar: derselbe Motor wie im gehosteten Repo MetAudits, durch gemeinsame Test-Fixtures in Parität gehalten und mit dem unabhängigen FAIR-Checker kreuzvalidiert. Wer einer Prüfung widerspricht, kann sie lesen, zitieren oder forken (Apache-2.0).",
+  "how.open.body": "Das vollständige Regelwerk ist in <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js\" target=\"_blank\" rel=\"noreferrer\">src/fair.js</a> lesbar: derselbe Motor wie im gehosteten FAIR Readout Server, durch gemeinsame Test-Fixtures in Parität gehalten und mit dem unabhängigen FAIR-Checker kreuzvalidiert. Wer einer Prüfung widerspricht, kann sie lesen, zitieren oder forken (Apache-2.0).",
   "how.open.title": "Offen per Bauart",
-  "how.open.twin": "Offener Zwilling von <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">Repo MetAudits</a>: dasselbe Raster mit 14 Teilprinzipien, clientseitig umgesetzt, plus Konzeptvollständigkeit im MGC-Stil.",
+  "how.open.twin": "Offener Zwilling von <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">FAIR Readout Server</a>: dasselbe Raster mit 14 Teilprinzipien, clientseitig umgesetzt, plus Konzeptvollständigkeit im MGC-Stil.",
   "how.score.bands": "Jede Prüfung liefert <b>erfüllt (1)</b>, <b>teilweise (0,5)</b> oder <b>nicht erfüllt (0)</b>. Die Teilstufe gibt es, weil Metadaten selten alles oder nichts sind: ein verknüpfter Identifikator ohne Typ, eine für Menschen, aber nicht für Maschinen lesbare Lizenz.",
   "how.score.capability": "Die Bewertung ist <b>quellenbewusst</b>: Was die Quelle selbst garantiert, wird automatisch angerechnet, z. B. liefert DataCite Metadaten per HTTPS über eine dokumentierte API und bewahrt sie unabhängig von den Daten auf, was sich in A1 und A2 niederschlägt. Ein Datensatz wird nie für die Tugenden seines Protokolls bestraft und nie für etwas belohnt, das er nicht deklariert.",
   "how.score.mean": "Der Wert eines Prinzips ist der Mittelwert seiner Prüfungen, der Gesamtwert der Mittelwert aller 14: ohne versteckte Gewichte. Aggregierte Ansichten führen zusätzlich den ungerundeten Mittelwert (<code>rawMean</code>), damit exportierte Zahlen sich nicht hinter den Bändern 0 / 50 / 100 verstecken.",

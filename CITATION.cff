@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this tool or its rubric, please cite it as below."
-title: "fair-repo-audit"
+title: "FAIR Readout: the metadata a repository publishes, scored in your browser"
 abstract: >-
   A static, client-side web tool that scores the FAIR metadata quality of any
   DataCite or OAI-PMH repository against 14 FAIR sub-principles, with
@@ -10,7 +10,7 @@ abstract: >-
   log of a single DOI, and reads a monthly scoring history produced by a
   scheduled job the user runs in their own repository. Every mode runs entirely in
   the visitor's browser and uploads nothing. Multilingual (EN/ES/DE).
-  The open twin of the hosted Repo MetAudits service: the scoring engine is a
+  The open twin of the hosted FAIR Readout Server: the scoring engine is a
   faithful, fully-readable port, so scores match across both tools.
 type: software
 authors:

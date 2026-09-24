@@ -2,7 +2,7 @@
 // Run with:  node --test tests/
 //
 // These double as the parity fixture against the server-side engine in
-// Repo MetAudits: any change that flips an expected score here should be
+// FAIR Readout Server: any change that flips an expected score here should be
 // mirrored there (or consciously documented as a divergence).
 
 import test from 'node:test';

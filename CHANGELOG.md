@@ -15,6 +15,13 @@ latest release.
 
 ### Changed
 
+- **The tool is called FAIR Readout**, and its hosted twin FAIR Readout Server (formerly Repo
+  MetAudits). The repository keeps its name, `fair-repo-audit`, and every URL and DOI stays as it
+  was; the name changes where a reader meets it: the page title, the rail, the README and
+  `CITATION.cff`, whose title Zenodo takes at the next release. Assets move to `?v=47`.
+
+### Changed
+
 - **The look comes from rijdho/house-style.** `house/` holds a synced copy (house.css and the Inter
   fonts), loaded before `style.css`, with a lock and a test that fail on a hand edit or a stale copy
   (`node scripts/sync-house.mjs` refreshes it). `style.css` keeps only what this tool adds or sets

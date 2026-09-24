@@ -15,7 +15,7 @@ export const en = {
 
   // ── Document metadata ──
   "meta.description": "Point it at a DataCite or OAI-PMH repository and read its FAIR metadata quality: 14 sub-principle scores plus field-level completeness. Client-side by default, rubric fully open.",
-  "meta.title": "fair-repo-audit: FAIR metadata readout",
+  "meta.title": "FAIR Readout: the metadata a repository publishes, scored",
 
   // ── Interface chrome ──
   "ui.brand.source": "source ↗",
@@ -514,8 +514,8 @@ export const en = {
   "conn.funders.help": "Share of funders carrying an identifier: makes funding aggregatable across records.",
   "conn.none": "No people/organisation fields present in these records.",
   "conn.ofTotal": "{identified} of {total}.",
-  "conn.quickWins.one": "<b>Quick wins:</b> {count} record has creators without an ORCID. These are the fastest re-curation gains: resolvable via the Remediate tool in Repo MetAudits.",
-  "conn.quickWins.other": "<b>Quick wins:</b> {count} records have creators without an ORCID. These are the fastest re-curation gains: resolvable via the Remediate tool in Repo MetAudits.",
+  "conn.quickWins.one": "<b>Quick wins:</b> {count} record has creators without an ORCID. These are the fastest re-curation gains: resolvable via the Remediate tool in FAIR Readout Server.",
+  "conn.quickWins.other": "<b>Quick wins:</b> {count} records have creators without an ORCID. These are the fastest re-curation gains: resolvable via the Remediate tool in FAIR Readout Server.",
   "conn.title": "Connectivity: PIDs on people & orgs",
 
   // ── date ──
@@ -580,9 +580,9 @@ export const en = {
   "how.data.privacy": "Everything runs client-side: records are fetched, scored and rendered in your browser. Nothing is uploaded, stored or tracked.",
   "how.data.title": "Where the data comes from",
   "how.deeper": "Want more depth? Each section below goes one level further.",
-  "how.open.body": "The full rubric is readable in <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js\" target=\"_blank\" rel=\"noreferrer\">src/fair.js</a>: the same engine as the hosted Repo MetAudits, kept in parity by shared test fixtures and cross-validated against the independent FAIR-Checker. If you disagree with a check, you can read it, cite it, or fork it (Apache-2.0).",
+  "how.open.body": "The full rubric is readable in <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js\" target=\"_blank\" rel=\"noreferrer\">src/fair.js</a>: the same engine as the hosted FAIR Readout Server, kept in parity by shared test fixtures and cross-validated against the independent FAIR-Checker. If you disagree with a check, you can read it, cite it, or fork it (Apache-2.0).",
   "how.open.title": "Open by design",
-  "how.open.twin": "Open twin of <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">Repo MetAudits</a>: the same 14-sub-principle rubric, moved client-side, plus MGC-style concept completeness.",
+  "how.open.twin": "Open twin of <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">FAIR Readout Server</a>: the same 14-sub-principle rubric, moved client-side, plus MGC-style concept completeness.",
   "how.score.bands": "Every check returns <b>Full (1)</b>, <b>Partial (0.5)</b> or <b>Not met (0)</b>. Partial exists because metadata is rarely all-or-nothing: a related identifier without a type, a license readable by humans but not by machines.",
   "how.score.capability": "Scoring is <b>source-aware</b>: what the source itself guarantees is credited automatically, e.g. DataCite serves metadata over HTTPS through a documented API and preserves it independently of the data, and A1 and A2 reflect that. A record is never punished for its protocol's virtues, nor rewarded for what it doesn't declare.",
   "how.score.mean": "A principle's score is the average of its checks, and the overall score is the average of all 14: no hidden weights. Aggregate views also carry the unrounded mean (<code>rawMean</code>) so exported numbers don't hide behind the 0 / 50 / 100 bands.",

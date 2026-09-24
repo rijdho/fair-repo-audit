@@ -1,4 +1,4 @@
-/* fair-repo-audit's own styles. The shared look (tokens, shell, components, the self-hosted Inter
+/* FAIR Readout's own styles. The shared look (tokens, shell, components, the self-hosted Inter
    font) comes from house/house.css, a synced copy of rijdho/house-style that index.html loads first;
    what stays here is what this tool adds or sets differently. Run node scripts/sync-house.mjs to
    refresh the copy, never edit it. */
