@@ -13,6 +13,8 @@ latest release.
 
 ## [Unreleased]
 
+## [1.9.0]: 2026-09-24
+
 ### Changed
 
 - **I3 asks for a reference to another work.** A typed relation now earns the full point only
