@@ -9,7 +9,8 @@
 
 // Aliased: this module already has a local `has()` for Dublin Core field presence,
 // and an unaliased import would be shadowed by it: silently, since the arities differ.
-import { t, has as hasKey } from './i18n/index.js?v=38';
+import { t, has as hasKey } from './i18n/index.js?v=39';
+import { hasOrcid, hasRor } from './pids.js?v=39';
 
 const arr = (x) => Array.isArray(x) ? x : [];
 const some = (a, pred) => arr(a).some(pred);
@@ -40,9 +41,9 @@ const DATACITE_GROUPS = [
   ] },
   { gkey: 'dc.contacts', concepts: [
     { key: 'author',              present: a => some(a.creators, c => c.name) },
-    { key: 'authorOrcid',         present: a => some(a.creators, c => some(c.nameIdentifiers, n => n.nameIdentifierScheme === 'ORCID')) },
+    { key: 'authorOrcid',         present: a => some(a.creators, hasOrcid) },
     { key: 'authorAffiliation',   present: a => some(a.creators, c => some(c.affiliation, af => af.name)) },
-    { key: 'affiliationRor',      present: a => some(a.creators, c => some(c.affiliation, af => af.affiliationIdentifier)) },
+    { key: 'affiliationRor',      present: a => some(a.creators, c => some(c.affiliation, hasRor)) },
     { key: 'contactPerson',       present: a => some(a.contributors, c => c.contributorType === 'ContactPerson') },
     { key: 'funder',              present: a => some(a.fundingReferences, f => f.funderName) },
     { key: 'funderId',            present: a => some(a.fundingReferences, f => f.funderIdentifier) },

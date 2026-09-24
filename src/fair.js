@@ -14,7 +14,8 @@
 // count in this file lands in an exported report, and digit grouping would change the
 // English output for values >= 1000. Wire it up when that change is wanted.
 // eslint-disable-next-line no-unused-vars
-import { t, tn, n } from './i18n/index.js?v=38';
+import { t, tn, n } from './i18n/index.js?v=39';
+import { hasOrcid, orcidOf, hasRor } from './pids.js?v=39';
 
 function toArr(val) {
   if (!val) return [];
@@ -584,18 +585,19 @@ function assessDataCiteWork(work) {
   const doi = a.doi;
 
   // Creator analysis
-  const creatorsWithOrcid = (a.creators ?? []).filter(c => (c.nameIdentifiers ?? []).some(n => n.nameIdentifierScheme === 'ORCID'));
+  // A well-formed ORCID, not just the scheme: DataCite accepts a null under nameIdentifierScheme ORCID.
+  const creatorsWithOrcid = (a.creators ?? []).filter(hasOrcid);
   const creatorsWithAffiliation = (a.creators ?? []).filter(c => c.affiliation && c.affiliation.length > 0);
 
   // Connectivity: do entities carry the identifiers that link them (ORCID/ROR/funder IDs)
   const dcCreators = a.creators ?? [];
   const dcContribs = a.contributors ?? [];
-  const orcidCount = arr => arr.filter(c => (c.nameIdentifiers ?? []).some(n => n.nameIdentifierScheme === 'ORCID')).length;
+  const orcidCount = arr => arr.filter(hasOrcid).length;
   const allAffils = [...dcCreators, ...dcContribs].flatMap(c => c.affiliation ?? []);
   const dcFunders = a.fundingReferences ?? [];
   const connectivity = {
     creators: dcCreators.length, creatorsId: orcidCount(dcCreators),
-    affiliations: allAffils.length, affiliationsId: allAffils.filter(af => !!af.affiliationIdentifier).length,
+    affiliations: allAffils.length, affiliationsId: allAffils.filter(hasRor).length,
     funders: dcFunders.length, fundersId: dcFunders.filter(f => !!f.funderIdentifier).length,
     contributors: dcContribs.length, contributorsId: orcidCount(dcContribs),
   };
@@ -846,7 +848,7 @@ function assessDataCiteWork(work) {
             ? t('check.dc.R1.2.details.orcidSample', {
                 count: creatorsWithOrcid.length,
                 total: totalCreators,
-                identifier: creatorsWithOrcid[0].nameIdentifiers[0].nameIdentifier,
+                identifier: orcidOf(creatorsWithOrcid[0]),
               })
             : t('check.dc.R1.2.details.orcid', { count: creatorsWithOrcid.length, total: totalCreators }),
           creatorsWithAffiliation.length > 0

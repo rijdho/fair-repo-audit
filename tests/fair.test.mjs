@@ -171,7 +171,7 @@ test('DataCite R1.2: ORCID → 1, affiliation only → 0.5, bare creator → 0.5
 test('DataCite connectivity: ORCID/ROR/funder identifiers are counted', () => {
   const a = assessDataCiteWork(work({
     creators: [
-      { name: 'A', nameIdentifiers: [{ nameIdentifierScheme: 'ORCID', nameIdentifier: 'x' }], affiliation: [{ name: 'U', affiliationIdentifier: 'https://ror.org/x' }] },
+      { name: 'A', nameIdentifiers: [{ nameIdentifierScheme: 'ORCID', nameIdentifier: 'https://orcid.org/0000-0002-1825-0097' }], affiliation: [{ name: 'U', affiliationIdentifierScheme: 'ROR', affiliationIdentifier: 'https://ror.org/02mhbdp94' }] },
       { name: 'B', affiliation: [{ name: 'V' }] },
     ],
     fundingReferences: [{ funderName: 'F', funderIdentifier: 'https://doi.org/10.13039/1' }, { funderName: 'G' }],
@@ -182,6 +182,36 @@ test('DataCite connectivity: ORCID/ROR/funder identifiers are counted', () => {
     funders: 2, fundersId: 1,
     contributors: 0, contributorsId: 0,
   });
+});
+
+// A declared identifier is not always one. Each case below was found in DataCite records of
+// Chilean datasets on 2026-09-24 (doi:10.7910/dvn/esn21f/86kvgb, 10.57760/sciencedb.010p2,
+// 10.34894/px5ivz); the scheme alone used to count all of them as identified.
+test('DataCite: only well-formed ORCIDs and ROR ids count as identified', () => {
+  const person = (orcid, aff) => ({ name: 'P', nameIdentifiers: [{ nameIdentifierScheme: 'ORCID', nameIdentifier: orcid }],
+                                     affiliation: aff ? [aff] : [] });
+  const a = assessDataCiteWork(work({
+    creators: [
+      person(null),                                              // scheme ORCID, value null
+      person('0000-0002-8998-7888'),                             // wrong check digit, 404 at ORCID
+      person('0000-0002-1694-233X'),                             // valid, check digit X
+      person('https://orcid.org/0000-0002-1825-0097', { name: 'UCN', affiliationIdentifierScheme: 'ROR', affiliationIdentifier: 'https://www.ucn.cl' }),
+      person(undefined, { name: 'G', affiliationIdentifierScheme: 'ROR', affiliationIdentifier: 'https://ror.org/University%20of%20Groningen' }),
+      person(undefined, { name: 'N', affiliationIdentifierScheme: 'ROR', affiliationIdentifier: 'https://ror.org/02mhbdp94' }),
+      // No scheme, but schemeUri says ORCID and the value is one (doi:10.57760/sciencedb.01856): counts.
+      { name: 'S', nameIdentifiers: [{ nameIdentifier: '/0000-0002-7163-6220', schemeUri: 'https://orcid.org' }] },
+    ],
+  }));
+  assert.equal(a.connectivity.creatorsId, 3, 'the X-checksum ORCID, the URL form and the schemeUri-marked one count; null and the bad check digit do not');
+  assert.equal(a.connectivity.affiliationsId, 1, 'a website and a name inside ror.org/ are not ROR ids');
+});
+
+test('DataCite R1.2: a null ORCID no longer earns full provenance', () => {
+  const only = (nameIdentifier) => assessDataCiteWork(work({
+    creators: [{ name: 'P', nameIdentifiers: [{ nameIdentifierScheme: 'ORCID', nameIdentifier }] }] }));
+  assert.equal(scoreOf(only(null), 'R1.2'), 0.5);
+  assert.equal(scoreOf(only('0000-0002-8998-7888'), 'R1.2'), 0.5);
+  assert.equal(scoreOf(only('https://orcid.org/0000-0002-1825-0097'), 'R1.2'), 1);
 });
 
 // ── OAI-PMH: F1 (identifier classes) ──

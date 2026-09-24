@@ -13,6 +13,20 @@ latest release.
 
 ## [Unreleased]
 
+### Fixed
+
+- **A declared identifier is no longer counted as an identifier.** DataCite accepts any string
+  under `nameIdentifierScheme: ORCID` or `affiliationIdentifierScheme: ROR`, null included, and
+  the scheme alone used to count. Now an ORCID counts only if its value is well-formed (the
+  0000-0000-0000-000X pattern and its ISO 7064 check digit) and the scheme, the `schemeUri` or the
+  value marks it as ORCID; a ROR counts only if it is `ror.org/0` followed by the ROR id form.
+  This applies to the R1.2 score, the connectivity profile ("Creators with ORCID", "Affiliations
+  with ROR") and the *Author ORCID* and *Affiliation ROR* concepts, all in the new `src/pids.js`.
+  Measured on 10,686 Chilean DataCite datasets (2026-09-24): 41 of 56,241 declared ORCIDs fail
+  (17 datasets carry a null), and 33 of 8,546 affiliations labelled ROR are a website or a name
+  inside a ror.org URL. The R1.2 detail now shows the first valid ORCID, not the first identifier.
+  Mirrored in the Repo MetAudits engine, whose parity test covers the null and website cases.
+
 ### Removed
 
 - **Dead code found in a sweep after 1.7.0.** Three exports nobody imported (`ELEMENTS` in
