@@ -13,6 +13,8 @@ latest release.
 
 ## [Unreleased]
 
+## [1.7.1]: 2026-09-24
+
 ### Fixed
 
 - **A declared identifier is no longer counted as an identifier.** DataCite accepts any string
@@ -392,7 +394,8 @@ Version DOI: [10.5281/zenodo.21492531](https://doi.org/10.5281/zenodo.21492531).
   no dependencies).
 - `CITATION.cff` with citation metadata, MIT licence.
 
-[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.7.1...HEAD
+[1.7.1]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.7.1
 [1.7.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.7.0
 [1.6.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.6.0
 [1.5.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.5.0
