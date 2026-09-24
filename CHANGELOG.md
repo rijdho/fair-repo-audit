@@ -15,6 +15,10 @@ latest release.
 
 ### Changed
 
+- **rijdho.github.io under the name is a link to it**, with house-style 1.0.2, which styles that link. Assets move to `?v=48`.
+
+### Changed
+
 - **The tool is called FAIR Readout**, and its hosted twin FAIR Readout Server (formerly Repo
   MetAudits). The repository keeps its name, `fair-repo-audit`, and every URL and DOI stays as it
   was; the name changes where a reader meets it: the page title, the rail, the README and
