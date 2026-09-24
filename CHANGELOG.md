@@ -38,6 +38,8 @@ latest release.
 
 ## [1.8.0]: 2026-09-24
 
+Version DOI: [10.5281/zenodo.22937440](https://doi.org/10.5281/zenodo.22937440).
+
 ### Changed
 
 - **Licensed under Apache-2.0.** The code moves from AGPL-3.0-or-later to Apache-2.0, the licence
