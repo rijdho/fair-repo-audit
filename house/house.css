@@ -1,4 +1,4 @@
-/* house-style 1.0.2
+/* house-style 1.0.3
    The "violet" design language shared by rijdho's public tools (fair-repo-audit, coara-action-planner,
    orcid-finder, chilean-altoutputs), ported from the cris-eilein house style. This file is the ORIGINAL:
    projects keep an exact copy (synced by their `sync-house` script) and a test fails if the copy drifts.
@@ -137,6 +137,10 @@ h1, h2, h3 { font-family: var(--disp); font-weight: 800; letter-spacing: -0.02em
 /* The site line under the name links to rijdho.github.io in every tool (1.0.2). */
 a.brand-sub { display: block; text-decoration: none; }
 a.brand-sub:hover { color: var(--brand); text-decoration: underline; }
+/* The icon and the name link to the tool's own start page (1.0.3). */
+a.brand-glyph { display: block; }
+.brand-name a { color: inherit; text-decoration: none; }
+.brand-name a:hover { color: var(--brand); }
 
 .nav-label { font-family: var(--mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: var(--ink-2); padding: 10px 8px 6px; }
