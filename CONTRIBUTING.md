@@ -5,23 +5,11 @@ pull request if the change is small and self-contained.
 
 ## Licensing of contributions
 
-This project is licensed **AGPL-3.0-or-later**, and contributions are accepted
-on the same terms. By opening a pull request you agree that:
-
-1. your contribution is licensed under AGPL-3.0-or-later, and
-2. you grant the maintainer the right to relicense your contribution, including
-   under a different or proprietary licence.
-
-Point 2 is not boilerplate and it is worth explaining rather than burying.
-This project is the open half of a pair: the same rubric also runs in a hosted
-service that is not open source. Keeping the right to move code between the two
-is what makes it possible to publish this half at all. Without that grant, a
-single merged contribution would permanently prevent it, since a contributor
-keeps copyright over their own work and the AGPL would then bind the whole.
-
-If you would rather not grant point 2, say so in the pull request. A bug report
-or a precise description of the fix is genuinely useful on its own, and the fix
-can be written separately.
+This project is licensed **Apache-2.0**, and contributions are accepted on the same terms:
+section 5 of the licence says that anything submitted for inclusion is licensed under it, with
+no separate agreement to sign. Apache-2.0 is permissive, so the maintainer can also carry a
+contribution into the hosted Repo MetAudits service, which runs the same rubric; that is what
+makes it possible to keep the two scoring alike.
 
 ## Scope: this measures, it does not remediate
 

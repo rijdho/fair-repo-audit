@@ -9,8 +9,8 @@
 
 // Aliased: this module already has a local `has()` for Dublin Core field presence,
 // and an unaliased import would be shadowed by it: silently, since the arities differ.
-import { t, has as hasKey } from './i18n/index.js?v=41';
-import { hasOrcid, hasRor } from './pids.js?v=41';
+import { t, has as hasKey } from './i18n/index.js?v=42';
+import { hasOrcid, hasRor } from './pids.js?v=42';
 
 const arr = (x) => Array.isArray(x) ? x : [];
 const some = (a, pred) => arr(a).some(pred);
