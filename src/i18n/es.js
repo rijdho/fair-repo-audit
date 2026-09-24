@@ -15,7 +15,7 @@ export const es = {
 
   // ── Document metadata ──
   "meta.description": "Apúntelo a un repositorio DataCite u OAI-PMH y lea la calidad FAIR de sus metadatos: los 14 subprincipios y la completitud campo a campo. Del lado del cliente por defecto, rúbrica abierta.",
-  "meta.title": "FAIR Readout: los metadatos que publica un repositorio, puntuados",
+  "meta.title": "FAIR Metadata Check: los metadatos que publica un repositorio, puntuados",
 
   // ── Interface chrome ──
   "ui.brand.source": "código ↗",
@@ -514,8 +514,8 @@ export const es = {
   "conn.funders.help": "Proporción de financiadores con identificador: permite agregar la financiación entre registros.",
   "conn.none": "No hay campos de personas ni organizaciones en estos registros.",
   "conn.ofTotal": "{identified} de {total}.",
-  "conn.quickWins.one": "<b>Mejoras rápidas:</b> {count} registro tiene creadores sin ORCID. Son las correcciones de curación más rápidas de conseguir, resolubles con la herramienta Remediate de FAIR Readout Server.",
-  "conn.quickWins.other": "<b>Mejoras rápidas:</b> {count} registros tienen creadores sin ORCID. Son las correcciones de curación más rápidas de conseguir, resolubles con la herramienta Remediate de FAIR Readout Server.",
+  "conn.quickWins.one": "<b>Mejoras rápidas:</b> {count} registro tiene creadores sin ORCID. Son las correcciones de curación más rápidas de conseguir, resolubles con la herramienta Remediate de FAIR Metadata Check (Extended).",
+  "conn.quickWins.other": "<b>Mejoras rápidas:</b> {count} registros tienen creadores sin ORCID. Son las correcciones de curación más rápidas de conseguir, resolubles con la herramienta Remediate de FAIR Metadata Check (Extended).",
   "conn.title": "Conectividad: PID en personas y organizaciones",
 
   // ── date ──
@@ -580,9 +580,9 @@ export const es = {
   "how.data.privacy": "Todo se ejecuta en el cliente: los registros se descargan, se puntúan y se muestran en su navegador. No se sube, almacena ni rastrea nada.",
   "how.data.title": "De dónde salen los datos",
   "how.deeper": "¿Quiere más profundidad? Cada sección va un nivel más allá.",
-  "how.open.body": "La rúbrica completa puede leerse en <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js\" target=\"_blank\" rel=\"noreferrer\">src/fair.js</a>: el mismo motor que el FAIR Readout Server alojado, mantenido en paridad mediante fixtures de test compartidos y validado de forma cruzada con el FAIR-Checker independiente. Si no está de acuerdo con una comprobación, puede leerla, citarla o bifurcarla (Apache-2.0).",
+  "how.open.body": "La rúbrica completa puede leerse en <a href=\"https://github.com/rijdho/fair-repo-audit/blob/main/src/fair.js\" target=\"_blank\" rel=\"noreferrer\">src/fair.js</a>: el mismo motor que el FAIR Metadata Check (Extended) alojado, mantenido en paridad mediante fixtures de test compartidos y validado de forma cruzada con el FAIR-Checker independiente. Si no está de acuerdo con una comprobación, puede leerla, citarla o bifurcarla (Apache-2.0).",
   "how.open.title": "Abierto por diseño",
-  "how.open.twin": "Gemelo abierto de <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">FAIR Readout Server</a>: la misma rúbrica de 14 subprincipios, trasladada al navegador, más la completitud de conceptos al estilo MGC.",
+  "how.open.twin": "Gemelo abierto de <a href=\"https://metaudits.rijdho.org/repo-metaudits/\" target=\"_blank\" rel=\"noreferrer\">FAIR Metadata Check (Extended)</a>: la misma rúbrica de 14 subprincipios, trasladada al navegador, más la completitud de conceptos al estilo MGC.",
   "how.score.bands": "Cada comprobación devuelve <b>completa (1)</b>, <b>parcial (0,5)</b> o <b>no cumplida (0)</b>. La banda parcial existe porque los metadatos rara vez son todo o nada: un identificador relacionado sin tipo, una licencia legible para personas pero no para máquinas.",
   "how.score.capability": "La puntuación es <b>consciente de la fuente</b>: lo que la propia fuente garantiza se acredita automáticamente, p. ej., DataCite sirve los metadatos por HTTPS mediante una API documentada y los conserva con independencia de los datos, y A1 y A2 lo reflejan. Un registro nunca se penaliza por las virtudes de su protocolo, ni se premia por lo que no declara.",
   "how.score.mean": "La puntuación de un principio es la media de sus comprobaciones, y la global, la media de las 14: sin pesos ocultos. Las vistas agregadas llevan además la media sin redondear (<code>rawMean</code>), para que los números exportados no se escondan tras las bandas 0 / 50 / 100.",

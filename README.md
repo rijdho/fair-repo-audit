@@ -1,4 +1,4 @@
-# FAIR Readout
+# FAIR Metadata Check
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21492530.svg?v=2)](https://doi.org/10.5281/zenodo.21492530)
 
@@ -23,7 +23,7 @@ Available in **English, Spanish and German** (auto-detected, switchable).
 13.5 of 14 FAIR checks across 25 of 169,871 records, with per-principle scores of 4/4 Findable,
 3/3 Accessible, 2.5/3 Interoperable and 4/4 Reusable.](docs/score.png)
 
-This is the **open twin** of [FAIR Readout Server](https://metaudits.rijdho.org/repo-metaudits/), which runs the same rubric on the server.
+This is the **open twin** of [FAIR Metadata Check (Extended)](https://metaudits.rijdho.org/repo-metaudits/), which runs the same rubric on the server.
 That tool keeps its scoring engine server-side (protected); this one moves the *same* rubric
 into the browser where it is fully visible: inspired by the open, client-side philosophy of
 [Metadata Game Changers](https://metadatagamechangers.com/). The scoring logic in
@@ -281,7 +281,7 @@ cors-proxy/          : a ~40-line CORS relay, required for OAI-PMH (no scoring l
 ## Methodology & validation
 
 The rubric, the Full/Partial/None bands, and the source-capability-aware scoring are documented
-in [FAIR Readout Server's METHODOLOGY.md](https://metaudits.rijdho.org/repo-metaudits/) and
+in [the METHODOLOGY.md of FAIR Metadata Check (Extended)](https://metaudits.rijdho.org/repo-metaudits/) and
 cross-validated against the independent [FAIR-Checker](https://fair-checker.france-bioinformatique.fr/)
 tool. Because the engine here is a faithful port, those results carry over.
 
@@ -295,7 +295,7 @@ node --test tests/*.test.mjs
 ```
 
 `fair.test.mjs` and `analysis.test.mjs` assert on **scores**, and those fixtures double as
-the parity contract with the server-side engine in FAIR Readout Server: a change that flips an
+the parity contract with the server-side engine in FAIR Metadata Check (Extended): a change that flips an
 expected score should be mirrored there or documented as a divergence. Because they cover
 scores rather than wording, they stayed green throughout the i18n extraction: which is the
 point, but also means they cannot vouch for the prose. `i18n.test.mjs` covers that side:
