@@ -240,7 +240,7 @@ export const de = {
   "check.dc.I2.details.withScheme": "Mit Schema: {list}.",
   "check.dc.I2.details.withoutScheme": "Ohne Schema: {list}{ellipsis}",
   "check.dc.I2.name": "Kontrollierte Vokabulare",
-  "check.dc.I3.description": "relatedIdentifiers mit typisierter Beziehung und Identifikatorschema",
+  "check.dc.I3.description": "Eine typisierte Relation zu einem anderen Werk (Verweise nur auf eigene Dateien oder Versionen zählen teilweise)",
   "check.dc.I3.details.count.one": "{count} verwandter Identifikator.",
   "check.dc.I3.details.count.other": "{count} verwandte Identifikatoren.",
   "check.dc.I3.details.noRelationType": "Keiner trägt einen relationType: ergänzen Sie einen (References, IsSupplementTo …), damit Maschinen wissen, WIE die Ressourcen zusammenhängen.",

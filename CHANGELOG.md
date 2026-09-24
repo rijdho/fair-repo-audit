@@ -13,6 +13,12 @@ latest release.
 
 ## [Unreleased]
 
+### Changed
+
+- **The I3 check says what it now asks for**: a typed relation to another work, with links only to the
+  record's own files or versions counting as partial (the rule changed in 1.9.0; its description had not).
+  Assets move to `?v=45`.
+
 ## [1.9.0]: 2026-09-24
 
 ### Changed

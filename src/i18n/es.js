@@ -240,7 +240,7 @@ export const es = {
   "check.dc.I2.details.withScheme": "Con esquema: {list}.",
   "check.dc.I2.details.withoutScheme": "Sin esquema: {list}{ellipsis}",
   "check.dc.I2.name": "Vocabularios controlados",
-  "check.dc.I3.description": "relatedIdentifiers con relación tipificada y esquema de identificador",
+  "check.dc.I3.description": "Una relación con tipo hacia otra obra (los enlaces solo a los propios archivos o versiones del registro cuentan como parcial)",
   "check.dc.I3.details.count.one": "{count} identificador relacionado.",
   "check.dc.I3.details.count.other": "{count} identificadores relacionados.",
   "check.dc.I3.details.noRelationType": "Ninguno lleva un relationType: añada uno (References, IsSupplementTo…) para que las máquinas sepan CÓMO se relacionan los recursos.",

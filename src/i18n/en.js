@@ -240,7 +240,7 @@ export const en = {
   "check.dc.I2.details.withScheme": "With scheme: {list}.",
   "check.dc.I2.details.withoutScheme": "Without scheme: {list}{ellipsis}",
   "check.dc.I2.name": "Controlled vocabularies",
-  "check.dc.I3.description": "relatedIdentifiers with typed relation and identifier scheme",
+  "check.dc.I3.description": "A typed relation to another work (links only to the record's own files or versions count as partial)",
   "check.dc.I3.details.count.one": "{count} related identifier.",
   "check.dc.I3.details.count.other": "{count} related identifiers.",
   "check.dc.I3.details.noRelationType": "None carries a relationType: add one (References, IsSupplementTo…) so machines know HOW resources relate.",

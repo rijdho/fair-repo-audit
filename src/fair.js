@@ -14,9 +14,9 @@
 // count in this file lands in an exported report, and digit grouping would change the
 // English output for values >= 1000. Wire it up when that change is wanted.
 // eslint-disable-next-line no-unused-vars
-import { t, tn, n } from './i18n/index.js?v=44';
-import { hasOrcid, orcidOf, hasRor } from './pids.js?v=44';
-import { isOtherWork } from './relations.js?v=44';
+import { t, tn, n } from './i18n/index.js?v=45';
+import { hasOrcid, orcidOf, hasRor } from './pids.js?v=45';
+import { isOtherWork } from './relations.js?v=45';
 
 function toArr(val) {
   if (!val) return [];
