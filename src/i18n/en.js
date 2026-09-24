@@ -245,6 +245,7 @@ export const en = {
   "check.dc.I3.details.count.other": "{count} related identifiers.",
   "check.dc.I3.details.noRelationType": "None carries a relationType: add one (References, IsSupplementTo…) so machines know HOW resources relate.",
   "check.dc.I3.details.none": "No relatedIdentifiers: resource is an isolated record with no explicit links to other resources",
+  "check.dc.I3.details.ownOnly": "Every typed relation points to the record's own files or versions, so none references another work.",
   "check.dc.I3.details.relationTypes": "Relation types: {list}.",
   "check.dc.I3.details.sample": "Sample: {list}",
   "check.dc.I3.name": "Qualified references to other resources",

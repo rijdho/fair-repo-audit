@@ -13,6 +13,18 @@ latest release.
 
 ## [Unreleased]
 
+### Changed
+
+- **I3 asks for a reference to another work.** A typed relation now earns the full point only
+  when it reaches beyond the record: links to the record's own files (HasPart, IsPartOf under its
+  own DOI) or to its versions earn the partial 0.5, as untyped relations already did. FAIR's I3
+  is about qualified references to *other* (meta)data, and on Dataverse, which registers a DOI
+  per file, the old rule gave every record the point for listing its own files. Universidad de
+  Chile (prefix 10.34691, 100 most recent records, 2026-09-24) moves from 71% to 68%, I from
+  2/3 to 1.5/3; nothing else changes. Mirrored in the Repo MetAudits engine, whose parity test
+  gains three fixtures (own files, a file pointing to its dataset, a version of itself). Assets
+  move to `?v=44`.
+
 ### Added
 
 - **A concept for a link to another work.** *Related identifier* says a record declares one;

@@ -245,6 +245,7 @@ export const es = {
   "check.dc.I3.details.count.other": "{count} identificadores relacionados.",
   "check.dc.I3.details.noRelationType": "Ninguno lleva un relationType: añada uno (References, IsSupplementTo…) para que las máquinas sepan CÓMO se relacionan los recursos.",
   "check.dc.I3.details.none": "Sin relatedIdentifiers: el recurso es un registro aislado, sin enlaces explícitos a otros recursos",
+  "check.dc.I3.details.ownOnly": "Todas las relaciones con tipo apuntan a los propios archivos o versiones del registro, así que ninguna referencia otra obra.",
   "check.dc.I3.details.relationTypes": "Tipos de relación: {list}.",
   "check.dc.I3.details.sample": "Muestra: {list}",
   "check.dc.I3.name": "Referencias cualificadas a otros recursos",

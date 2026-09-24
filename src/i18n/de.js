@@ -245,6 +245,7 @@ export const de = {
   "check.dc.I3.details.count.other": "{count} verwandte Identifikatoren.",
   "check.dc.I3.details.noRelationType": "Keiner trägt einen relationType: ergänzen Sie einen (References, IsSupplementTo …), damit Maschinen wissen, WIE die Ressourcen zusammenhängen.",
   "check.dc.I3.details.none": "Keine relatedIdentifiers: die Ressource ist ein isolierter Nachweis ohne ausdrückliche Verweise auf andere Ressourcen",
+  "check.dc.I3.details.ownOnly": "Alle typisierten Relationen verweisen auf eigene Dateien oder Versionen des Datensatzes, keine auf ein anderes Werk.",
   "check.dc.I3.details.relationTypes": "Beziehungstypen: {list}.",
   "check.dc.I3.details.sample": "Beispiel: {list}",
   "check.dc.I3.name": "Qualifizierte Verweise auf andere Ressourcen",

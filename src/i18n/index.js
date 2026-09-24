@@ -10,9 +10,9 @@
 //    types) are NEVER keys here: they are data the user types into their
 //    metadata editor, and they stay in English in every locale.
 
-import { en } from './en.js?v=43';
-import { es } from './es.js?v=43';
-import { de } from './de.js?v=43';
+import { en } from './en.js?v=44';
+import { es } from './es.js?v=44';
+import { de } from './de.js?v=44';
 
 export const LOCALES = { en, es, de };
 

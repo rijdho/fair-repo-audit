@@ -14,8 +14,9 @@
 // count in this file lands in an exported report, and digit grouping would change the
 // English output for values >= 1000. Wire it up when that change is wanted.
 // eslint-disable-next-line no-unused-vars
-import { t, tn, n } from './i18n/index.js?v=43';
-import { hasOrcid, orcidOf, hasRor } from './pids.js?v=43';
+import { t, tn, n } from './i18n/index.js?v=44';
+import { hasOrcid, orcidOf, hasRor } from './pids.js?v=44';
+import { isOtherWork } from './relations.js?v=44';
 
 function toArr(val) {
   if (!val) return [];
@@ -641,6 +642,9 @@ function assessDataCiteWork(work) {
 
   // Related identifiers analysis: only entries carrying a relationType count as "typed"
   const typedRels = (a.relatedIdentifiers ?? []).filter(r => r.relationType);
+  // I3 asks for qualified references to OTHER (meta)data. A typed link to the record's own files
+  // or versions (Dataverse: HasPart/IsPartOf, one DOI per file) earns the partial 0.5, not the 1.
+  const typedOther = typedRels.filter(r => isOtherWork(r, a.doi));
   const relTypes = typedRels.reduce((acc, r) => {
     acc[r.relationType] = (acc[r.relationType] ?? 0) + 1;
     return acc;
@@ -772,7 +776,7 @@ function assessDataCiteWork(work) {
         id: 'I3', name: t('check.dc.I3.name'),
         description: t('check.dc.I3.description'),
         score: (a.relatedIdentifiers?.length ?? 0) > 0
-          ? (typedRels.length > 0 ? 1 : 0.5) : 0,
+          ? (typedOther.length > 0 ? 1 : 0.5) : 0,
         maxScore: 1,
         get details() { return (a.relatedIdentifiers?.length ?? 0) > 0
           ? tn('check.dc.I3.details.count', a.relatedIdentifiers.length) + ' '
@@ -781,6 +785,7 @@ function assessDataCiteWork(work) {
                   list: Object.entries(relTypes).map(([k, v]) => `${k} (${v})`).join(', '),
                 })
               : t('check.dc.I3.details.noRelationType')) + ' '
+            + (typedRels.length > 0 && typedOther.length === 0 ? t('check.dc.I3.details.ownOnly') + ' ' : '')
             + t('check.dc.I3.details.sample', {
                 list: a.relatedIdentifiers.slice(0, 2).map(r => `[${r.relatedIdentifierType}] ${r.relatedIdentifier}${r.relationType ? ` \u2014 ${r.relationType}` : ''}`).join('; '),
               })
