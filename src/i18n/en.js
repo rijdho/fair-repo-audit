@@ -145,6 +145,8 @@ export const en = {
   "concept.publisher.gloss": "The publishing entity.",
   "concept.relatedIdentifier": "Related identifier",
   "concept.relatedIdentifier.gloss": "A link to another resource (paper, dataset, software). Turns an isolated record into part of a graph.",
+  "concept.otherWork": "Link to another work",
+  "concept.otherWork.gloss": "A related identifier that points beyond the record itself: its own files (HasPart, IsPartOf) and versions do not count. On Dataverse, most related identifiers are the dataset's own files.",
   "concept.relatedPidScheme": "Related PID scheme",
   "concept.relatedPidScheme.gloss": "The related link is itself a PID (DOI/URL), so a machine can actually follow it.",
   "concept.relation": "Relation",

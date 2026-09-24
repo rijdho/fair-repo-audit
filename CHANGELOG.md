@@ -13,6 +13,17 @@ latest release.
 
 ## [Unreleased]
 
+### Added
+
+- **A concept for a link to another work.** *Related identifier* says a record declares one;
+  the new *Link to another work* says whether any of them reaches beyond the record itself, not
+  counting its own files (HasPart, IsPartOf under its own DOI) or its versions. Dataverse
+  registers one DOI per file and links each to its dataset, so a repository can score 100% on
+  the first and 0% on the second: Universidad de Chile's 100 most recent records did exactly
+  that on 2026-09-24. The FAIR score is unchanged (I3 still counts a typed relation, and moving
+  it is a rubric change the Repo MetAudits engine has to make in step). In `src/relations.js`,
+  with tests. Assets move to `?v=43`.
+
 ## [1.8.0]: 2026-09-24
 
 ### Changed

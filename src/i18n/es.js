@@ -145,6 +145,8 @@ export const es = {
   "concept.publisher.gloss": "La entidad que publica.",
   "concept.relatedIdentifier": "Identificador relacionado",
   "concept.relatedIdentifier.gloss": "Un enlace a otro recurso (artículo, conjunto de datos, software). Convierte un registro aislado en parte de un grafo.",
+  "concept.otherWork": "Enlace a otra obra",
+  "concept.otherWork.gloss": "Un identificador relacionado que apunta más allá del propio registro: sus archivos (HasPart, IsPartOf) y versiones no cuentan. En Dataverse, la mayoría de los identificadores relacionados son los archivos del propio dataset.",
   "concept.relatedPidScheme": "Esquema del PID relacionado",
   "concept.relatedPidScheme.gloss": "El enlace relacionado es en sí mismo un PID (DOI/URL), de modo que una máquina puede seguirlo realmente.",
   "concept.relation": "Relación",

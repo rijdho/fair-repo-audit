@@ -9,8 +9,9 @@
 
 // Aliased: this module already has a local `has()` for Dublin Core field presence,
 // and an unaliased import would be shadowed by it: silently, since the arities differ.
-import { t, has as hasKey } from './i18n/index.js?v=42';
-import { hasOrcid, hasRor } from './pids.js?v=42';
+import { t, has as hasKey } from './i18n/index.js?v=43';
+import { hasOrcid, hasRor } from './pids.js?v=43';
+import { isOtherWork } from './relations.js?v=43';
 
 const arr = (x) => Array.isArray(x) ? x : [];
 const some = (a, pred) => arr(a).some(pred);
@@ -35,6 +36,8 @@ const DATACITE_GROUPS = [
   ] },
   { gkey: 'dc.connections', concepts: [
     { key: 'relatedIdentifier',   present: a => arr(a.relatedIdentifiers).length > 0 },
+    // Declared above; here, whether one of them reaches beyond the record's own files and versions.
+    { key: 'otherWork',           present: a => some(a.relatedIdentifiers, r => isOtherWork(r, a.doi)) },
     { key: 'typedRelation',       present: a => some(a.relatedIdentifiers, r => r.relationType) },
     { key: 'relatedPidScheme',    present: a => some(a.relatedIdentifiers, r => r.relatedIdentifierType) },
     { key: 'geoLocation',         present: a => arr(a.geoLocations).length > 0 },

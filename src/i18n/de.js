@@ -145,6 +145,8 @@ export const de = {
   "concept.publisher.gloss": "Die veröffentlichende Einrichtung.",
   "concept.relatedIdentifier": "Verwandter Identifikator",
   "concept.relatedIdentifier.gloss": "Ein Verweis auf eine andere Ressource (Aufsatz, Datensatz, Software). Macht aus einem isolierten Nachweis den Teil eines Graphen.",
+  "concept.otherWork": "Verweis auf ein anderes Werk",
+  "concept.otherWork.gloss": "Eine verwandte Kennung, die über den Datensatz selbst hinausweist: eigene Dateien (HasPart, IsPartOf) und Versionen zählen nicht. Bei Dataverse sind die meisten verwandten Kennungen die eigenen Dateien des Datensatzes.",
   "concept.relatedPidScheme": "Schema der verwandten PID",
   "concept.relatedPidScheme.gloss": "Der verwandte Verweis ist selbst eine PID (DOI/URL), sodass eine Maschine ihm tatsächlich folgen kann.",
   "concept.relation": "Beziehung",
