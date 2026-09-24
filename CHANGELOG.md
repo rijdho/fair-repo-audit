@@ -17,7 +17,7 @@ latest release.
 
 - **The rail signs off like every other tool in the family.** One item per line: author, licence,
   source, *Part of Metadata Audits* (linking the new front page, rijdho.github.io/metaudits-home),
-  the data sources and the concept DOI, in the interface language. Asset versions move to `?v=40`
+  the data sources and the concept DOI, in the interface language. Asset versions move to `?v=41`
   so cached browsers fetch the new locales.
 
 ## [1.7.1]: 2026-09-24

@@ -65,7 +65,7 @@ export const es = {
   "ui.rail.by": "Por <a href=\"https://rijdho.github.io\" target=\"_blank\" rel=\"noreferrer\">Ricardo Hartley Belmar</a>",
   "ui.rail.license": "Código bajo AGPL-3.0",
   "ui.rail.source": "Código en GitHub",
-  "ui.rail.family": "Parte de <a href=\"https://rijdho.github.io/metaudits-home/\" target=\"_blank\" rel=\"noreferrer\">Metadata Audits</a>",
+  "ui.rail.family": "Parte de <a href=\"https://rijdho.github.io/metaudits-home/\" target=\"_blank\" rel=\"noreferrer\">Metaudits</a>",
   "ui.sample.all": "Todos ≤10k",
   "ui.suggest.aria": "Repositorios coincidentes",
   "ui.tabs.aria": "Fuente de metadatos",
