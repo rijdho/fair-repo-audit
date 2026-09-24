@@ -15,6 +15,16 @@ latest release.
 
 ### Changed
 
+- **The look comes from rijdho/house-style.** `house/` holds a synced copy (house.css and the Inter
+  fonts), loaded before `style.css`, with a lock and a test that fail on a hand edit or a stale copy
+  (`node scripts/sync-house.mjs` refreshes it). `style.css` keeps only what this tool adds or sets
+  differently: 337 declarations identical to house.css went, and the duplicate `fonts/` with them.
+  Checked by screenshots before and after, 10 views in light and dark, desktop and phone: identical
+  on desktop; on a phone the command bar now drops the source link, as across the family, so a long
+  mode title no longer wraps. Assets move to `?v=46`.
+
+### Changed
+
 - **The I3 check says what it now asks for**: a typed relation to another work, with links only to the
   record's own files or versions counting as partial (the rule changed in 1.9.0; its description had not).
   Assets move to `?v=45`.
