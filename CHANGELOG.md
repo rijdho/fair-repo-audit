@@ -13,6 +13,8 @@ latest release.
 
 ## [Unreleased]
 
+## [1.10.0]: 2026-09-24
+
 ### Changed
 
 - **Renamed FAIR Metadata Check** (was FAIR Readout), and the hosted version FAIR Metadata Check
@@ -25,14 +27,10 @@ latest release.
 - **The icon and the name link to the tool's start page**, with house-style 1.0.3. Assets move to `?v=49`.
 - **rijdho.github.io under the name is a link to it**, with house-style 1.0.2, which styles that link. Assets move to `?v=48`.
 
-### Changed
-
 - **The tool is called FAIR Readout**, and its hosted twin FAIR Readout Server (formerly Repo
   MetAudits). The repository keeps its name, `fair-repo-audit`, and every URL and DOI stays as it
   was; the name changes where a reader meets it: the page title, the rail, the README and
   `CITATION.cff`, whose title Zenodo takes at the next release. Assets move to `?v=47`.
-
-### Changed
 
 - **The look comes from rijdho/house-style.** `house/` holds a synced copy (house.css and the Inter
   fonts), loaded before `style.css`, with a lock and a test that fail on a hand edit or a stale copy
@@ -41,8 +39,6 @@ latest release.
   Checked by screenshots before and after, 10 views in light and dark, desktop and phone: identical
   on desktop; on a phone the command bar now drops the source link, as across the family, so a long
   mode title no longer wraps. Assets move to `?v=46`.
-
-### Changed
 
 - **The I3 check says what it now asks for**: a typed relation to another work, with links only to the
   record's own files or versions counting as partial (the rule changed in 1.9.0; its description had not).
@@ -475,7 +471,10 @@ Version DOI: [10.5281/zenodo.21492531](https://doi.org/10.5281/zenodo.21492531).
   no dependencies).
 - `CITATION.cff` with citation metadata, MIT licence.
 
-[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.7.1...HEAD
+[Unreleased]: https://github.com/rijdho/fair-repo-audit/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.10.0
+[1.9.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.9.0
+[1.8.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.8.0
 [1.7.1]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.7.1
 [1.7.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.7.0
 [1.6.0]: https://github.com/rijdho/fair-repo-audit/releases/tag/v1.6.0
