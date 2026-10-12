@@ -15,6 +15,8 @@ latest release.
 
 ## [1.15.0]: 2026-10-12
 
+Version DOI: [10.5281/zenodo.23319259](https://doi.org/10.5281/zenodo.23319259).
+
 ### Changed
 
 - **Every interface text was reviewed for accuracy and register.** All 724 English strings were
