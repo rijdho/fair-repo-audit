@@ -15,6 +15,8 @@ latest release.
 
 ## [1.11.0]: 2026-10-12
 
+Version DOI: [10.5281/zenodo.23317900](https://doi.org/10.5281/zenodo.23317900).
+
 ### Changed
 
 - **Re-curation shows a card per revision that says what the edit did.** Each revision listed only
