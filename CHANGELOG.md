@@ -13,6 +13,22 @@ latest release.
 
 ## [Unreleased]
 
+## [1.16.0]: 2026-10-13
+
+### Changed
+
+- **The charts follow one set of mark specs.** A single `SPEC` in `src/charts.js` now governs
+  every chart: columns at most 24px wide (12px each in a side-by-side pair), never filling their
+  slot; near-square ends; 2px lines; a 10% area wash; markers with a 2px ring in the surface
+  colour; hairline grids and 10px axis text. Before, the score-by-year and History columns were up
+  to 48px wide and read as solid blocks, the year picker used 30px and the activity chart 20px,
+  and the radar drew 2.5px outlines with a 16% fill while the trend chart used 2px.
+- **Score columns carry their value** on the cap, in text ink rather than the column colour.
+- **The radar no longer prints a value at each vertex**, where it collided with the ring ticks;
+  the four tiles below carry the means, and the ring values sit on the diagonal between F and A.
+- **The compare tiles write their values in text ink**, with a colour swatch beside each, instead
+  of in the series colour. Assets move to `?v=70`.
+
 ## [1.15.0]: 2026-10-12
 
 Version DOI: [10.5281/zenodo.23319259](https://doi.org/10.5281/zenodo.23319259).

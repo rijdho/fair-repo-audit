@@ -16,7 +16,7 @@
 //
 // Nothing here touches the network or the DOM, so all three are tested offline.
 
-import { dataCiteConcepts } from './concepts.js?v=67';
+import { dataCiteConcepts } from './concepts.js?v=70';
 
 /** The concepts worth following over time: who, where, under what terms, linked to what.
  *  Their definitions are the DataCite mode's own (concepts.js), so a share read here is

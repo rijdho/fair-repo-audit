@@ -2,9 +2,27 @@
 // The heatmap and radar show the DISTRIBUTION across records, not just the
 // averages: every record × every check, and the profile shape plus its spread.
 
-import { t, tn, n as fmtNum } from './i18n/index.js?v=67';
+import { t, tn, n as fmtNum } from './i18n/index.js?v=70';
 
 const pctOf = (grp) => grp.score / grp.maxScore;
+
+// One set of mark specs for every chart, so they read as one family: thin columns
+// that never fill their slot, near-square ends (the tool's formal look), 2px lines,
+// a 10% area wash, markers with a ring in the surface colour, hairline grids and
+// 10px mono axis text. A chart that needs a different value is a chart that drifted.
+const SPEC = {
+  barMax: 24,       // a single column, at most
+  pairBar: 12,      // each column of a side-by-side pair
+  barFill: 0.6,     // share of the slot a column may take before the cap applies
+  rx: 1,            // near-square ends
+  line: 2,
+  area: 0.1,
+  faint: 0.08,      // per-record outlines behind a mean
+  dotR: 4,
+  ring: 2,
+  axisSize: 10,
+  labelSize: 10,
+};
 
 // ── FAIR radar over four axes (F/A/I/R).
 // datasets: [{ assessments, color?, label }].
@@ -29,7 +47,9 @@ export function renderRadar(container, datasets, opts) {
 
   for (const r of [0.25, 0.5, 0.75, 1]) {
     svg.appendChild(mk('circle', { cx, cy, r: r * R, fill: 'none', stroke: grid, 'stroke-width': 1 }));
-    svg.appendChild(txt(cx + 12, cy - r * R, `${r * 100 | 0}`, { size: 8 }));
+    // Ring values sit on the diagonal between F and A, where no axis or mean vertex lands.
+    const [tx, ty] = pt(-Math.PI / 4, r);
+    svg.appendChild(txt(tx + 3, ty - 3, `${r * 100 | 0}`, { size: 9, anchor: 'start' }));
   }
   for (const ax of AX) {
     const [ex, ey] = pt(ax.ang, 1);
@@ -56,16 +76,16 @@ export function renderRadar(container, datasets, opts) {
       const sample = d.assessments.length <= CAP ? d.assessments : d.assessments.filter((_, i) => i % Math.ceil(d.assessments.length / CAP) === 0).slice(0, CAP);
       for (const a of sample) {
         const pts = AX.map(ax => pt(ax.ang, pctOf(a.principles[ax.idx])));
-        svg.appendChild(mk('polygon', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: color, 'stroke-width': 1, opacity: 0.08 }));
+        svg.appendChild(mk('polygon', { points: pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: color, 'stroke-width': 1, opacity: SPEC.faint }));
       }
     }
     const meanPts = AX.map(ax => pt(ax.ang, stat[ax.key].mean));
-    svg.appendChild(mk('polygon', { points: meanPts.map(p => p.join(',')).join(' '), fill: color, 'fill-opacity': 0.16, stroke: color, 'stroke-width': 2.5 }));
+    svg.appendChild(mk('polygon', { points: meanPts.map(p => p.join(',')).join(' '), fill: color, 'fill-opacity': SPEC.area, stroke: color, 'stroke-width': SPEC.line, 'stroke-linejoin': 'round' }));
+    // No value at each vertex: the four tiles below carry the means, and labels
+    // inside the plot collided with the ring ticks.
     AX.forEach((ax, i) => {
       const [px, py] = meanPts[i];
-      const [vx, vy] = pt(ax.ang, Math.max(stat[ax.key].mean - 0.14, 0.1));
-      svg.appendChild(txt(vx, vy, `${Math.round(stat[ax.key].mean * 100)}%`, { fill: muted, size: 10 }));
-      const dot = mk('circle', { cx: px, cy: py, r: 4.5, fill: color, stroke: surface, 'stroke-width': 1.5, style: 'cursor:pointer' });
+      const dot = mk('circle', { cx: px, cy: py, r: SPEC.dotR, fill: color, stroke: surface, 'stroke-width': SPEC.ring, style: 'cursor:pointer' });
       dot.addEventListener('mouseenter', e => tip(e, `${ax.key} · ${ax.name}\n`
         + t('chart.radar.mean', { pct: Math.round(stat[ax.key].mean * 100) })
         + (isAgg ? `\n${t('chart.radar.range', { min: Math.round(stat[ax.key].min * 100), max: Math.round(stat[ax.key].max * 100) })}` : '')));
@@ -98,10 +118,10 @@ export function renderRadar(container, datasets, opts) {
   datasets.forEach((d, di) => {
     const stat = stats[di];
     const meanPts = AX.map(ax => pt(ax.ang, stat[ax.key].mean));
-    svg.appendChild(mk('polygon', { points: meanPts.map(p => p.join(',')).join(' '), fill: d.color, 'fill-opacity': 0.1, stroke: d.color, 'stroke-width': 2.5 }));
+    svg.appendChild(mk('polygon', { points: meanPts.map(p => p.join(',')).join(' '), fill: d.color, 'fill-opacity': SPEC.area, stroke: d.color, 'stroke-width': SPEC.line, 'stroke-linejoin': 'round' }));
     AX.forEach((ax, i) => {
       const [px, py] = meanPts[i];
-      const dot = mk('circle', { cx: px, cy: py, r: 4, fill: d.color, stroke: surface, 'stroke-width': 1.5, style: 'cursor:pointer' });
+      const dot = mk('circle', { cx: px, cy: py, r: SPEC.dotR, fill: d.color, stroke: surface, 'stroke-width': SPEC.ring, style: 'cursor:pointer' });
       dot.addEventListener('mouseenter', e => tip(e, `${d.label}\n${ax.key} · ${ax.name}: ${Math.round(stat[ax.key].mean * 100)}%`));
       dot.addEventListener('mouseleave', () => tip(null));
       svg.appendChild(dot);
@@ -114,7 +134,7 @@ export function renderRadar(container, datasets, opts) {
   const summary = document.createElement('div'); summary.className = 'radar-summary';
   summary.innerHTML = AX.map(ax => `<div class="rs-item"><span class="rs-letter" style="color:${ax.color}">${ax.key}</span>
     <span class="rs-name">${ax.name}</span>
-    <span class="rs-cmp">${datasets.map((d, di) => `<b style="color:${d.color}">${Math.round(stats[di][ax.key].mean * 100)}%</b>`).join(' ')}</span></div>`).join('');
+    <span class="rs-cmp">${datasets.map((d, di) => `<span><i class="sw" style="background:${d.color}"></i><b>${Math.round(stats[di][ax.key].mean * 100)}%</b></span>`).join('')}</span></div>`).join('');
   container.appendChild(summary);
 }
 
@@ -164,29 +184,34 @@ export function renderHeatmap(container, assessments, tip) {
 
 // ── Temporal: mean FAIR% per year (SVG bars) ──
 export function renderTemporal(container, rows, opts) {
-  const { colors, axis, grid, tip } = opts;
+  const { colors, axis, grid, tip, ink = axis } = opts;
   const NS = 'http://www.w3.org/2000/svg';
-  const W = container.clientWidth || 760, H = 220, padL = 30, padR = 10, padT = 12, padB = 24;
+  const W = container.clientWidth || 760, H = 230, padL = 42, padR = 12, padT = 22, padB = 26;
   const iw = W - padL - padR, ih = H - padT - padB, n = rows.length;
-  const gap = iw / n, bw = Math.min(48, gap * 0.68);
+  const gap = iw / n, bw = Math.min(SPEC.barMax, gap * SPEC.barFill);
   const mk = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
   const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H });
   const mono = 'ui-monospace, SF Mono, Menlo, monospace';
   for (const v of [0, 50, 100]) {
     const y = padT + ih - v / 100 * ih;
     svg.appendChild(mk('line', { x1: padL, y1: y, x2: W - padR, y2: y, stroke: grid, 'stroke-width': 1 }));
-    const t = mk('text', { x: 2, y: y + 3, fill: axis, 'font-size': 9, 'font-family': mono }); t.textContent = v; svg.appendChild(t);
+    const t = mk('text', { x: padL - 6, y: y + 3, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'end', 'font-family': mono }); t.textContent = v; svg.appendChild(t);
   }
   rows.forEach((r, i) => {
     const x = padL + gap * i + (gap - bw) / 2;
     const h = Math.max(r.mean / 100 * ih, 1.5), y = padT + ih - h;
     const color = r.mean >= 75 ? colors.hi : r.mean >= 25 ? colors.mid : colors.lo;
-    const rect = mk('rect', { x, y, width: bw, height: h, rx: 1, fill: color, style: 'cursor:pointer' });
+    const rect = mk('rect', { x, y, width: bw, height: h, rx: SPEC.rx, fill: color, style: 'cursor:pointer' });
     rect.addEventListener('mouseenter', e => tip(e, `${r.year}\n${t('chart.temporal.meanFair', { pct: r.mean })}\n${tn('chart.records', r.n, { count: fmtNum(r.n) })}`));
     rect.addEventListener('mouseleave', () => tip(null));
     svg.appendChild(rect);
+    // The value on the cap, in text ink, while the columns are few enough to read.
+    if (n <= 14) {
+      const v = mk('text', { x: x + bw / 2, y: y - 5, fill: ink, 'font-size': SPEC.labelSize, 'text-anchor': 'middle', 'font-family': mono });
+      v.textContent = `${Math.round(r.mean)}`; svg.appendChild(v);
+    }
     if (n <= 18 || i % Math.ceil(n / 18) === 0) {
-      const t = mk('text', { x: x + bw / 2, y: H - 7, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
+      const t = mk('text', { x: x + bw / 2, y: H - 8, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'middle', 'font-family': mono });
       t.textContent = `'${String(r.year).slice(2)}`; svg.appendChild(t);
     }
   });
@@ -204,7 +229,7 @@ export function renderYearPicker(container, data, opts) {
   const W = container.clientWidth || 760, H = 128, padL = 8, padR = 8, padT = 10, padB = 20;
   const iw = W - padL - padR, ih = H - padT - padB, n = data.length;
   const max = Math.max(1, ...data.map(d => d.count));
-  const gap = iw / n, bw = Math.min(30, gap * 0.72);
+  const gap = iw / n, bw = Math.min(SPEC.barMax, gap * SPEC.barFill);
   const mk = (tag, a) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); return e; };
   const svg = mk('svg', { viewBox: `0 0 ${W} ${H}`, width: '100%', height: H });
   svg.appendChild(mk('line', { x1: padL, y1: padT + ih, x2: W - padR, y2: padT + ih, stroke: grid, 'stroke-width': 1 }));
@@ -220,14 +245,14 @@ export function renderYearPicker(container, data, opts) {
     const x = padL + gap * i + (gap - bw) / 2;
     const h = d.count ? Math.max(d.count / max * ih, 2) : 0;
     const on = inSel(d.year);
-    if (h > 0) svg.appendChild(mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 1, fill: on ? accent : muted, 'fill-opacity': on ? 0.95 : 0.32 }));
+    if (h > 0) svg.appendChild(mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: SPEC.rx, fill: on ? accent : muted, 'fill-opacity': on ? 0.95 : 0.32 }));
     const hit = mk('rect', { x: padL + gap * i, y: padT, width: gap, height: ih, fill: 'transparent', style: 'cursor:pointer; pointer-events:all' });
     hit.addEventListener('mouseenter', e => tip(e, `${d.year}\n${tn('chart.records', d.count, { count: fmtNum(d.count) })}${on ? `\n${t('chart.yearpicker.inRange')}` : ''}`));
     hit.addEventListener('mouseleave', () => tip(null));
     hit.addEventListener('click', () => pick(d.year));
     svg.appendChild(hit);
     if (n <= 16 || i % Math.ceil(n / 16) === 0 || i === n - 1) {
-      const t = mk('text', { x: x + bw / 2, y: H - 6, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
+      const t = mk('text', { x: x + bw / 2, y: H - 6, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'middle', 'font-family': mono });
       t.textContent = `'${String(d.year).slice(2)}`; svg.appendChild(t);
     }
   });
@@ -267,18 +292,18 @@ export function renderActivity(container, rows, opts) {
 
   for (const v of [0, top / 2, top]) {
     svg.appendChild(mk('line', { x1: padL, y1: y(v), x2: W - padR, y2: y(v), stroke: grid, 'stroke-width': 1 }));
-    const lb = mk('text', { x: padL - 6, y: y(v) + 3, fill: axis, 'font-size': 9, 'text-anchor': 'end', 'font-family': mono });
+    const lb = mk('text', { x: padL - 6, y: y(v) + 3, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'end', 'font-family': mono });
     lb.textContent = fmt(v); svg.appendChild(lb);
   }
 
-  const gap = iw / n, bw = Math.min(20, gap * 0.36);
+  const gap = iw / n, bw = Math.min(SPEC.pairBar, gap * SPEC.barFill / 2);
   rows.forEach((r, i) => {
     const cx = padL + gap * i + gap / 2;
     [['registered', colors.a, -1], ['updated', colors.b, 1]].forEach(([key, col, side]) => {
       const v = r[key], h = Math.max((v / top) * ih, v > 0 ? 1.5 : 0);
       if (h <= 0) return;
       const x = cx + (side < 0 ? -bw - 1 : 1);
-      const rect = mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 1, fill: col, style: 'cursor:pointer' });
+      const rect = mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: SPEC.rx, fill: col, style: 'cursor:pointer' });
       rect.addEventListener('mouseenter', e => tip(e, `${r.year}\n${t('chart.activity.' + key, { count: fmtNum(v) })}`));
       rect.addEventListener('mouseleave', () => tip(null));
       // A bar is a question ("which records?"), so it answers on click and on Enter.
@@ -292,7 +317,7 @@ export function renderActivity(container, rows, opts) {
       svg.appendChild(rect);
     });
     if (n <= 18 || i % Math.ceil(n / 18) === 0) {
-      const lb = mk('text', { x: cx, y: H - 7, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
+      const lb = mk('text', { x: cx, y: H - 8, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'middle', 'font-family': mono });
       lb.textContent = `'${String(r.year).slice(2)}`; svg.appendChild(lb);
     }
   });
@@ -320,14 +345,14 @@ export function renderTrend(container, series, opts) {
 
   for (const v of [0, 50, 100]) {
     svg.appendChild(mk('line', { x1: padL, y1: y(v), x2: W - padR, y2: y(v), stroke: grid, 'stroke-width': 1 }));
-    const lb = mk('text', { x: padL - 6, y: y(v) + 3, fill: axis, 'font-size': 9, 'text-anchor': 'end', 'font-family': mono });
+    const lb = mk('text', { x: padL - 6, y: y(v) + 3, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'end', 'font-family': mono });
     lb.textContent = v; svg.appendChild(lb);
   }
   // Label the ends, and the middle when there is room, rather than every run:
   // a monthly history overruns the axis within two years.
   const marks = dates.length <= 8 ? dates.map((_, i) => i) : [0, Math.floor(dates.length / 2), dates.length - 1];
   marks.forEach(i => {
-    const lb = mk('text', { x: x(dates[i]), y: H - 9, fill: axis, 'font-size': 9, 'text-anchor': 'middle', 'font-family': mono });
+    const lb = mk('text', { x: x(dates[i]), y: H - 9, fill: axis, 'font-size': SPEC.axisSize, 'text-anchor': 'middle', 'font-family': mono });
     lb.textContent = dates[i].slice(2, 7); svg.appendChild(lb);
   });
 
@@ -336,14 +361,14 @@ export function renderTrend(container, series, opts) {
     if (pts.length > 1) {
       svg.appendChild(mk('path', {
         d: pts.map((p, i) => `${i ? 'L' : 'M'}${x(p.date)},${y(p.value)}`).join(' '),
-        fill: 'none', stroke: s.color, 'stroke-width': 2, 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
+        fill: 'none', stroke: s.color, 'stroke-width': SPEC.line, 'stroke-linejoin': 'round', 'stroke-linecap': 'round',
       }));
     }
     pts.forEach(p => {
       // A ring in the surface colour keeps overlapping series readable where
       // two repositories happen to land on the same score.
-      const c = mk('circle', { cx: x(p.date), cy: y(p.value), r: 4, fill: s.color,
-        stroke: surface || '#fff', 'stroke-width': 1.5, style: 'cursor:pointer' });
+      const c = mk('circle', { cx: x(p.date), cy: y(p.value), r: SPEC.dotR, fill: s.color,
+        stroke: surface || '#fff', 'stroke-width': SPEC.ring, style: 'cursor:pointer' });
       c.addEventListener('mouseenter', e => tip(e, `${s.label}\n${p.date}\n${p.value}%${p.note ? '\n' + p.note : ''}`));
       c.addEventListener('mouseleave', () => tip(null));
       svg.appendChild(c);

@@ -1,13 +1,13 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=67';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=67';
-import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=67';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=67';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=67';
-import { temporalSeries, findDuplicates } from './analysis.js?v=67';
-import * as oai from './oaipmh.js?v=67';
-import * as crossing from './analyze.js?v=67';
-import * as recuration from './recuration.js?v=67';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=67';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=70';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=70';
+import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=70';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=70';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=70';
+import { temporalSeries, findDuplicates } from './analysis.js?v=70';
+import * as oai from './oaipmh.js?v=70';
+import * as crossing from './analyze.js?v=70';
+import * as recuration from './recuration.js?v=70';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=70';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -672,6 +672,7 @@ function render(a, meta) {
     renderTemporal(wrap, lastTemporal, {
       colors: { hi: cs.getPropertyValue('--lvl-hi').trim(), mid: cs.getPropertyValue('--lvl-mid').trim(), lo: cs.getPropertyValue('--lvl-lo').trim() },
       axis: cs.getPropertyValue('--muted').trim(), grid: cs.getPropertyValue('--border').trim(), tip,
+      ink: cs.getPropertyValue('--ink-2').trim(),
     });
     const first = lastTemporal[0], last = lastTemporal[lastTemporal.length - 1], delta = last.mean - first.mean;
     const tk = el('p', 'radar-takeaway');
@@ -1203,7 +1204,7 @@ function renderHistory(d) {
   {
     const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
     renderTemporal(chart, scored.map(c => ({ year: c.year, n: c.n, mean: c.agg.overallPercent })),
-      { colors: { hi: v('--lvl-hi'), mid: v('--lvl-mid'), lo: v('--lvl-lo') }, axis: v('--muted'), grid: v('--border'), tip });
+      { colors: { hi: v('--lvl-hi'), mid: v('--lvl-mid'), lo: v('--lvl-lo') }, axis: v('--muted'), grid: v('--border'), tip, ink: v('--ink-2') });
   }
 
   // What the drift is made of: the checks that moved between the end cohorts.
