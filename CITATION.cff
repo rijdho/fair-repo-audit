@@ -29,8 +29,8 @@ identifiers:
 repository-code: "https://github.com/rijdho/fair-repo-audit"
 url: "https://rijdho.github.io/fair-repo-audit/"
 license: Apache-2.0
-version: "1.10.0"
-date-released: "2026-09-24"
+version: "1.11.0"
+date-released: "2026-10-12"
 keywords:
   - FAIR principles
   - research data management

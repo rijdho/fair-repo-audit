@@ -1,12 +1,12 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=51';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=51';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=51';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=51';
-import { temporalSeries, findDuplicates } from './analysis.js?v=51';
-import * as oai from './oaipmh.js?v=51';
-import * as crossing from './analyze.js?v=51';
-import * as recuration from './recuration.js?v=51';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=51';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=54';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=54';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=54';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=54';
+import { temporalSeries, findDuplicates } from './analysis.js?v=54';
+import * as oai from './oaipmh.js?v=54';
+import * as crossing from './analyze.js?v=54';
+import * as recuration from './recuration.js?v=54';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=54';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -1233,9 +1233,8 @@ function renderRecuration(doi, h) {
   // Score every revision, but only where the walk began at `create`. A partial
   // log reconstructs a partial record, and a score on that would read as a bad
   // repository rather than as a short log. Wrong in a way that looks plausible.
-  const scored = h.complete
-    ? h.versions.map(v => assessDataCiteWork(v.work).overallPercent)
-    : h.versions.map(() => null);
+  const assessed = h.complete ? h.versions.map(v => assessDataCiteWork(v.work)) : h.versions.map(() => null);
+  const scored = assessed.map(a => (a ? a.overallPercent : null));
 
   const head = el('div', 'card');
   head.innerHTML = `<h3>${esc(t('rc.title'))}</h3>
@@ -1256,23 +1255,94 @@ function renderRecuration(doi, h) {
   card.innerHTML = `<h3>${esc(t('rc.versions.title'))}</h3>`;
   const list = el('div', 'rc-list');
   h.versions.forEach((v, i) => {
+    const prevA = i > 0 ? assessed[i - 1] : null, nowA = assessed[i];
     const prev = i > 0 ? scored[i - 1] : null, now = scored[i];
     const delta = (now != null && prev != null) ? now - prev : null;
-    const row = el('div', 'rc-item');
-    row.innerHTML = `
-      <span class="rc-v">v${v.version}</span>
-      <span class="rc-when">${esc((v.timestamp || '').slice(0, 10))}</span>
-      <span class="chip ${v.action === 'create' ? 'ok' : 'part'}">${esc(v.action)}</span>
-      <span class="rc-score">${now == null ? '<i class="muted">—</i>'
-        : `<b class="lvl-${lvlOf(now)}-ink">${now}%</b>${delta ? ` <i class="rc-delta ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${delta}</i>` : ''}`}</span>
-      <span class="rc-fields">${v.changed.length
-        ? v.changed.map(f => `<code>${esc(f)}</code>`).join('')
-        : `<i class="muted">${esc(t('rc.noFields'))}</i>`}${
-        v.unmapped.length ? `<i class="muted rc-unmapped">${esc(t('rc.unmapped', { list: v.unmapped.join(', ') }))}</i>` : ''}</span>`;
-    list.appendChild(row);
+    const item = el('div', 'rc-card');
+    const score = now == null ? '<i class="muted">–</i>'
+      : prev == null ? `<b class="lvl-${lvlOf(now)}-ink">${now}%</b>`
+        : `<span class="muted">${prev}% →</span> <b class="lvl-${lvlOf(now)}-ink">${now}%</b>${delta
+          ? ` <i class="rc-delta ${delta > 0 ? 'up' : 'down'}">${delta > 0 ? '+' : ''}${delta}</i>`
+          : ` <i class="muted rc-delta">${esc(t('rc.score.same'))}</i>`}`;
+    item.innerHTML = `<div class="rc-head">
+        <span class="rc-v">v${v.version}</span>
+        <span class="rc-when">${esc((v.timestamp || '').slice(0, 10))}</span>
+        <span class="chip ${v.action === 'create' ? 'ok' : 'part'}">${esc(v.action)}</span>
+        <span class="rc-score">${score}</span></div>`;
+
+    if (v.action === 'create') {
+      const p = el('p', 'rc-created');
+      p.innerHTML = `${esc(t('rc.created', { count: n(v.changed.length) }))} ${v.changed.map(f => `<code>${esc(f)}</code>`).join('')}`;
+      item.appendChild(p);
+    } else {
+      // Which FAIR checks this edit moved, so the delta is explained, not just shown.
+      const moved = prevA && nowA ? checkMoves(prevA, nowA) : [];
+      if (moved.length) {
+        const box = el('div', 'rc-checks');
+        box.innerHTML = `<span class="rc-label">${esc(t('rc.checks'))}</span>` + moved.map(m =>
+          `<span class="rc-chk ${m.to > m.from ? 'up' : 'down'}"><b>${esc(m.id)}</b> ${esc(m.name)} <span class="rc-mv">${frac(m.from)} → ${frac(m.to)}</span></span>`).join('');
+        item.appendChild(box);
+      }
+      const ul = el('ul', 'rc-diffs');
+      for (const d of v.diffs) {
+        const li = el('li');
+        li.innerHTML = `<code>${esc(d.field)}</code> <span>${describeDiff(d)}</span>`;
+        ul.appendChild(li);
+      }
+      if (!v.diffs.length) ul.innerHTML = `<li class="muted">${esc(t('rc.noFields'))}</li>`;
+      item.appendChild(ul);
+    }
+    if (v.unmapped.length) {
+      const u = el('p', 'muted rc-unmapped');
+      u.textContent = t('rc.unmapped', { list: v.unmapped.join(', ') });
+      item.appendChild(u);
+    }
+    list.appendChild(item);
   });
   card.appendChild(list);
   results.appendChild(card);
+}
+
+/** Checks whose score differs between two assessments of the same record. */
+function checkMoves(a, b) {
+  const flat = (x) => new Map(x.principles.flatMap(p => p.checks).map(c => [c.id, c]));
+  const fa = flat(a), fb = flat(b), out = [];
+  for (const [id, c] of fb) {
+    const from = fa.get(id)?.score ?? 0;
+    if (from !== c.score) out.push({ id, name: c.name, from, to: c.score });
+  }
+  return out;
+}
+
+const frac = (x) => (x === 0.5 ? '½' : String(x));
+
+/** Few items are named; many are counted, with repeats collapsed (25 × application/zip). */
+function itemList(items) {
+  const counts = new Map();
+  for (const x of items) counts.set(x, (counts.get(x) || 0) + 1);
+  const shown = [...counts].map(([x, k]) => (k > 1 ? `${k} × ${x}` : x));
+  const cut = shown.slice(0, 4).map(x => `<q>${esc(x.length > 90 ? `${x.slice(0, 87)}…` : x)}</q>`).join(', ');
+  return shown.length > 4 ? `${cut} ${esc(t('rc.d.more', { count: n(shown.length - 4) }))}` : cut;
+}
+
+/** One field's change, in words. */
+function describeDiff(d) {
+  if (d.kind === 'same') return esc(t('rc.d.same'));
+  if (d.kind === 'set') {
+    if (d.before == null) return esc(t('rc.d.setNew', { after: d.after }));
+    if (d.after == null) return esc(t('rc.d.cleared', { before: d.before }));
+    return esc(t('rc.d.set', { before: d.before, after: d.after }));
+  }
+  const parts = [];
+  if (d.count[0] !== d.count[1]) parts.push(esc(t('rc.d.count', { before: n(d.count[0]), after: n(d.count[1]) })));
+  if (d.added.length) parts.push(`${esc(t('rc.d.added'))} ${itemList(d.added)}`);
+  if (d.removed.length) parts.push(`${esc(t('rc.d.removed'))} ${itemList(d.removed)}`);
+  for (const e of d.edited) {
+    const what = e.values.map(x => (x.before === undefined || x.after === undefined) ? esc(x.key)
+      : `${esc(x.key)}: ${x.before == null ? esc(t('rc.d.none')) : `<q>${esc(x.before)}</q>`} → ${x.after == null ? esc(t('rc.d.none')) : `<q>${esc(x.after)}</q>`}`).join('; ');
+    parts.push(`${esc(t('rc.d.edited'))} <q>${esc(e.label)}</q> (${what})`);
+  }
+  return parts.join(' · ') || esc(t('rc.d.same'));
 }
 
 // ══ Metrics: the score history metrics-watch builds ═════════════════════

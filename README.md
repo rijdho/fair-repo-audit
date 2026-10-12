@@ -116,6 +116,14 @@ still working on it.
   record you see today, so this is the view that makes it visible, and it is also the one that
   catches an edit that made a record worse.
 
+  Each revision is a card that says what the edit did, not only which fields it touched: what
+  was added and removed in each list, the items edited in place with their old and new values (an
+  affiliation, an ORCID dropped or restored), the before and after of single values, and which of
+  the 14 FAIR checks moved and by how much. A long text is cut where the two versions differ.
+  [`10.34894/y0q89u`](https://rijdho.github.io/fair-repo-audit/?tab=recuration&rd=10.34894/y0q89u)
+  shows all of it: nine revisions from 64% to 89%, a licence added, an ORCID removed at v6 and put
+  back at v7, access switched from restricted to closed and back.
+
   DataCite does not always retain the `create` entry. Where the log starts mid-life the changes are
   still exact, but the scores are withheld rather than computed from a partial reconstruction: that
   would report a decent record as a terrible one, with a number that looks entirely plausible.

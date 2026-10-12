@@ -13,6 +13,19 @@ latest release.
 
 ## [Unreleased]
 
+## [1.11.0]: 2026-10-12
+
+### Changed
+
+- **Re-curation shows a card per revision that says what the edit did.** Each revision listed only
+  the names of the fields it touched (`creators`, `descriptions`), which did not say what changed.
+  DataCite's audit log carries every field's before and after, so each card now states what was
+  added and removed in each list, the items edited in place with their old and new values, the
+  before and after of single values, and which FAIR checks the edit moved, with their scores. On
+  10.34894/y0q89u that shows an ORCID removed at v6 and restored at v7, and access switched from
+  restricted to closed and back. A long text is cut where the two versions differ, so an edit in
+  an abstract's second sentence is visible. English, German and Spanish. Assets move to `?v=54`.
+
 ## [1.10.0]: 2026-09-24
 
 ### Changed

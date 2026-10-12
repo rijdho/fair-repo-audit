@@ -7,7 +7,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { reconstructVersions, bareDoi } from '../src/recuration.js';
+import { reconstructVersions, bareDoi, describeChange } from '../src/recuration.js';
 
 const act = (version, action, changes, day) => ({
   version, action, changes, 'prov:generatedAtTime': `2020-0${day}-01T00:00:00Z`,
@@ -90,4 +90,76 @@ test('revisions are ordered by version, whatever order the API returned them in'
   ]);
   assert.deepEqual(versions.map(v => v.version), [1, 2, 3]);
   assert.deepEqual(versions.map(v => v.work.attributes.titles[0].title), ['A', 'B', 'C']);
+});
+
+// ── What an edit actually did ──────────────────────────────────────────────
+// Cases from a real record, 10.34894/y0q89u (DataverseNL), whose log showed
+// only field names before: the reader could not tell what any revision did.
+
+test('a single value reports its before and after', () => {
+  assert.deepEqual(describeChange('version', '2.0', '2.1'), { field: 'version', kind: 'set', before: '2.0', after: '2.1' });
+  assert.deepEqual(describeChange('url', null, 'https://x.org'), { field: 'url', kind: 'set', before: null, after: 'https://x.org' });
+});
+
+test('a list reports what was added and removed, by label', () => {
+  const d = describeChange('rightsList',
+    [{ rightsUri: 'info:eu-repo/semantics/restrictedAccess' }, { rights: 'CC BY 4.0' }],
+    [{ rightsUri: 'info:eu-repo/semantics/closedAccess' }, { rights: 'CC BY 4.0' }]);
+  assert.deepEqual(d.added, ['info:eu-repo/semantics/closedAccess']);
+  assert.deepEqual(d.removed, ['info:eu-repo/semantics/restrictedAccess']);
+  assert.deepEqual(d.count, [2, 2]);
+  assert.deepEqual(d.edited, [], 'the unchanged licence is not reported');
+});
+
+test('an item kept under the same label but changed inside is edited, with the values', () => {
+  const before = [{ name: 'Nweke, I. C.', affiliation: [{ name: '(leidenuniv.nl)' }], nameIdentifiers: [{ nameIdentifier: 'https://orcid.org/0000-0002-4582-8384' }] }];
+  const after = [{ name: 'Nweke, I. C.', affiliation: [{ name: 'leidenuniv.nl' }], nameIdentifiers: [] }];
+  const d = describeChange('creators', before, after);
+  assert.deepEqual(d.added, []);
+  assert.deepEqual(d.removed, []);
+  assert.deepEqual(d.edited, [{ label: 'Nweke, I. C.', keys: ['affiliation', 'nameIdentifiers'], values: [
+    { key: 'affiliation', before: '(leidenuniv.nl)', after: 'leidenuniv.nl' },
+    { key: 'nameIdentifiers', before: 'https://orcid.org/0000-0002-4582-8384', after: null },
+  ] }], 'an ORCID dropped from a creator must be visible, not hidden in a field name');
+});
+
+test('repeated items are matched one for one, not as a set', () => {
+  // A second file of a format already present is an addition: a set would see none.
+  const d = describeChange('formats', ['application/zip', 'application/pdf'], ['application/zip', 'application/pdf', 'application/zip']);
+  assert.deepEqual(d.added, ['application/zip']);
+  assert.deepEqual(d.removed, []);
+});
+
+test('a rewrite with identical content says so', () => {
+  assert.deepEqual(describeChange('titles', [{ title: 'A' }], [{ title: 'A' }]), { field: 'titles', kind: 'same' });
+});
+
+test('every update carries its diffs; the create carries none', () => {
+  const { versions } = reconstructVersions('10.1/x', [
+    act(1, 'create', { version_info: '1.0' }, 1),
+    act(2, 'update', { version_info: ['1.0', '2.0'] }, 2),
+  ]);
+  assert.deepEqual(versions[0].diffs, []);
+  assert.deepEqual(versions[1].diffs, [{ field: 'version', kind: 'set', before: '1.0', after: '2.0' }]);
+});
+
+test('a long text that changed is cut, never reported as removed', () => {
+  // The abstract of 10.34894/y0q89u was rewritten at v4; the long new text was once
+  // shown as "none", which reads as a deletion.
+  const long = 'This dataset contains research data on Nigerian security politics, focusing on Amotekun, the security outfit.';
+  const d = describeChange('descriptions', [{ description: 'Terrorism and Political Violence', descriptionType: 'Abstract' }],
+    [{ description: long, descriptionType: 'Abstract' }]);
+  const v = d.edited[0].values[0];
+  assert.equal(v.before, 'Terrorism and Political Violence');
+  assert.ok(v.after && v.after.endsWith('…'), 'cut, with an ellipsis');
+  assert.ok(v.after.startsWith('This dataset'), 'the texts differ from the start, so the cut starts there too');
+});
+
+test('two long texts are cut where they differ, so the edit is visible', () => {
+  const a = 'This dataset contains research data on Nigerian security politics, focusing on Amotekun, the security outfit in Southwest Nigeria.';
+  const b = 'This dataset contains research data on Nigerian security politics, focusing on Amotekun, the security outfit in Southwestern Nigeria. Contact the author.';
+  const v = describeChange('descriptions', [{ description: a, descriptionType: 'Abstract' }], [{ description: b, descriptionType: 'Abstract' }]).edited[0].values[0];
+  assert.notEqual(v.before, v.after, 'identical snippets would hide the edit');
+  assert.ok(v.before.startsWith('…') && v.before.includes('Southwest Nigeria'));
+  assert.ok(v.after.includes('Southwestern Nigeria'));
 });
