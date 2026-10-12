@@ -9,9 +9,9 @@
 
 // Aliased: this module already has a local `has()` for Dublin Core field presence,
 // and an unaliased import would be shadowed by it: silently, since the arities differ.
-import { t, has as hasKey } from './i18n/index.js?v=63';
-import { hasOrcid, hasRor } from './pids.js?v=63';
-import { isOtherWork } from './relations.js?v=63';
+import { t, has as hasKey } from './i18n/index.js?v=67';
+import { hasOrcid, hasRor } from './pids.js?v=67';
+import { isOtherWork } from './relations.js?v=67';
 
 const arr = (x) => Array.isArray(x) ? x : [];
 const some = (a, pred) => arr(a).some(pred);
@@ -123,9 +123,7 @@ const glossProxy = (prefix) => new Proxy({}, {
 
 export const GLOSS = glossProxy('concept.');
 
-// One-line meaning for each FAIR principle (gauge hover).
-// NOTE: app.js splits this on ' \u2014 ' to peel off the leading principle name,
-// so every translation must keep the "Name \u2014 explanation" shape.
+// One-line meaning for each FAIR principle (gauge hover). app.js shows it whole.
 export const PRINCIPLE_GLOSS = glossProxy('principle.');
 
 export function dataCiteConcepts(works) {

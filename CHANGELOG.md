@@ -13,6 +13,29 @@ latest release.
 
 ## [Unreleased]
 
+## [1.15.0]: 2026-10-12
+
+### Changed
+
+- **Every interface text was reviewed for accuracy and register.** All 724 English strings were
+  checked against the code; 201 proposed changes were then verified one by one by a second,
+  independent reading, which rejected 8 as false positives and corrected 16 replacements. 210
+  strings changed, and their German and Spanish translations with them. Among the corrections:
+  ROR and ORCID ids are described as well-formed, since they are not resolved; recommendations no
+  longer call optional DataCite fields required; the year chart compares records from different
+  years and no longer reads that as metadata improving over time; the heatmap and radar say they
+  draw a sample above 150 and 120 records; the OAI-PMH relay is described as what it is (it
+  validates requests and is required, not optional); "nothing is stored" now names what the
+  browser does keep; a Dublin Core advice that could never raise the score was rewritten;
+  content-negotiation types, the DataCite namespace and the HTTPS RFC were corrected against live
+  checks. Headings and help texts use plain, formal wording, and the English uses US spelling
+  throughout. Status chips read "carried over", "partly carried over", "replaced", "not carried
+  over" and "added"; Re-curation's action chip is translated.
+- **A more formal look**: near-square corners (2px) throughout this tool, overriding the family's
+  rounded tokens locally; house/house.css is unchanged.
+- The em dashes left in code comments and in one visible sample text are gone. Assets move to
+  `?v=67`.
+
 ## [1.14.0]: 2026-10-12
 
 Version DOI: [10.5281/zenodo.23318799](https://doi.org/10.5281/zenodo.23318799).

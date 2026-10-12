@@ -1,6 +1,6 @@
 // OAI-PMH client: parses XML in the browser with DOMParser (no dependencies).
 // OAI-PMH endpoints rarely send CORS headers, so requests go through a thin
-// CORS relay (a "dumb" byte proxy, it holds NO scoring logic). The proxy URL is
+// CORS relay, which validates and forwards the request but holds no scoring logic. The proxy URL is
 // configurable: deploy your own from ./cors-proxy or point at any relay you trust.
 
 // No relay is shipped as a default on purpose. Hardcoding one would point every

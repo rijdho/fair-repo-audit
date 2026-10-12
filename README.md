@@ -258,7 +258,7 @@ non-obvious thing about the design:
 ```mermaid
 flowchart TB
     accTitle: How a query reaches the scoring engine
-    accDescr: The browser queries the DataCite REST API directly, because that API sends CORS headers. OAI-PMH endpoints rarely send them, so those requests pass through a dumb byte relay that only forwards the GET and adds CORS headers, holding no scoring logic. Records from both routes feed the same client-side FAIR engine, which scores each one against 14 sub-principles and renders the results views and exports.
+    accDescr: The browser queries the DataCite REST API directly, because that API sends CORS headers. OAI-PMH endpoints rarely send them, so those requests pass through a relay that validates the request, forwards it and adds CORS headers, and holds no scoring logic. Records from both routes feed the same client-side FAIR engine, which scores each one against 14 sub-principles and renders the results views and exports.
 
     browser["🌐 Browser<br/>static, no build step"]
     datacite["📇 DataCite REST API"]
@@ -299,8 +299,9 @@ cors-proxy/          : a ~40-line CORS relay, required for OAI-PMH (no scoring l
 
 - **DataCite** needs no server: the API sends CORS headers, so the browser queries it directly.
   `affiliation=true` is always set (without it DataCite strips ROR affiliation identifiers).
-- **OAI-PMH** endpoints rarely send CORS headers, so those requests pass through a **dumb byte
-  relay**. It holds no logic: it just forwards the GET and adds CORS headers. **No relay is
+- **OAI-PMH** endpoints rarely send CORS headers, so those requests pass through a **relay**
+  that holds no scoring logic: it accepts only OAI-PMH GET requests, refuses private hosts, caps
+  the response size and adds CORS headers. **No relay is
   shipped as a default**, on purpose: a hardcoded one would route every visitor's traffic through
   a single account and publish that account's hostname here. Deploy your own from
   [`cors-proxy/`](cors-proxy/) and paste its URL into the app's *CORS proxy* field, so this tool

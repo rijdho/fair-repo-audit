@@ -2,7 +2,7 @@
 // The heatmap and radar show the DISTRIBUTION across records, not just the
 // averages: every record × every check, and the profile shape plus its spread.
 
-import { t, tn, n as fmtNum } from './i18n/index.js?v=63';
+import { t, tn, n as fmtNum } from './i18n/index.js?v=67';
 
 const pctOf = (grp) => grp.score / grp.maxScore;
 
@@ -181,7 +181,7 @@ export function renderTemporal(container, rows, opts) {
     const x = padL + gap * i + (gap - bw) / 2;
     const h = Math.max(r.mean / 100 * ih, 1.5), y = padT + ih - h;
     const color = r.mean >= 75 ? colors.hi : r.mean >= 25 ? colors.mid : colors.lo;
-    const rect = mk('rect', { x, y, width: bw, height: h, rx: 3, fill: color, style: 'cursor:pointer' });
+    const rect = mk('rect', { x, y, width: bw, height: h, rx: 1, fill: color, style: 'cursor:pointer' });
     rect.addEventListener('mouseenter', e => tip(e, `${r.year}\n${t('chart.temporal.meanFair', { pct: r.mean })}\n${tn('chart.records', r.n, { count: fmtNum(r.n) })}`));
     rect.addEventListener('mouseleave', () => tip(null));
     svg.appendChild(rect);
@@ -220,7 +220,7 @@ export function renderYearPicker(container, data, opts) {
     const x = padL + gap * i + (gap - bw) / 2;
     const h = d.count ? Math.max(d.count / max * ih, 2) : 0;
     const on = inSel(d.year);
-    if (h > 0) svg.appendChild(mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 2, fill: on ? accent : muted, 'fill-opacity': on ? 0.95 : 0.32 }));
+    if (h > 0) svg.appendChild(mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 1, fill: on ? accent : muted, 'fill-opacity': on ? 0.95 : 0.32 }));
     const hit = mk('rect', { x: padL + gap * i, y: padT, width: gap, height: ih, fill: 'transparent', style: 'cursor:pointer; pointer-events:all' });
     hit.addEventListener('mouseenter', e => tip(e, `${d.year}\n${tn('chart.records', d.count, { count: fmtNum(d.count) })}${on ? `\n${t('chart.yearpicker.inRange')}` : ''}`));
     hit.addEventListener('mouseleave', () => tip(null));
@@ -278,7 +278,7 @@ export function renderActivity(container, rows, opts) {
       const v = r[key], h = Math.max((v / top) * ih, v > 0 ? 1.5 : 0);
       if (h <= 0) return;
       const x = cx + (side < 0 ? -bw - 1 : 1);
-      const rect = mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 2, fill: col, style: 'cursor:pointer' });
+      const rect = mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 1, fill: col, style: 'cursor:pointer' });
       rect.addEventListener('mouseenter', e => tip(e, `${r.year}\n${t('chart.activity.' + key, { count: fmtNum(v) })}`));
       rect.addEventListener('mouseleave', () => tip(null));
       // A bar is a question ("which records?"), so it answers on click and on Enter.

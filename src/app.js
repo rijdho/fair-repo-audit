@@ -1,13 +1,13 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=63';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=63';
-import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=63';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=63';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=63';
-import { temporalSeries, findDuplicates } from './analysis.js?v=63';
-import * as oai from './oaipmh.js?v=63';
-import * as crossing from './analyze.js?v=63';
-import * as recuration from './recuration.js?v=63';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=63';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=67';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=67';
+import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=67';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=67';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=67';
+import { temporalSeries, findDuplicates } from './analysis.js?v=67';
+import * as oai from './oaipmh.js?v=67';
+import * as crossing from './analyze.js?v=67';
+import * as recuration from './recuration.js?v=67';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=67';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -1370,7 +1370,7 @@ function renderRecuration(doi, h) {
     item.innerHTML = `<div class="rc-head">
         <span class="rc-v">v${v.version}</span>
         <span class="rc-when">${esc((v.timestamp || '').slice(0, 10))}</span>
-        <span class="chip ${v.action === 'create' ? 'ok' : 'part'}">${esc(v.action)}</span>
+        <span class="chip ${v.action === 'create' ? 'ok' : 'part'}">${esc(v.action === 'create' ? t('rc.action.create') : t('rc.action.update'))}</span>
         <span class="rc-score">${score}</span></div>`;
 
     if (v.action === 'create') {
@@ -1543,7 +1543,7 @@ function renderMetrics(h) {
       row.innerHTML = `<span class="cx-el">${esc(r.date)}</span>
         <span class="num">${n(r.sampled)}</span><span class="num">${n(r.total ?? 0)}</span>
         <span class="num"><b class="lvl-${lvlOf(r.overall)}-ink">${r.overall}%</b></span>
-        <span class="num">${d == null ? '<i class="muted">—</i>'
+        <span class="num">${d == null ? '<i class="muted">–</i>'
           : d === 0 ? '<i class="muted">0</i>'
           : `<i class="rc-delta ${d > 0 ? 'up' : 'down'}">${d > 0 ? '+' : ''}${d}</i>`}</span>
         <span class="hx-fair">${(r.principles || []).map(x =>

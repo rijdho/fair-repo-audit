@@ -14,9 +14,9 @@
 // count in this file lands in an exported report, and digit grouping would change the
 // English output for values >= 1000. Wire it up when that change is wanted.
 // eslint-disable-next-line no-unused-vars
-import { t, tn, n } from './i18n/index.js?v=63';
-import { hasOrcid, orcidOf, hasRor } from './pids.js?v=63';
-import { isOtherWork } from './relations.js?v=63';
+import { t, tn, n } from './i18n/index.js?v=67';
+import { hasOrcid, orcidOf, hasRor } from './pids.js?v=67';
+import { isOtherWork } from './relations.js?v=67';
 
 function toArr(val) {
   if (!val) return [];
@@ -253,7 +253,7 @@ function analyzeDateQuality(dates) {
 
 // ── Score helpers ──
 
-// The glyph is structural \u2014 exports and the UI key off it \u2014 so it stays in the
+// The glyph is structural (exports and the UI key off it), so it stays in the
 // code; only the word after it comes from the catalogue.
 function scoreLabel(s) {
   return s === 1 ? `\u25cf ${t('score.full')}`
@@ -787,7 +787,7 @@ function assessDataCiteWork(work) {
               : t('check.dc.I3.details.noRelationType')) + ' '
             + (typedRels.length > 0 && typedOther.length === 0 ? t('check.dc.I3.details.ownOnly') + ' ' : '')
             + t('check.dc.I3.details.sample', {
-                list: a.relatedIdentifiers.slice(0, 2).map(r => `[${r.relatedIdentifierType}] ${r.relatedIdentifier}${r.relationType ? ` \u2014 ${r.relationType}` : ''}`).join('; '),
+                list: a.relatedIdentifiers.slice(0, 2).map(r => `[${r.relatedIdentifierType}] ${r.relatedIdentifier}${r.relationType ? ` (${r.relationType})` : ''}`).join('; '),
               })
           : t('check.dc.I3.details.none'); },
       },
@@ -1041,12 +1041,12 @@ function aggregateAssessments(assessments) {
 
       // Spreading `rc` evaluates its lazy label getters and would freeze them as
       // plain strings, so they are re-applied to the aggregate copy. `details` is
-      // a getter for the same reason \u2014 the closure holds the counts, so it can be
+      // a getter for the same reason: the closure holds the counts, so it can be
       // recomputed in whatever language is current at render time.
       const agg = {
         ...rc,
         score: rounded,
-        rawMean: avgScore,   // unrounded mean \u2014 consumers needing a true % read this, not the 0/0.5/1 band
+        rawMean: avgScore,   // unrounded mean: consumers needing a true % read this, not the 0/0.5/1 band
         get details() {
           return tn('aggregate.details', count, {
             full: fullCount, partial: partialCount, zero: zeroCount,
