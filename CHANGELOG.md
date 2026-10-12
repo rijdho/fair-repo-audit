@@ -15,6 +15,8 @@ latest release.
 
 ## [1.13.0]: 2026-10-12
 
+Version DOI: [10.5281/zenodo.23318371](https://doi.org/10.5281/zenodo.23318371).
+
 ### Added
 
 - **The curation activity chart opens its records.** Clicking a bar (or pressing Enter on it)
