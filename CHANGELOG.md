@@ -15,6 +15,8 @@ latest release.
 
 ## [1.12.0]: 2026-10-12
 
+Version DOI: [10.5281/zenodo.23318158](https://doi.org/10.5281/zenodo.23318158).
+
 ### Fixed
 
 - **A History cohort is a random sample of its year.** It was the newest records by `-created`,
