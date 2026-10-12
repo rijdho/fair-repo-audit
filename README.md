@@ -108,9 +108,17 @@ still working on it.
 - **History** scores each *registration* cohort separately. Publication year says when the science
   happened; `registered` says when the DOI was minted, which is when the metadata was written. A
   repository whose 2015 and 2025 cohorts score the same is minting from an unchanged template, and
-  a single overall score cannot tell that apart from steady improvement. Alongside it, a curation
-  activity chart counts records registered against records edited in each year: registration
-  without editing is a deposit-and-forget collection.
+  a single overall score cannot tell that apart from steady improvement. Each cohort is a random
+  sample of its year (until 1.12.0 it was the newest records, which meant December), and the page
+  says that a gap of a few points is within sampling noise. Three readings explain the score:
+  which FAIR checks moved between the first and last cohort; which identifiers and links each
+  cohort carries (author affiliation beside affiliation ROR, ORCID, licence URI, funder id,
+  related identifiers), which shows when a repository started writing ROR ids, if it did; and a
+  curation activity chart that counts records registered against records last edited in each
+  year. Registration without editing is a deposit-and-forget collection, but an edit is not
+  always curation: when a three-day window holds most of a year's edits, the page counts it
+  exactly and flags it as a burst, usually the platform re-sending its records. On DataverseNL,
+  8,284 of 9,676 edits in 2025 fell on 2 to 4 July.
 - **Re-curation** replays a single DOI's audit log (`/dois/{doi}/activities`), showing what changed
   at each revision and what the record scored at each one. Metadata curation leaves no trace in the
   record you see today, so this is the view that makes it visible, and it is also the one that

@@ -375,13 +375,20 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
 .hx-table .cx-row { grid-template-columns: 74px 90px 84px 92px minmax(120px, 1fr); }
 /* Four small columns, one per FAIR principle: a sparkline for the shape of a
    cohort, so a flat overall that hides a moving I or R is still visible. */
-.hx-fair { display: inline-flex; align-items: flex-end; gap: 3px; height: 20px; }
+.hx-fair { display: inline-flex; align-items: flex-end; gap: 10px; }
+/* Each bar carries its number: a bar with no scale cannot be read. */
+.hx-pc { display: inline-flex; align-items: flex-end; gap: 4px; height: 20px; }
+.hx-pn { font-family: var(--mono); font-size: .68rem; color: var(--muted); line-height: 1; }
 .hx-p { display: block; width: 9px; border-radius: 2px 2px 0 0; height: var(--h); min-height: 2px;
   background: var(--muted); }
 .hx-p[data-l="F"] { background: var(--f-F); }
 .hx-p[data-l="A"] { background: var(--f-A); }
 .hx-p[data-l="I"] { background: var(--f-I); }
 .hx-p[data-l="R"] { background: var(--f-R); }
+
+.hx-note { font-size: .78rem; margin-top: 6px; }
+.hx-ctable .cx-row { grid-template-columns: 74px repeat(var(--cols, 6), minmax(70px, 1fr)); }
+.hx-ctable .cx-head span { font-size: .7rem; line-height: 1.25; }
 
 .rc-warn { margin: 10px 0 0; padding: 10px 13px; border-radius: var(--r-sm, 9px);
   background: color-mix(in srgb, var(--lvl-mid) 10%, transparent);
@@ -412,6 +419,8 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
 .rc-unmapped { font-size: .7rem; font-style: normal; }
 @media (max-width: 760px) {
   .hx-table .cx-row { grid-template-columns: 1fr 1fr; gap: 4px 10px; }
+  .hx-ctable { overflow-x: auto; }
+  .hx-ctable .cx-row { min-width: 560px; }
 }
 
 .mw-table .cx-row { grid-template-columns: 100px 78px 92px 74px 74px minmax(90px, 1fr); }

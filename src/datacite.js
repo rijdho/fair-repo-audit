@@ -156,17 +156,33 @@ function scopeParams(mode, value) {
 }
 const dayRange = (field, year) => `${field}:[${year}-01-01 TO ${year}-12-31]`;
 
-/** One registration-year cohort: the records whose DOI was minted that year. */
+/**
+ * One registration-year cohort: a random sample of the records whose DOI was minted
+ * that year. It used to be the newest `pageSize` by `-created`, which is December:
+ * DataverseNL's 2021 "cohort" was ten records from 2021-12, out of 4,225 minted that
+ * year. DataCite's random sample has no seed, so a re-run differs a little; the page
+ * says so rather than offering a reproducible but unrepresentative number.
+ */
 export async function fetchRegisteredCohort(mode, value, year, { pageSize = 25 } = {}) {
   const p = scopeParams(mode, value);
   p.set('affiliation', 'true');
   p.set('page[size]', String(pageSize));
-  p.set('sort', '-created');
+  p.set('random', 'true');
   p.set('query', scopedQuery(mode, value, dayRange('registered', year)));
   const res = await fetch(`${DATACITE}?${p}`);
   if (!res.ok) throw new Error(`DataCite API returned ${res.status}`);
   const json = await res.json();
   return { works: json.data || [], total: json.meta?.total ?? 0 };
+}
+
+/** Count-only: how many records were last updated between two ISO days, inclusive. */
+export async function countUpdatedBetween(mode, value, from, to) {
+  const p = scopeParams(mode, value);
+  p.set('page[size]', '0');
+  p.set('query', scopedQuery(mode, value, `updated:[${from} TO ${to}]`));
+  const res = await fetch(`${DATACITE}?${p}`);
+  if (!res.ok) throw new Error(`DataCite API returned ${res.status}`);
+  return (await res.json()).meta?.total ?? 0;
 }
 
 /** Count-only: how many records were registered, and updated, in each year. */

@@ -1,12 +1,13 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=54';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram } from './datacite.js?v=54';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=54';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=54';
-import { temporalSeries, findDuplicates } from './analysis.js?v=54';
-import * as oai from './oaipmh.js?v=54';
-import * as crossing from './analyze.js?v=54';
-import * as recuration from './recuration.js?v=54';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=54';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=57';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween } from './datacite.js?v=57';
+import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=57';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=57';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=57';
+import { temporalSeries, findDuplicates } from './analysis.js?v=57';
+import * as oai from './oaipmh.js?v=57';
+import * as crossing from './analyze.js?v=57';
+import * as recuration from './recuration.js?v=57';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=57';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -1130,7 +1131,8 @@ $('#hx-analyze')?.addEventListener('click', busy('#hx-analyze', async () => {
     catch { continue; }
     if (!r.works.length) { cohorts.push({ year: years[i], n: 0, total: r.total, agg: null }); continue; }
     const assessments = r.works.map(w => assessDataCiteWork({ id: w.id, type: w.type, attributes: w.attributes }));
-    cohorts.push({ year: years[i], n: r.works.length, total: r.total, agg: aggregateAssessments(assessments) });
+    cohorts.push({ year: years[i], n: r.works.length, total: r.total, agg: aggregateAssessments(assessments),
+      concepts: cohortConcepts(r.works), works: r.works });
   }
   if (!cohorts.some(c => c.agg)) return status(t('err.noDatedRecords'), 'error');
 
@@ -1138,9 +1140,21 @@ $('#hx-analyze')?.addEventListener('click', busy('#hx-analyze', async () => {
   let activity = [];
   try { activity = await fetchCurationHistogram(mode, value, { from, to: until }); } catch { /* context only */ }
 
+  // A day that holds most of a year's edits is a platform re-sending its records,
+  // not curation. The samples propose the window; an exact count decides.
+  const bulk = [];
+  for (const c of bulkCandidates(cohorts.flatMap(x => x.works || []))) {
+    const yearTotal = activity.find(a => a.year === c.year)?.updated ?? 0;
+    if (!yearTotal) continue;
+    let k = 0;
+    try { k = await countUpdatedBetween(mode, value, c.from, c.to); } catch { continue; }
+    if (k / yearTotal >= 0.5) bulk.push({ ...c, count: k, total: yearTotal });
+  }
+  for (const c of cohorts) delete c.works;
+
   setUrl({ tab: 'history', hm: mode, hv: value, hf: String(from), hu: String(until), n: String(sample), lang: currentLang });
   status('');
-  renderHistory({ mode, value, sample, cohorts, activity });
+  renderHistory({ mode, value, sample, cohorts, activity, bulk });
   $('#results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }));
 
@@ -1159,7 +1173,8 @@ function renderHistory(d) {
       a: String(first.year), b: String(last.year),
       pa: String(first.agg.overallPercent), pb: String(last.agg.overallPercent),
       drift: (drift > 0 ? '+' : '') + drift,
-    }))}</p>`;
+    }))}</p>
+    <p class="muted hx-note">${esc(t('hx.sampleNote', { n: n(d.sample) }))}</p>`;
   const chart = el('div'); head.appendChild(chart); results.appendChild(head);
   {
     const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
@@ -1167,31 +1182,64 @@ function renderHistory(d) {
       { colors: { hi: v('--lvl-hi'), mid: v('--lvl-mid'), lo: v('--lvl-lo') }, axis: v('--muted'), grid: v('--border'), tip });
   }
 
+  // What the drift is made of: the checks that moved between the end cohorts.
+  if (scored.length > 1) {
+    const moves = cohortMoves(first.agg, last.agg);
+    const mcard = el('div', 'card');
+    mcard.innerHTML = `<h3>${esc(t('hx.moves.title', { a: String(first.year), b: String(last.year) }))}</h3>` + (moves.length
+      ? `<div class="rc-checks">${moves.map(m => `<span class="rc-chk ${m.to > m.from ? 'up' : 'down'}"><b>${esc(m.id)}</b> ${esc(m.name)} <span class="rc-mv">${Math.round(m.from * 100)}% → ${Math.round(m.to * 100)}%</span></span>`).join('')}</div>`
+      : `<p class="muted">${esc(t('hx.moves.none'))}</p>`);
+    results.appendChild(mcard);
+  }
+
   // Cohort table: overall plus each principle, so a flat overall that hides a
-  // moving I or R is visible rather than averaged away.
+  // moving I or R is visible rather than averaged away. Years with nothing
+  // registered are named in one line instead of a row each.
   const tcard = el('div', 'card');
   tcard.innerHTML = `<h3>${esc(t('hx.cohorts.title'))}</h3>`;
   const tbl = el('div', 'cx-table hx-table');
   tbl.innerHTML = `<div class="cx-row cx-head"><span>${esc(t('hx.col.year'))}</span>
     <span class="num">${esc(t('hx.col.total'))}</span><span class="num">${esc(t('hx.col.sampled'))}</span>
     <span class="num">${esc(t('hx.col.overall'))}</span><span>${esc(t('hx.col.profile'))}</span></div>`;
-  d.cohorts.forEach(c => {
+  const empty = d.cohorts.filter(c => !c.agg).map(c => c.year);
+  scored.forEach(c => {
     const row = el('div', 'cx-row');
-    if (!c.agg) {
-      row.innerHTML = `<span class="cx-el">${c.year}</span><span class="num">${n(c.total || 0)}</span>
-        <span class="num">—</span><span class="num muted">${esc(t('hx.noRecords'))}</span><span></span>`;
-    } else {
-      const p = c.agg.principles.map(x => Math.round(x.score / x.maxScore * 100));
-      row.innerHTML = `<span class="cx-el">${c.year}</span>
-        <span class="num">${n(c.total)}</span><span class="num">${n(c.n)}</span>
-        <span class="num"><b class="lvl-${lvlOf(c.agg.overallPercent)}-ink">${c.agg.overallPercent}%</b></span>
-        <span class="hx-fair">${c.agg.principles.map((x, i) =>
-          `<i class="hx-p" data-l="${x.letter}" style="--h:${p[i]}%" title="${esc(x.letter)} ${p[i]}%"></i>`).join('')}</span>`;
-    }
+    const p = c.agg.principles.map(x => Math.round(x.score / x.maxScore * 100));
+    row.innerHTML = `<span class="cx-el">${c.year}</span>
+      <span class="num">${n(c.total)}</span><span class="num">${n(c.n)}</span>
+      <span class="num"><b class="lvl-${lvlOf(c.agg.overallPercent)}-ink">${c.agg.overallPercent}%</b></span>
+      <span class="hx-fair">${c.agg.principles.map((x, i) =>
+        `<span class="hx-pc"><i class="hx-p" data-l="${x.letter}" style="--h:${p[i]}%" title="${esc(x.letter)} ${p[i]}%"></i><span class="hx-pn">${esc(x.letter)} ${p[i]}</span></span>`).join('')}</span>`;
     tbl.appendChild(row);
   });
   tcard.appendChild(tbl);
+  if (empty.length) {
+    const e = el('p', 'muted hx-note');
+    e.textContent = t('hx.emptyYears', { years: empty.join(', ') });
+    tcard.appendChild(e);
+  }
   results.appendChild(tcard);
+
+  // Identifiers and links by cohort: when did this repository start writing them?
+  {
+    const ccard = el('div', 'card');
+    ccard.innerHTML = `<h3>${esc(t('hx.concepts.title'))}</h3><p class="muted">${esc(t('hx.concepts.desc'))}</p>`;
+    const ct = el('div', 'cx-table hx-ctable');
+    ct.style.setProperty('--cols', String(HX_CONCEPTS.length));
+    ct.innerHTML = `<div class="cx-row cx-head"><span>${esc(t('hx.col.year'))}</span>${HX_CONCEPTS.map(k =>
+      `<span class="num" title="${esc(GLOSS[k] || '')}">${esc(t(`concept.${k}`))}</span>`).join('')}</div>`;
+    scored.forEach(c => {
+      const row = el('div', 'cx-row');
+      row.innerHTML = `<span class="cx-el">${c.year}</span>${HX_CONCEPTS.map(k => {
+        const v = c.concepts?.[k];
+        return v == null ? '<span class="num muted">–</span>'
+          : `<span class="num"><b class="lvl-${lvlOf(v)}-ink">${Math.round(v)}%</b></span>`;
+      }).join('')}`;
+      ct.appendChild(row);
+    });
+    ccard.appendChild(ct);
+    results.appendChild(ccard);
+  }
 
   if (d.activity.length) {
     const acard = el('div', 'card');
@@ -1202,6 +1250,11 @@ function renderHistory(d) {
     const wrap = el('div'); acard.appendChild(wrap); results.appendChild(acard);
     const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
     renderActivity(wrap, d.activity, { colors: sc, axis: v('--muted'), grid: v('--border'), tip });
+    for (const b of d.bulk || []) {
+      const w = el('p', 'rc-warn');
+      w.textContent = t('hx.bulk', { year: String(b.year), count: n(b.count), total: n(b.total), from: b.from, to: b.to });
+      acard.appendChild(w);
+    }
   }
 }
 

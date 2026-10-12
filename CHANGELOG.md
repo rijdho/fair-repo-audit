@@ -13,6 +13,29 @@ latest release.
 
 ## [Unreleased]
 
+## [1.12.0]: 2026-10-12
+
+### Fixed
+
+- **A History cohort is a random sample of its year.** It was the newest records by `-created`,
+  which is December: DataverseNL's 2021 cohort was ten records from 2021-12, out of 4,225 minted
+  that year. DataCite's random sample has no seed, so the page now says that a re-run differs a
+  little and that a gap of a few points is within sampling noise.
+- **The curation chart no longer calls every edit curation.** `updated` is a record's last edit,
+  and a platform re-sending every record looks the same as a curator. A three-day window holding
+  most of a year's edits is proposed from the samples, counted exactly, and flagged as a burst:
+  on DataverseNL, 8,284 of 9,676 edits in 2025 fell on 2 to 4 July.
+
+### Added
+
+- **What moved between the first and the last cohort**: the FAIR checks whose mean moved by a
+  quarter point or more, with both means, so a drift is explained rather than only stated.
+- **Identifiers and links, by cohort**: author affiliation, affiliation ROR, author ORCID, licence
+  URI, funder id and related identifiers, as shares of each cohort's sample, using the DataCite
+  mode's own definitions.
+- The cohort profile bars carry their F, A, I and R numbers, and years with no records are named
+  in one line instead of a row each. English, German and Spanish. Assets move to `?v=57`.
+
 ## [1.11.0]: 2026-10-12
 
 Version DOI: [10.5281/zenodo.23317900](https://doi.org/10.5281/zenodo.23317900).
