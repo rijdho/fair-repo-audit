@@ -1,13 +1,13 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=59';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=59';
-import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=59';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=59';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=59';
-import { temporalSeries, findDuplicates } from './analysis.js?v=59';
-import * as oai from './oaipmh.js?v=59';
-import * as crossing from './analyze.js?v=59';
-import * as recuration from './recuration.js?v=59';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=59';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=63';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=63';
+import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=63';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=63';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=63';
+import { temporalSeries, findDuplicates } from './analysis.js?v=63';
+import * as oai from './oaipmh.js?v=63';
+import * as crossing from './analyze.js?v=63';
+import * as recuration from './recuration.js?v=63';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=63';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -961,9 +961,9 @@ function cmpRow(name, pa, pb, sc, tipText) {
 }
 
 // ══ Source vs published ══════════════════════════════════════════════
-// The one mode whose analysis does not run in this file. It posts a repository
-// and a value to the analysis service and renders what comes back: aggregate
-// views for both sides, the element ledger, and per-record scores. The ledger
+// The analysis lives in analyze.js and runs in the browser (since 1.7.0; it was a
+// hosted service before). This renders what it returns: aggregate views for both
+// sides, the element ledger, and a card per record with both sides' values. The ledger
 // carries the DataCite pointer for every element on purpose. The audience for
 // this is people who will have to change a minting template, and a percentage
 // they cannot locate in their own schema is not something they can act on.
@@ -1044,40 +1044,64 @@ function renderCrossing(d) {
     const row = el('div', 'cx-row');
     const rate = r.carryRate;
     const cls = rate === null ? 'gap' : rate === 0 ? 'lost' : rate >= 99 ? 'ok' : 'part';
+    // Say what happened where a bare percentage would mislead: a title is replaced,
+    // not lost; a count-only row is an upper bound; nothing held but something
+    // published is an addition.
+    const label = rate === null
+      ? (r.pubValues > 0 ? esc(t('cx.carry.added')) : '–')
+      : r.exact && rate === 0 && r.pubValues > 0 ? `0% · ${esc(t('cx.carry.replaced'))}`
+        : `${r.exact || rate === 0 ? '' : '≤ '}${rate}%`;
     row.innerHTML = `<span class="cx-el">${esc(t('cx.el.' + r.element))}
         ${r.fair.map(f => `<i class="cx-fair" data-l="${esc(f[0])}">${esc(f)}</i>`).join('')}</span>
       <code class="cx-ptr">${esc(r.pointer)}</code>
       <span class="num">${n(r.srcValues)}</span>
       <span class="num">${n(r.pubValues)}</span>
       <span class="cx-carry"><span class="bar"><span class="bar-fill lvl-${cls === 'ok' ? 'hi' : cls === 'part' ? 'mid' : 'lo'}" style="width:${Math.max(rate ?? 0, 1.5)}%"></span></span>
-        <b class="cx-${cls}">${rate === null ? '—' : rate + '%'}</b></span>`;
+        <b class="cx-${cls}">${label}</b></span>`;
     row.addEventListener('mouseenter', e => tip(e, `${r.pointer}\n${t('cx.tip.cruises', { s: String(r.srcCruises), p: String(r.pubCruises) })}${r.exact ? '\n' + t('cx.tip.exact') + (r.carryRate === 0 ? '\n' + t('cx.tip.exactNone', { p: String(r.pubValues) }) : '') : ''}`));
     row.addEventListener('mouseleave', () => tip(null));
     tbl.appendChild(row);
   });
   lcard.appendChild(tbl);
+  const bound = el('p', 'muted hx-note');
+  bound.textContent = t('cx.ledger.bound');
+  lcard.appendChild(bound);
   results.appendChild(lcard);
 
-  // Per-record: where the two sides land for each item, with links to both.
+  // Per-record: a card per record. The summary line keeps the two scores and the
+  // links; opened, it shows both sides' values for every element either side holds.
   const rcard = el('div', 'card');
-  rcard.innerHTML = `<h3>${esc(t('cx.records.title'))} ${lgd}</h3>`;
-  const rt = el('div', 'cx-table cx-records');
-  rt.innerHTML = `<div class="cx-row cx-head"><span>${esc(t('cx.col.record'))}</span>
-      <span class="num">${esc(t('cx.side.source'))}</span><span class="num">${esc(t('cx.side.published'))}</span>
-      <span>${esc(t('cx.col.links'))}</span></div>`;
-  d.records.forEach(r => {
-    const row = el('div', 'cx-row');
-    row.innerHTML = `<span class="cx-el">${esc(r.label)} <i class="muted">${esc(r.vessel || '')} ${esc((r.departDate || '').slice(0, 4))}</i></span>
-      <span class="num" style="color:${sc.a}">${r.sourcePercent}%</span>
-      <span class="num" style="color:${sc.b}">${r.publishedPercent}%</span>
-      <span class="cx-links">
-        <a href="${esc(r.links.doi)}" target="_blank" rel="noreferrer">DOI</a>
-        <a href="${esc(r.links.datacite)}" target="_blank" rel="noreferrer">DataCite JSON</a>
-        <a href="${esc(r.links.cruise)}" target="_blank" rel="noreferrer">${esc(t('cx.link.source'))}</a>
-      </span>`;
-    rt.appendChild(row);
+  rcard.innerHTML = `<h3>${esc(t('cx.records.title'))} ${lgd}</h3><p class="muted hx-note">${esc(t('cx.records.hint'))}</p>`;
+  const list = el('div', 'cx-recs');
+  // Open the record with the most to show, not simply the first: a transit cruise
+  // with no people and no abstract makes a thin first impression.
+  const richness = (r) => (r.fields || []).filter(f => f.status !== 'absent').length;
+  const openAt = d.records.reduce((best, r, i) => (richness(r) > richness(d.records[best]) ? i : best), 0);
+  d.records.forEach((r, i) => {
+    const det = el('details', 'cx-rec');
+    if (i === openAt) det.open = true;
+    det.innerHTML = `<summary>
+        <span class="cx-el">${esc(r.label)} <i class="muted">${esc(r.vessel || '')} ${esc((r.departDate || '').slice(0, 4))}</i></span>
+        <span class="cx-sc"><b style="color:${sc.a}">${r.sourcePercent}%</b> <span class="muted">→</span> <b style="color:${sc.b}">${r.publishedPercent}%</b></span>
+        <span class="cx-links">
+          <a href="${esc(r.links.doi)}" target="_blank" rel="noreferrer">DOI</a>
+          <a href="${esc(r.links.datacite)}" target="_blank" rel="noreferrer">DataCite JSON</a>
+          <a href="${esc(r.links.cruise)}" target="_blank" rel="noreferrer">${esc(t('cx.link.source'))}</a>
+        </span></summary>`;
+    const rows = (r.fields || []).filter(f => f.status !== 'absent');
+    const vals = (v) => v.list.length
+      ? `${v.list.map(x => `<q>${esc(x)}</q>`).join('<br>')}${v.more ? `<br><i class="muted">${esc(t('rc.d.more', { count: n(v.more) }))}</i>` : ''}`
+      : '<i class="muted">–</i>';
+    det.insertAdjacentHTML('beforeend', `<div class="cx-fields">
+      <div class="cx-frow cx-fhead"><span>${esc(t('cx.col.element'))}</span><span>${esc(t('cx.side.source'))}</span><span>${esc(t('cx.side.published'))}</span><span></span></div>
+      ${rows.map(f => `<div class="cx-frow">
+        <span class="cx-el">${esc(t('cx.el.' + f.element))}<code class="cx-ptr">${esc(f.pointer)}</code></span>
+        <span>${vals(f.sourceValues)}</span><span>${vals(f.publishedValues)}</span>
+        <span><span class="chip cx-st-${CX_STATUS[f.status]}">${esc(t('cx.st.' + f.status))}</span></span></div>`).join('')}
+    </div>`);
+    list.appendChild(det);
   });
-  rcard.appendChild(rt);
+  rcard.appendChild(list);
   results.appendChild(rcard);
 }
 

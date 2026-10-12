@@ -354,13 +354,28 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
   min-width: 40px; text-align: right; }
 .cx-ok { color: var(--lvl-hi); } .cx-part { color: var(--lvl-mid); }
 .cx-lost { color: var(--lvl-lo); } .cx-gap { color: var(--muted); }
-.cx-records .cx-row { grid-template-columns: minmax(150px, 1fr) 74px 84px 220px; }
+.cx-recs { display: flex; flex-direction: column; gap: 10px; }
+.cx-rec { border: 1px solid var(--border); border-radius: var(--r-sm, 9px); background: var(--surface); }
+.cx-rec > summary { display: grid; grid-template-columns: minmax(150px, 1fr) 130px 230px; gap: 10px; align-items: center;
+  padding: 10px 14px; cursor: pointer; font-size: .84rem; }
+.cx-rec[open] > summary { border-bottom: 1px solid var(--border); }
+.cx-sc { font-family: var(--mono); font-size: .8rem; }
+.cx-fields { padding: 4px 14px 12px; font-size: .8rem; }
+.cx-frow { display: grid; grid-template-columns: 190px 1fr 1fr 92px; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--hair); align-items: start; }
+.cx-frow:last-child { border-bottom: 0; }
+.cx-fhead { font-family: var(--mono); font-size: .66rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.cx-frow .cx-el { flex-direction: column; align-items: flex-start; gap: 2px; }
+.cx-frow q { quotes: none; overflow-wrap: anywhere; }
+.cx-st-ok { color: var(--lvl-hi-ink); } .cx-st-part { color: var(--lvl-mid-ink); } .cx-st-lost { color: var(--lvl-lo-ink); }
 .cx-links { display: flex; gap: 10px; flex-wrap: wrap; font-size: .72rem; }
 .cx-links a { color: var(--accent); text-decoration: none; }
 .cx-links a:hover { text-decoration: underline; }
 @media (max-width: 760px) {
   .cx-row { grid-template-columns: 1fr 1fr; gap: 4px 10px; }
   .cx-ptr { grid-column: 1 / -1; }
+  .cx-rec > summary { grid-template-columns: 1fr; }
+  .cx-frow { grid-template-columns: 1fr 1fr; }
+  .cx-frow .cx-el { grid-column: 1 / -1; }
   .cx-head { display: none; }
   .cx-records .cx-row { grid-template-columns: 1fr 1fr; }
   .cx-links { grid-column: 1 / -1; }

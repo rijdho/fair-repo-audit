@@ -31,7 +31,7 @@
 // cached per browser for six hours. That is weaker than a shared cache and it
 // is the honest cost of the move.
 
-import { assessDataCiteWork, aggregateAssessments } from './fair.js?v=59';
+import { assessDataCiteWork, aggregateAssessments } from './fair.js?v=63';
 
 const R2R = 'https://service.rvdata.us/api';
 const DATACITE = 'https://api.datacite.org/dois';
@@ -214,6 +214,7 @@ const orcidSet = (a) => new Set(agents(a).flatMap(e => arr(e.nameIdentifiers)
 const ELEMENTS = [
   { key: 'title', pointer: 'titles[].title', fair: ['F2'],
     count: a => arr(a.titles).filter(t => t.title).length,
+    values: a => arr(a.titles).map(t => t.title),
     // A title is never "missing" in these records, it is SUBSTITUTED, so a bare
     // count would score a template string as a full carry. Identity matters here
     // and nowhere else, which is why this is the only element with a matcher.
@@ -222,64 +223,121 @@ const ELEMENTS = [
       return st && pt && st.trim().toLowerCase() === pt.trim().toLowerCase() ? 1 : 0;
     } },
   { key: 'abstract', pointer: 'descriptions[descriptionType=Abstract]', fair: ['F2', 'R1'],
-    count: a => arr(a.descriptions).filter(d => d.description).length },
+    count: a => arr(a.descriptions).filter(d => d.description).length,
+    values: a => arr(a.descriptions).map(d => d.description) },
   { key: 'people', pointer: 'contributors[nameType=Personal].name', fair: ['R1.2'],
-    count: a => agents(a).filter(e => e.nameType === 'Personal').length },
+    count: a => agents(a).filter(e => e.nameType === 'Personal').length,
+    values: a => agents(a).filter(e => e.nameType === 'Personal').map(e => e.name) },
   { key: 'orcid', pointer: 'creators/contributors[].nameIdentifiers[scheme=ORCID]', fair: ['R1.2', 'I3'],
     count: a => orcidSet(a).size,
+    values: a => [...orcidSet(a)],
     match: (s, p) => { const S = orcidSet(s), P = orcidSet(p); return [...S].filter(x => P.has(x)).length; } },
   { key: 'affiliation', pointer: 'creators/contributors[].affiliation[].name', fair: ['R1.2'],
-    count: a => agents(a).filter(e => arr(e.affiliation).length).length },
+    count: a => agents(a).filter(e => arr(e.affiliation).length).length,
+    values: a => agents(a).flatMap(e => arr(e.affiliation).map(x => (typeof x === 'string' ? x : x?.name))) },
   { key: 'geoBox', pointer: 'geoLocations[].geoLocationBox', fair: ['F2', 'R1'],
-    count: a => arr(a.geoLocations).filter(g => g.geoLocationBox).length },
+    count: a => arr(a.geoLocations).filter(g => g.geoLocationBox).length,
+    values: a => arr(a.geoLocations).filter(g => g.geoLocationBox).map(({ geoLocationBox: b }) =>
+      `W ${b.westBoundLongitude} · E ${b.eastBoundLongitude} · S ${b.southBoundLatitude} · N ${b.northBoundLatitude}`) },
   { key: 'geoPlace', pointer: 'geoLocations[].geoLocationPlace', fair: ['F2'],
-    count: a => arr(a.geoLocations).filter(g => g.geoLocationPlace).length },
+    count: a => arr(a.geoLocations).filter(g => g.geoLocationPlace).length,
+    // One place string may name several ports joined by "/", and DataCite repeats a
+    // port a cruise left from and returned to ("Nome, Alaska/Nome, Alaska"). Split,
+    // so the places are compared and not the way they were joined.
+    values: a => arr(a.geoLocations).flatMap(g => String(g.geoLocationPlace ?? '').split('/')).map(x => x.trim()).filter(Boolean) },
   { key: 'subjects', pointer: 'subjects[].subject', fair: ['F2', 'I2'],
-    count: a => arr(a.subjects).filter(s => s.subject).length },
-  { key: 'formats', pointer: 'formats[]', fair: ['R1'], count: a => arr(a.formats).length },
-  { key: 'sizes', pointer: 'sizes[]', fair: ['R1'], count: a => arr(a.sizes).length },
+    count: a => arr(a.subjects).filter(s => s.subject).length,
+    values: a => arr(a.subjects).map(s => s.subject) },
+  { key: 'formats', pointer: 'formats[]', fair: ['R1'], count: a => arr(a.formats).length, values: a => arr(a.formats) },
+  { key: 'sizes', pointer: 'sizes[]', fair: ['R1'], count: a => arr(a.sizes).length, values: a => arr(a.sizes) },
   { key: 'related', pointer: 'relatedIdentifiers[].relatedIdentifier', fair: ['I3'],
-    count: a => arr(a.relatedIdentifiers).length },
-  { key: 'dates', pointer: 'dates[].date', fair: ['R1'], count: a => arr(a.dates).filter(d => d.date).length },
+    count: a => arr(a.relatedIdentifiers).length,
+    values: a => arr(a.relatedIdentifiers).map(r => `${r.relationType ? `${r.relationType} ` : ''}${r.relatedIdentifier}`) },
+  { key: 'dates', pointer: 'dates[].date', fair: ['R1'], count: a => arr(a.dates).filter(d => d.date).length,
+    values: a => arr(a.dates).map(d => `${d.dateType ? `${d.dateType} ` : ''}${d.date}`) },
   { key: 'funding', pointer: 'fundingReferences[].funderName', fair: ['R1.2'],
-    count: a => arr(a.fundingReferences).length },
+    count: a => arr(a.fundingReferences).length,
+    values: a => arr(a.fundingReferences).map(f => f.funderName || f.funderIdentifier) },
   { key: 'licence', pointer: 'rightsList[].{rights,rightsUri}', fair: ['R1.1'],
-    count: a => arr(a.rightsList).filter(r => r.rights || r.rightsUri).length },
+    count: a => arr(a.rightsList).filter(r => r.rights || r.rightsUri).length,
+    values: a => arr(a.rightsList).map(r => r.rights || r.rightsUri) },
 ];
 
 export function buildLedger(pairs) {
   return ELEMENTS.map(e => {
     let srcCruises = 0, pubCruises = 0, srcValues = 0, pubValues = 0, carried = 0;
+    const identity = BY_IDENTITY.has(e.key) && !!e.values;
     for (const { source, published } of pairs) {
-      const s = e.count(source.attributes), p = e.count(published.attributes);
-      if (s > 0) srcCruises++;
-      if (p > 0) pubCruises++;
-      srcValues += s; pubValues += p;
-      // Where identity can be established, count true carriage. Otherwise the
-      // published count capped at the held count is the honest upper bound, and
-      // `exact` says which of the two a row is.
-      carried += e.match ? e.match(source.attributes, published.attributes) : Math.min(s, p);
+      if (e.count(source.attributes) > 0) srcCruises++;
+      if (e.count(published.attributes) > 0) pubCruises++;
+      if (identity) {
+        // Text elements: distinct values on each side, and how many of the held ones
+        // reappear. A person listed twice in the source is one value; an abstract
+        // replaced by the title carries nothing, however many abstracts there are.
+        const S = distinct(e, source.attributes), P = distinct(e, published.attributes);
+        srcValues += S.size; pubValues += P.size;
+        carried += [...S].filter(x => P.has(x)).length;
+      } else {
+        // Elements that change form on the way: the published count capped at the
+        // held count is the honest upper bound, and `exact` says it is one.
+        const s = e.count(source.attributes), p = e.count(published.attributes);
+        srcValues += s; pubValues += p;
+        carried += e.match ? e.match(source.attributes, published.attributes) : Math.min(s, p);
+      }
     }
     return {
       element: e.key, pointer: e.pointer, fair: e.fair,
       srcCruises, pubCruises, srcValues, pubValues, carried,
       carryRate: srcValues ? Math.round(1000 * carried / srcValues) / 10 : null,
       lost: Math.max(0, srcValues - carried),
-      exact: !!e.match,
+      exact: identity || !!e.match,
     };
   });
 }
 
 /** Per-record crossing for ONE record: element by element, what happened to it. */
+/**
+ * The values behind a count, for a person to read: distinct, non-empty, text cut at
+ * 140 characters, at most `cap` of them. `more` says how many were left out, so a
+ * list of 201 formats is never shown as if it were six.
+ */
+export function valuesOf(e, attributes, cap = 6) {
+  const all = [...new Set(arr(e.values?.(attributes)).map(v => String(v ?? '').trim()).filter(Boolean))];
+  const cut = (v) => (v.length > 140 ? `${v.slice(0, 137)}…` : v);
+  return { list: all.slice(0, cap).map(cut), more: Math.max(0, all.length - cap) };
+}
+
+// Elements whose values are text a person reads, so identity can be judged: the
+// same name with different case or punctuation is the same value. The others change
+// form on the way (coordinates rounded, two dates joined into a range, bytes summed)
+// and stay counted. Judging a card by count alone once called an abstract "arrives"
+// when the published abstract was the cruise's title, and called one person "partly"
+// published because the source lists her twice, as creator and as contributor.
+const BY_IDENTITY = new Set(['title', 'abstract', 'people', 'orcid', 'affiliation', 'geoPlace',
+  'subjects', 'formats', 'related', 'funding', 'licence']);
+const norm = (v) => String(v ?? '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+
+const distinct = (e, a) => new Set(arr(e.values(a)).map(norm).filter(Boolean));
+
+/** carried, partial or replaced, by the distinct values on each side. */
+function byIdentity(e, s, p) {
+  const S = distinct(e, s), P = distinct(e, p);
+  const shared = [...S].filter(x => P.has(x)).length;
+  return shared === 0 ? 'replaced' : shared === S.size ? 'carried' : 'partial';
+}
+
 export function fieldMap(pair) {
   const { source: s, published: p } = pair;
   const show = (a, e) => { const n = e.count(a); return n === 0 ? null : n; };
   return ELEMENTS.map(e => {
     const sN = show(s.attributes, e), pN = show(p.attributes, e);
+    const both = sN && pN;
     return {
       element: e.key, pointer: e.pointer, fair: e.fair,
       sourceCount: sN, publishedCount: pN,
-      status: sN && pN ? (e.match && e.match(s.attributes, p.attributes) === 0 ? 'replaced'
+      sourceValues: valuesOf(e, s.attributes), publishedValues: valuesOf(e, p.attributes),
+      status: both ? (BY_IDENTITY.has(e.key) && e.values ? byIdentity(e, s.attributes, p.attributes)
+             : e.match && e.match(s.attributes, p.attributes) === 0 ? 'replaced'
              : (pN >= sN ? 'carried' : 'partial'))
              : sN && !pN ? 'dropped'
              : !sN && pN ? 'added'
@@ -373,6 +431,7 @@ export async function analyze(source, value, n = DEFAULT_SAMPLE) {
       qaDevices: p.context.qaDevices, qaRatings: p.context.qaRatings,
       sourcePercent: A.assessments[i]?.overallPercent ?? null,
       publishedPercent: B.assessments[i]?.overallPercent ?? null,
+      fields: fieldMap(p),
       links: {
         doi: `https://doi.org/${p.source.attributes.doi}`,
         datacite: `${DATACITE}/${p.source.attributes.doi}`,

@@ -240,6 +240,16 @@ invisible to anything that only sees the output. Reading both sides needs a conn
 per repository, which is ongoing work rather than a rubric, and it is where this
 project earns its keep.
 
+How the crossing is judged. Text elements (title, abstract, people, ORCID, affiliation,
+place, subjects, formats, related identifiers, funding, licence) are compared value by
+value, ignoring case and punctuation, with a place split at "/" so a port named twice is
+one place. Elements that change form on the way (coordinates rounded, dates joined into a
+range, bytes summed) are compared by count and marked `≤`, as an upper bound. Each record
+opens a card with both sides' values and a status per element: arrives, partly, replaced,
+lost, added. On Sikuliaq, that shows the published title replaced by a template on every
+cruise, the abstract replaced by the cruise title on nine of ten, and SKQ2602S publishing
+one of its three chief scientists.
+
 ## Architecture
 
 The two sources reach the engine by different routes, and that asymmetry is the only

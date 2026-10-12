@@ -14,7 +14,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  bareDoi, r2rToWork, r2rFetch, fetchPublished, buildLedger, fieldMap, analyze,
+  bareDoi, r2rToWork, r2rFetch, fetchPublished, buildLedger, fieldMap, analyze, valuesOf,
 } from '../src/analyze.js?v=33';
 
 // ── Fixtures ──
@@ -140,10 +140,16 @@ test('the ledger counts values, not records, and reports what did not survive', 
   assert.deepEqual([orcid.srcValues, orcid.pubValues, orcid.carried, orcid.carryRate, orcid.exact],
     [2, 1, 1, 50, true]);
 
-  // No matcher: the published count capped at the held count, flagged inexact.
+  // A text element is matched by value: two subjects on each side, none shared.
   const subjects = row(l, 'subjects');
   assert.deepEqual([subjects.srcValues, subjects.pubValues, subjects.carried, subjects.carryRate, subjects.exact],
-    [2, 2, 2, 100, false]);
+    [2, 2, 0, 0, true]);
+
+  // An element that changes form (dates joined into a range) stays counted: the
+  // published count capped at the held count, flagged as an upper bound.
+  const dates = row(l, 'dates');
+  assert.equal(dates.exact, false);
+  assert.equal(dates.carried, Math.min(dates.srcValues, dates.pubValues));
 
   // Held and not published at all.
   assert.deepEqual([row(l, 'formats').srcValues, row(l, 'formats').carried, row(l, 'formats').lost], [2, 0, 0 + 2]);
@@ -179,7 +185,7 @@ test('fieldMap names what happened to each element, not just whether it matched'
     affiliation: 'dropped', // the published creator carries no affiliation
     geoBox: 'carried',
     geoPlace: 'dropped',
-    subjects: 'carried',
+    subjects: 'replaced',   // multibeam, ctd held; oceanography, methane published: none shared
     formats: 'dropped',
     sizes: 'dropped',
     related: 'dropped',
@@ -342,4 +348,65 @@ test('both sides are scored by the same rubric the other modes use', async () =>
   assert.equal(out.records[0].sourcePercent, assessDataCiteWork(r2rToWork(rec)).overallPercent);
   assert.equal(out.records[0].publishedPercent, assessDataCiteWork(published).overallPercent);
   assert.equal(out.views.source.percent, out.records[0].sourcePercent);
+});
+
+// ── The values behind each count ──
+// A count says "10 held, 10 published, 0% carried"; only the values say that the
+// published title is a template ("Cruise SKQ2602S on RV Sikuliaq") standing in for
+// the real cruise name. The per-record cards show them, so they are pinned here.
+
+test('a field map row carries both sides\' values, so a replacement can be read', () => {
+  const f = Object.fromEntries(fieldMap(pair()).map(r => [r.element, r]));
+  assert.equal(f.title.status, 'replaced');
+  assert.notDeepEqual(f.title.sourceValues.list, f.title.publishedValues.list);
+  assert.deepEqual(f.title.publishedValues, { list: ['AT26-13'], more: 0 });
+  assert.deepEqual(f.orcid.publishedValues.list, ['0000-0002-1825-0097']);
+  assert.deepEqual(f.licence.sourceValues, { list: [], more: 0 }, 'nothing held shows as nothing, not as a blank value');
+  assert.deepEqual(f.licence.publishedValues.list, ['CC0 1.0']);
+});
+
+test('a long list is cut, and says how much was left out', () => {
+  const e = { values: (a) => a.formats };
+  const v = valuesOf(e, { formats: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'a', ''] });
+  assert.deepEqual(v, { list: ['a', 'b', 'c', 'd', 'e', 'f'], more: 2 }, 'distinct, non-empty, six shown, two left out');
+  const long = valuesOf({ values: () => ['x'.repeat(200)] }, {});
+  assert.equal(long.list[0].length, 138, '137 characters and an ellipsis');
+});
+
+test('each record of an analysis carries its own field map, values included', async () => {
+  await withStorage(async () => {
+    const out = await withFetch(async (url) => {
+      if (url.includes('api.datacite.org')) return jsonRes({ data: { attributes: published.attributes } });
+      if (url.includes('/cruise/?cruise_id=')) return jsonRes({ data: [] });
+      if (url.includes('/cruise/?vessel_shortname=')) return jsonRes({ data: [cruise] });
+      return jsonRes({ data: [] });
+    }, () => analyze('rvdata', 'Atlantis-fields', 1));
+    assert.equal(out.records.length, 1);
+    const title = out.records[0].fields.find(f => f.element === 'title');
+    assert.equal(title.status, 'replaced');
+    assert.deepEqual(title.publishedValues.list, ['AT26-13']);
+  });
+});
+
+test('a text element is judged by its values, not by how many there are', () => {
+  // SKQ202521S: the published abstract is the cruise title, and one scientist is
+  // listed twice in the source (creator and contributor). Counting called the first
+  // "carried" and the second "partial".
+  const src = { titles: [{ title: 'Cruise X' }],
+    descriptions: [{ description: 'Raw ADCP data.', descriptionType: 'Abstract' }],
+    creators: [{ name: 'Whalen, Caitlin', nameType: 'Personal' }],
+    contributors: [{ name: 'Whalen, Caitlin', nameType: 'Personal' }],
+    geoLocations: [{ geoLocationPlace: 'Honolulu, Hawaii / Papeete' }] };
+  const pub = { titles: [{ title: 'Cruise X' }],
+    descriptions: [{ description: 'Mixing belOw Tropical Instability waVEs', descriptionType: 'Abstract' }],
+    creators: [{ name: 'Whalen, Caitlin', nameType: 'Personal' }], contributors: [],
+    geoLocations: [{ geoLocationPlace: 'Honolulu, Hawaii/Papeete' }] };
+  const f = Object.fromEntries(fieldMap({ source: { attributes: src }, published: { attributes: pub } }).map(r => [r.element, r.status]));
+  assert.equal(f.abstract, 'replaced');
+  assert.equal(f.people, 'carried', 'the same person once is not a partial carry');
+  assert.equal(f.geoPlace, 'carried', 'spacing around a slash is not a different place');
+  const roundTrip = fieldMap({ source: { attributes: { geoLocations: [{ geoLocationPlace: 'Nome, Alaska' }] } },
+    published: { attributes: { geoLocations: [{ geoLocationPlace: 'Nome, Alaska/Nome, Alaska' }] } } });
+  assert.equal(roundTrip.find(r => r.element === 'geoPlace').status, 'carried', 'a port named twice is one place');
+  assert.equal(f.title, 'carried');
 });

@@ -13,6 +13,26 @@ latest release.
 
 ## [Unreleased]
 
+## [1.14.0]: 2026-10-12
+
+### Changed
+
+- **Source vs published judges text by its values, not by how many there are.** Title,
+  abstract, people, ORCID, affiliation, place, subjects, formats, related identifiers, funding
+  and licence are compared value by value, ignoring case and punctuation, in the ledger and in
+  each record. Counting had called an abstract carried when the published abstract was the
+  cruise title (9 of 10 Sikuliaq cruises, now 0% · replaced), counted a person listed as both
+  creator and contributor twice (People went from 34.6% to 69.2%), and called subject terms
+  carried when the two sides shared none. Places are split at "/", so a port a cruise left from
+  and returned to, which DataCite writes twice, is one place. Coordinates, dates and sizes,
+  which change form on the way, stay counted and are marked `≤` as an upper bound; a row with
+  nothing published reads 0%, not `≤ 0%`.
+- **Each record opens a card with both sides' values**, element by element, with what happened
+  to each: arrives, partly, replaced, lost, added. The record with the most to show opens first.
+- **The ledger says what happened where a percentage would mislead**: "0% · replaced" for a
+  replaced title or abstract, "added on publication" when only the published side holds a value.
+  English, German and Spanish. Assets move to `?v=63`.
+
 ## [1.13.0]: 2026-10-12
 
 Version DOI: [10.5281/zenodo.23318371](https://doi.org/10.5281/zenodo.23318371).
