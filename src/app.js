@@ -1,13 +1,13 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=57';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween } from './datacite.js?v=57';
-import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=57';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=57';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=57';
-import { temporalSeries, findDuplicates } from './analysis.js?v=57';
-import * as oai from './oaipmh.js?v=57';
-import * as crossing from './analyze.js?v=57';
-import * as recuration from './recuration.js?v=57';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=57';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=59';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=59';
+import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=59';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=59';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=59';
+import { temporalSeries, findDuplicates } from './analysis.js?v=59';
+import * as oai from './oaipmh.js?v=59';
+import * as crossing from './analyze.js?v=59';
+import * as recuration from './recuration.js?v=59';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=59';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -1246,16 +1246,42 @@ function renderHistory(d) {
     const sc = seriesColors();
     acard.innerHTML = `<h3>${esc(t('hx.activity.title'))}
       <span class="chart-legend cmp-lgd"><span><i class="sw" style="background:${sc.a}"></i>${esc(t('hx.registered'))}</span><span><i class="sw" style="background:${sc.b}"></i>${esc(t('hx.updated'))}</span></span></h3>
-      <p class="muted">${esc(t('hx.activity.desc'))}</p>`;
+      <p class="muted">${esc(t('hx.activity.desc'))}</p><p class="muted hx-note">${esc(t('hx.pick.hint'))}</p>`;
     const wrap = el('div'); acard.appendChild(wrap); results.appendChild(acard);
+    const picked = el('div', 'hx-picked');
     const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
-    renderActivity(wrap, d.activity, { colors: sc, axis: v('--muted'), grid: v('--border'), tip });
+    renderActivity(wrap, d.activity, { colors: sc, axis: v('--muted'), grid: v('--border'), tip,
+      onPick: (year, key) => showYearRecords(picked, d, year, key) });
     for (const b of d.bulk || []) {
       const w = el('p', 'rc-warn');
       w.textContent = t('hx.bulk', { year: String(b.year), count: n(b.count), total: n(b.total), from: b.from, to: b.to });
       acard.appendChild(w);
     }
+    acard.appendChild(picked);
   }
+}
+
+/** The records behind one bar: the newest of them, each linked, and the whole list's URL. */
+async function showYearRecords(box, d, year, key, win = null) {
+  box.innerHTML = `<p class="muted">${esc(t('hx.pick.loading'))}</p>`;
+  let r;
+  try { r = await fetchYearRecords(d.mode, d.value, key, year, { pageSize: 25, ...(win || {}) }); }
+  catch (e) { box.innerHTML = `<p class="rc-warn">${esc(`${t('status.error')}: ${e.message}`)}</p>`; return; }
+  const title = (w) => w.attributes?.titles?.[0]?.title || w.id;
+  const day = (s) => String(s || '').slice(0, 10);
+  // A year with a flagged burst offers the burst itself: newest-first would show December.
+  const burst = key === 'updated' && !win ? (d.bulk || []).find(b => b.year === year) : null;
+  const heading = win ? t('hx.pick.burst', { from: win.from, to: win.to, total: n(r.total) })
+    : t(key === 'updated' ? 'hx.pick.updated' : 'hx.pick.registered', { year: String(year), total: n(r.total) });
+  box.innerHTML = `<h4 class="hx-pick-title">${esc(heading)}</h4>
+    ${burst ? `<p><button type="button" class="btn ghost hx-burst-btn">${esc(t('hx.pick.showBurst', { from: burst.from, to: burst.to }))}</button></p>` : ''}
+    <p class="muted hx-note">${esc(t('hx.pick.showing', { count: n(r.works.length) }))}
+      <a href="${esc(r.url)}" target="_blank" rel="noreferrer">${esc(t('hx.pick.api'))}</a></p>
+    <ol class="hx-pick-list">${r.works.map(w => `<li><a href="https://doi.org/${esc(w.id)}" target="_blank" rel="noreferrer">${esc(title(w))}</a>
+      <span class="hx-pick-meta"><code>${esc(w.id)}</code> · ${esc(t('hx.registered'))} ${esc(day(w.attributes?.registered))} · ${esc(t('hx.updated'))} ${esc(day(w.attributes?.updated))}
+      · <a href="?tab=recuration&rd=${encodeURIComponent(w.id)}&lang=${esc(currentLang)}">${esc(t('ui.tabs.recuration'))}</a></span></li>`).join('')}</ol>`;
+  box.querySelector('.hx-burst-btn')?.addEventListener('click', () => showYearRecords(box, d, year, key, { from: burst.from, to: burst.to }));
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // ══ Re-curation: what changed in one record, and when ═══════════════════

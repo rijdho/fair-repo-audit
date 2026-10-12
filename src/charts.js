@@ -2,7 +2,7 @@
 // The heatmap and radar show the DISTRIBUTION across records, not just the
 // averages: every record × every check, and the profile shape plus its spread.
 
-import { t, tn, n as fmtNum } from './i18n/index.js?v=57';
+import { t, tn, n as fmtNum } from './i18n/index.js?v=59';
 
 const pctOf = (grp) => grp.score / grp.maxScore;
 
@@ -250,7 +250,7 @@ const shortId = (id) => String(id).replace(/^https?:\/\/(dx\.)?doi\.org\//, '').
 // collection someone is still curating.
 // rows: [{year, registered, updated}] ascending.
 export function renderActivity(container, rows, opts) {
-  const { colors, axis, grid, tip } = opts;
+  const { colors, axis, grid, tip, onPick } = opts;
   const NS = 'http://www.w3.org/2000/svg';
   const W = container.clientWidth || 760, H = 230, padL = 42, padR = 12, padT = 14, padB = 26;
   const iw = W - padL - padR, ih = H - padT - padB, n = rows.length || 1;
@@ -281,6 +281,14 @@ export function renderActivity(container, rows, opts) {
       const rect = mk('rect', { x, y: padT + ih - h, width: bw, height: h, rx: 2, fill: col, style: 'cursor:pointer' });
       rect.addEventListener('mouseenter', e => tip(e, `${r.year}\n${t('chart.activity.' + key, { count: fmtNum(v) })}`));
       rect.addEventListener('mouseleave', () => tip(null));
+      // A bar is a question ("which records?"), so it answers on click and on Enter.
+      if (onPick) {
+        rect.setAttribute('tabindex', '0');
+        rect.setAttribute('role', 'button');
+        rect.setAttribute('aria-label', `${r.year}: ${t('chart.activity.' + key, { count: fmtNum(v) })}`);
+        rect.addEventListener('click', () => onPick(r.year, key));
+        rect.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onPick(r.year, key); } });
+      }
       svg.appendChild(rect);
     });
     if (n <= 18 || i % Math.ceil(n / 18) === 0) {

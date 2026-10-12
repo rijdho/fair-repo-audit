@@ -13,6 +13,17 @@ latest release.
 
 ## [Unreleased]
 
+## [1.13.0]: 2026-10-12
+
+### Added
+
+- **The curation activity chart opens its records.** Clicking a bar (or pressing Enter on it)
+  lists the 25 newest records registered, or last edited, in that year, each linked to its DOI
+  and to its Re-curation history, with the DataCite API URL of the full list. In a year with a
+  flagged burst, a button lists the burst's own records, which newest-first would bury under
+  December's: on DataverseNL, the 8,284 last edited between 2 and 4 July 2025. English, German
+  and Spanish. Assets move to `?v=59`.
+
 ## [1.12.0]: 2026-10-12
 
 Version DOI: [10.5281/zenodo.23318158](https://doi.org/10.5281/zenodo.23318158).

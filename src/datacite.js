@@ -175,6 +175,24 @@ export async function fetchRegisteredCohort(mode, value, year, { pageSize = 25 }
   return { works: json.data || [], total: json.meta?.total ?? 0 };
 }
 
+/**
+ * The records behind one bar of the activity chart: registered, or last updated, in a
+ * year, newest first. Returns the page, the total, and the API URL of the whole list,
+ * so the page can offer it rather than pretend the page is all there is.
+ */
+export async function fetchYearRecords(mode, value, field, year, { pageSize = 25, from, to } = {}) {
+  const p = scopeParams(mode, value);
+  p.set('page[size]', String(pageSize));
+  p.set('sort', field === 'updated' ? '-updated' : '-created');
+  // `from`/`to` narrow the year to a window, which is how a flagged burst is listed.
+  p.set('query', scopedQuery(mode, value, from && to ? `${field}:[${from} TO ${to}]` : dayRange(field, year)));
+  const url = `${DATACITE}?${p}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`DataCite API returned ${res.status}`);
+  const json = await res.json();
+  return { works: json.data || [], total: json.meta?.total ?? 0, url };
+}
+
 /** Count-only: how many records were last updated between two ISO days, inclusive. */
 export async function countUpdatedBetween(mode, value, from, to) {
   const p = scopeParams(mode, value);

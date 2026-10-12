@@ -387,6 +387,12 @@ input[type=text]:focus, select:focus { outline: 2px solid var(--brand); outline-
 .hx-p[data-l="R"] { background: var(--f-R); }
 
 .hx-note { font-size: .78rem; margin-top: 6px; }
+.hx-picked:not(:empty) { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); }
+.hx-pick-title { margin: 0 0 4px; font-size: .9rem; }
+.hx-pick-list { margin: 10px 0 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; font-size: .84rem; }
+.hx-pick-meta { display: block; font-size: .74rem; color: var(--muted); margin-top: 2px; }
+.hx-pick-meta code { font-family: var(--mono); font-size: .7rem; }
+svg rect[role="button"]:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
 .hx-ctable .cx-row { grid-template-columns: 74px repeat(var(--cols, 6), minmax(70px, 1fr)); }
 .hx-ctable .cx-head span { font-size: .7rem; line-height: 1.25; }
 

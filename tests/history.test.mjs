@@ -77,3 +77,29 @@ test('a cohort is a random sample of its year, not its last weeks', async () => 
   assert.equal(q.get('sort'), null);
   assert.equal(q.get('page[size]'), '10');
 });
+
+test('a bar lists its own records: the right field, newest first, and the full list offered', async () => {
+  const { fetchYearRecords } = await import('../src/datacite.js');
+  const seen = [];
+  const real = globalThis.fetch;
+  globalThis.fetch = async (url) => { seen.push(String(url)); return new Response(JSON.stringify({ data: [{ id: '10.1/a' }], meta: { total: 9676 } })); };
+  let r;
+  try { r = await fetchYearRecords('clientId', 'dans.dataversenl', 'updated', 2025); }
+  finally { globalThis.fetch = real; }
+  const q = new URL(seen[0]).searchParams;
+  assert.equal(q.get('query'), 'updated:[2025-01-01 TO 2025-12-31]', 'an "updated" bar lists by updated, not by registered');
+  assert.equal(q.get('sort'), '-updated');
+  assert.equal(q.get('client-id'), 'dans.dataversenl');
+  assert.equal(r.total, 9676);
+  assert.equal(r.url, seen[0], 'the URL offered is the one that produced the list');
+});
+
+test('a flagged burst is listed by its own window, not by the whole year', async () => {
+  const { fetchYearRecords } = await import('../src/datacite.js');
+  const seen = [];
+  const real = globalThis.fetch;
+  globalThis.fetch = async (url) => { seen.push(String(url)); return new Response(JSON.stringify({ data: [], meta: { total: 8284 } })); };
+  try { await fetchYearRecords('clientId', 'dans.dataversenl', 'updated', 2025, { from: '2025-07-02', to: '2025-07-04' }); }
+  finally { globalThis.fetch = real; }
+  assert.equal(new URL(seen[0]).searchParams.get('query'), 'updated:[2025-07-02 TO 2025-07-04]');
+});

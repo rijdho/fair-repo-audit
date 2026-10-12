@@ -118,7 +118,9 @@ still working on it.
   year. Registration without editing is a deposit-and-forget collection, but an edit is not
   always curation: when a three-day window holds most of a year's edits, the page counts it
   exactly and flags it as a burst, usually the platform re-sending its records. On DataverseNL,
-  8,284 of 9,676 edits in 2025 fell on 2 to 4 July.
+  8,284 of 9,676 edits in 2025 fell on 2 to 4 July. Every bar of that chart opens its records: the 25 newest
+  registered or last edited that year, each linked to its DOI and to its Re-curation history,
+  with the API URL of the full list; a year with a burst also offers the burst's own records.
 - **Re-curation** replays a single DOI's audit log (`/dois/{doi}/activities`), showing what changed
   at each revision and what the record scored at each one. Metadata curation leaves no trace in the
   record you see today, so this is the view that makes it visible, and it is also the one that
