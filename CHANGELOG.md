@@ -15,6 +15,8 @@ latest release.
 
 ## [1.14.0]: 2026-10-12
 
+Version DOI: [10.5281/zenodo.23318799](https://doi.org/10.5281/zenodo.23318799).
+
 ### Changed
 
 - **Source vs published judges text by its values, not by how many there are.** Title,
