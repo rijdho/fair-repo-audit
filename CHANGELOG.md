@@ -15,6 +15,8 @@ latest release.
 
 ## [1.16.0]: 2026-10-13
 
+Version DOI: [10.5281/zenodo.23335188](https://doi.org/10.5281/zenodo.23335188).
+
 ### Changed
 
 - **The charts follow one set of mark specs.** A single `SPEC` in `src/charts.js` now governs
