@@ -13,6 +13,8 @@ latest release.
 
 ## [Unreleased]
 
+## [1.17.0]: 2026-10-13
+
 ### Changed
 
 - **Licensed under MIT.** The code moves from Apache-2.0 to MIT, as every code licence in the
