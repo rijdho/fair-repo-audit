@@ -5,11 +5,10 @@ pull request if the change is small and self-contained.
 
 ## Licensing of contributions
 
-This project is licensed **Apache-2.0**, and contributions are accepted on the same terms:
-section 5 of the licence says that anything submitted for inclusion is licensed under it, with
-no separate agreement to sign. Apache-2.0 is permissive, so the maintainer can also carry a
-contribution into the hosted FAIR Metadata Check (Extended), which runs the same rubric; that is what
-makes it possible to keep the two scoring alike.
+This project is licensed **MIT**, and by opening a pull request you agree that your
+contribution is licensed under it too, with no separate agreement to sign. MIT is permissive, so
+the maintainer can also carry a contribution into the hosted FAIR Metadata Check (Extended), which
+runs the same rubric; that is what makes it possible to keep the two scoring alike.
 
 ## Scope: this measures, it does not remediate
 

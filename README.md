@@ -378,10 +378,9 @@ Paste `https://…workers.dev/?url=` into the app's *CORS proxy (advanced)* fiel
 ## License
 
 Copyright 2026 Ricardo Hartley Belmar.
-[Apache-2.0](LICENSE): read, cite, fork, adapt and build on it freely, including in your own
-services, keeping the copyright and licence notices and stating what you changed. The licence
-grants no right to the tool's name. Releases up to 1.7.1 were published under
-AGPL-3.0-or-later, and up to 1.3.0 under MIT, and remain so.
+[MIT](LICENSE): read, cite, fork, adapt and build on it freely, including in your own
+services, keeping the copyright and licence notice. Releases 1.8.0 to 1.16.0 were published
+under Apache-2.0, up to 1.7.1 under AGPL-3.0-or-later, and up to 1.3.0 under MIT, and remain so.
 
 ## Citation
 

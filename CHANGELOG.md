@@ -13,6 +13,14 @@ latest release.
 
 ## [Unreleased]
 
+### Changed
+
+- **Licensed under MIT.** The code moves from Apache-2.0 to MIT, as every code licence in the
+  family now does (2026-10-13): one short licence that everyone recognises, the same on every
+  tool, weighs more here than Apache's patent grant, which this tool does not need.
+  `CONTRIBUTING.md` says contributions come in under MIT. Releases 1.8.0 to 1.16.0 stay under
+  Apache-2.0 for anyone who took a copy then.
+
 ## [1.16.0]: 2026-10-13
 
 Version DOI: [10.5281/zenodo.23335188](https://doi.org/10.5281/zenodo.23335188).

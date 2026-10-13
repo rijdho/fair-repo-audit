@@ -28,7 +28,7 @@ identifiers:
     description: "Version DOI for v1.16.0"
 repository-code: "https://github.com/rijdho/fair-repo-audit"
 url: "https://rijdho.github.io/fair-repo-audit/"
-license: Apache-2.0
+license: MIT
 version: "1.16.0"
 date-released: "2026-10-13"
 keywords:
