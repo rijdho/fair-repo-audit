@@ -15,6 +15,8 @@ latest release.
 
 ## [1.17.0]: 2026-10-13
 
+Version DOI: [10.5281/zenodo.23342955](https://doi.org/10.5281/zenodo.23342955).
+
 ### Changed
 
 - **Licensed under MIT.** The code moves from Apache-2.0 to MIT, as every code licence in the
