@@ -61,7 +61,6 @@ export const en = {
   "ui.oai.yearNote": "Filters by the record <b>datestamp</b> (date added or last modified in the repository), not by publication year.",
   "ui.oai.years.label": "Record years",
   "ui.rail.cite": "Cite this tool",
-  "ui.rail.data": "Data from DataCite, OAI-PMH repositories and R2R",
   "ui.rail.by": "By <a href=\"https://rijdho.github.io\" target=\"_blank\" rel=\"noreferrer\">Ricardo Hartley Belmar</a>",
   "ui.rail.license": "Code under MIT",
   "ui.rail.source": "Source on GitHub",
