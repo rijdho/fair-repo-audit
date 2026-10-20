@@ -1,13 +1,13 @@
-import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=71';
-import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=71';
-import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=71';
-import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=71';
-import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=71';
-import { temporalSeries, findDuplicates } from './analysis.js?v=71';
-import * as oai from './oaipmh.js?v=71';
-import * as crossing from './analyze.js?v=71';
-import * as recuration from './recuration.js?v=71';
-import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=71';
+import { assessDataCiteWork, assessOaiRecord, aggregateAssessments, generateRecommendations, generateTextReport } from './fair.js?v=72';
+import { fetchWorks, fetchAllWorks, fetchYearHistogram, suggestClients, fetchRegisteredCohort, fetchCurationHistogram, countUpdatedBetween, fetchYearRecords } from './datacite.js?v=72';
+import { cohortConcepts, cohortMoves, bulkCandidates, HX_CONCEPTS } from './history.js?v=72';
+import { dataCiteConcepts, oaiConcepts, GLOSS, PRINCIPLE_GLOSS } from './concepts.js?v=72';
+import { renderHeatmap, renderTemporal, renderRadar, renderYearPicker, renderActivity, renderTrend } from './charts.js?v=72';
+import { temporalSeries, findDuplicates } from './analysis.js?v=72';
+import * as oai from './oaipmh.js?v=72';
+import * as crossing from './analyze.js?v=72';
+import * as recuration from './recuration.js?v=72';
+import { t, tn, n, applyDom, setLang, resolveLang, LANGS } from './i18n/index.js?v=72';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -184,6 +184,8 @@ let currentLang = resolveLang(
 );
 langBox.innerHTML = LANGS.map(l =>
   `<button type="button" data-code="${l.code}" title="${l.label}">${l.code.toUpperCase()}</button>`).join('');
+// With a single language there is nothing to switch, so the switch is not shown.
+if (LANGS.length < 2) langBox.remove();
 const reflectLang = () => {
   document.documentElement.lang = currentLang;
   $$('button[data-code]', langBox).forEach(b => b.setAttribute('aria-current', b.dataset.code === currentLang ? 'true' : 'false'));

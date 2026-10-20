@@ -17,7 +17,7 @@ answer "how good is our metadata, really?", ideally before someone else asks.
 
 🔗 **Live:** https://rijdho.github.io/fair-repo-audit/
 
-Available in **English, Spanish and German** (auto-detected, switchable).
+Available in **English**.
 
 ![Headline readout for the Dryad repository: an overall score of 96%, rated EXCELLENT, from
 13.5 of 14 FAIR checks across 25 of 169,871 records, with per-principle scores of 4/4 Findable,
@@ -72,7 +72,7 @@ Every record is scored against 14 FAIR sub-principles (Wilkinson et al. 2016), e
   concept diff, and the dual radar.
 - **How it works**, an in-app guide (its own tab): the four-step story for newcomers, then
   expandable depth: the 14 checks one by one (rendered from the same catalogues the results
-  use), the scoring bands, and where the data comes from. Available in all three languages.
+  use), the scoring bands, and where the data comes from.
 - **License & connectivity profiles**, prioritized recommendations, and **JSON / text / CSV**
   export, including an **Action list (CSV)**: every record that isn't full on a check, with the
   reason (a re-curation to-do list).
@@ -169,10 +169,12 @@ has thought of yet.
 
 ## Languages
 
-The interface, the per-check explanations and the fix recommendations are available in
-**English, Spanish and German**. Language is picked in the top bar and resolved
-at load in this order: `?lang=` → previous choice (`localStorage`) → `navigator.languages`
-→ English. Switching relabels whatever is already on screen without re-querying the API.
+The interface, the per-check explanations and the fix recommendations are in **English**.
+Spanish and German were offered until 1.17.0 and removed in 1.18.0 (2026-10-20): each text is
+checked claim by claim, and every locale multiplied that work. The texts stay in one catalogue,
+`src/i18n/en.js`, read through `t()`, so a translation is one more file there and one line in
+`src/i18n/index.js`; with two languages or more the switch reappears in the top bar, resolved at
+load in this order: `?lang=` → previous choice (`localStorage`) → `navigator.languages` → English.
 
 What is *not* translated, in any locale, is deliberate: metadata schema field names
 (`rightsURI`, `subjectScheme`, `relatedIdentifiers`, `dc:title`…), standard and

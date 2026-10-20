@@ -13,6 +13,16 @@ latest release.
 
 ## [Unreleased]
 
+## [1.18.0]: 2026-10-20
+
+### Removed
+
+- **Spanish and German.** The interface is in English only. Every text the tool shows is checked
+  claim by claim before release, and each locale multiplied that work; a translation nobody keeps
+  up goes stale. The texts stay in one catalogue, `src/i18n/en.js`, read through `t()`, so a
+  language comes back as one more file and one line in `src/i18n/index.js`. With a single language
+  the switch is not shown; the locale tests now run against whatever catalogues exist.
+
 ## [1.17.0]: 2026-10-13
 
 Version DOI: [10.5281/zenodo.23342955](https://doi.org/10.5281/zenodo.23342955).

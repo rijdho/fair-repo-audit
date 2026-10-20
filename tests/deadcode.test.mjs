@@ -56,7 +56,7 @@ const APP = [...Object.values(SOURCES), HTML, SCRIPTS].join('\n');
  * reported 91 keys as dead. One file belongs in the corpus (index.js, which
  * names meta.title); three do not.
  */
-const LOCALES = new Set(['src/i18n/en.js', 'src/i18n/es.js', 'src/i18n/de.js']);
+const LOCALES = new Set(Object.keys(SOURCES).filter((f) => f.startsWith('src/i18n/') && f !== 'src/i18n/index.js'));
 const KEY_CONSUMERS = [...Object.entries(SOURCES).filter(([f]) => !LOCALES.has(f)).map(([, c]) => c),
                        HTML, SCRIPTS].join('\n');
 

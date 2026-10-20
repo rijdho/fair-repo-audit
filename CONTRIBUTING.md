@@ -33,9 +33,9 @@ No dependencies and no build step. The suite runs on Node's own test runner:
 node --test tests/*.test.mjs
 ```
 
-The locale tests are the ones that fail most often and they are doing their job:
-a UI string added to `src/i18n/en.js` must be added to `de.js` and `es.js` too,
-with the same `{placeholder}` tokens.
+Every UI string goes in `src/i18n/en.js`, the only catalogue since 1.18.0. If a language is
+added again, the locale tests require every key of `en.js` in it, with the same `{placeholder}`
+tokens.
 
 ## What runs where
 

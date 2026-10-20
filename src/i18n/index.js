@@ -10,18 +10,16 @@
 //    types) are NEVER keys here: they are data the user types into their
 //    metadata editor, and they stay in English in every locale.
 
-import { en } from './en.js?v=71';
-import { es } from './es.js?v=71';
-import { de } from './de.js?v=71';
+import { en } from './en.js?v=72';
 
-export const LOCALES = { en, es, de };
+// English only since 2026-10-20 (1.18.0): every text passes a claims check, and each locale
+// multiplied that work. A translation comes back by adding its catalogue here and to LANGS.
+export const LOCALES = { en };
 
 // `label` is deliberately the endonym: a reader looking for their own language
 // scans for "Deutsch", not for "German".
 export const LANGS = [
   { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-  { code: 'de', label: 'Deutsch' },
 ];
 
 const DEFAULT_LANG = 'en';

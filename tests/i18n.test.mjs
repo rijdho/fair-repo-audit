@@ -116,7 +116,7 @@ test('plural keys come in complete one/other pairs', () => {
 });
 
 test('t() falls back to English, then to the key itself', () => {
-  setLang('es');
+  setLang(CODES.find((c) => c !== 'en') ?? 'en');
   const key = Object.keys(EN)[0];
   assert.equal(typeof t(key), 'string');
   assert.equal(t('no.such.key.exists'), 'no.such.key.exists');
@@ -149,10 +149,16 @@ test('tn() selects a plural form and injects {count}', () => {
 });
 
 test('resolveLang: explicit code wins, then browser, then English', () => {
-  assert.equal(resolveLang('de', ['pt-BR']), 'de');
-  assert.equal(resolveLang(null, ['es-CL', 'en']), 'es');
+  // Written against whatever catalogues exist, so it holds with English alone and checks the
+  // precedence again as soon as a second language is added.
+  const other = CODES.find((c) => c !== 'en');
+  if (other) {
+    assert.equal(resolveLang(other, ['pt-BR']), other);
+    assert.equal(resolveLang(null, [`${other}-XX`, 'en']), other);
+    assert.equal(resolveLang('klingon', [`${other}-YY`]), other);
+  }
+  assert.equal(resolveLang('de-unknown', ['pt-BR']), 'en');
   assert.equal(resolveLang(null, ['pt-BR']), 'en');
-  assert.equal(resolveLang('klingon', ['es-MX']), 'es');
   assert.equal(resolveLang(undefined, []), 'en');
 });
 
