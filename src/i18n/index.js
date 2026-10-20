@@ -10,10 +10,10 @@
 //    types) are NEVER keys here: they are data the user types into their
 //    metadata editor, and they stay in English in every locale.
 
-import { en } from './en.js?v=72';
+import { en } from './en.js?v=73';
 
-// English only since 2026-10-20 (1.18.0): every text passes a claims check, and each locale
-// multiplied that work. A translation comes back by adding its catalogue here and to LANGS.
+// English only since 2026-10-20 (1.18.0): every change to a text had to be made, and checked,
+// in each locale. A translation comes back by adding its catalogue here and to LANGS.
 export const LOCALES = { en };
 
 // `label` is deliberately the endonym: a reader looking for their own language

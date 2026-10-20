@@ -170,8 +170,8 @@ has thought of yet.
 ## Languages
 
 The interface, the per-check explanations and the fix recommendations are in **English**.
-Spanish and German were offered until 1.17.0 and removed in 1.18.0 (2026-10-20): each text is
-checked claim by claim, and every locale multiplied that work. The texts stay in one catalogue,
+Spanish and German were offered until 1.17.0 and removed in 1.18.0 (2026-10-20), because every
+change to a text had to be made, and checked, in three languages. The texts stay in one catalogue,
 `src/i18n/en.js`, read through `t()`, so a translation is one more file there and one line in
 `src/i18n/index.js`; with two languages or more the switch reappears in the top bar, resolved at
 load in this order: `?lang=` → previous choice (`localStorage`) → `navigator.languages` → English.
