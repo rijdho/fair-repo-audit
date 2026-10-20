@@ -9,9 +9,8 @@ abstract: >-
   it publishes, scores each registration cohort separately, replays the audit
   log of a single DOI, and reads a monthly scoring history produced by a
   scheduled job the user runs in their own repository. Every mode runs entirely in
-  the visitor's browser and uploads nothing. Multilingual (EN/ES/DE).
-  The open twin of the hosted FAIR Metadata Check (Extended): the scoring engine is a
-  faithful, fully-readable port, so scores match across both tools.
+  the visitor's browser and uploads nothing. A browser version of the hosted FAIR
+  Metadata Check (Extended), whose scoring engine it carries as readable code.
 type: software
 authors:
   - family-names: "Hartley Belmar"
