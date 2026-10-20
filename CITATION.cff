@@ -28,7 +28,7 @@ identifiers:
 repository-code: "https://github.com/rijdho/fair-repo-audit"
 url: "https://rijdho.github.io/fair-repo-audit/"
 license: MIT
-version: "1.18.0"
+version: "1.18.1"
 date-released: "2026-10-20"
 keywords:
   - FAIR principles

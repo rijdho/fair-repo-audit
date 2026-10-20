@@ -13,6 +13,15 @@ latest release.
 
 ## [Unreleased]
 
+## [1.18.1]: 2026-10-20
+
+### Fixed
+
+- **The citation abstract.** `CITATION.cff`, which Zenodo reads for the record, still called the
+  tool multilingual, and called it an open twin whose scores match the hosted version. It now
+  describes the tool in English only and as a browser version of the hosted check whose engine it
+  carries as readable code. The tool itself is unchanged.
+
 ## [1.18.0]: 2026-10-20
 
 Version DOI: [10.5281/zenodo.23496711](https://doi.org/10.5281/zenodo.23496711).
