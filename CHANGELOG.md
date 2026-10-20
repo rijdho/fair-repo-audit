@@ -15,6 +15,8 @@ latest release.
 
 ## [1.18.1]: 2026-10-20
 
+Version DOI: [10.5281/zenodo.23502882](https://doi.org/10.5281/zenodo.23502882).
+
 ### Fixed
 
 - **The citation abstract.** `CITATION.cff`, which Zenodo reads for the record, still called the
