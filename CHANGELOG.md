@@ -15,6 +15,8 @@ latest release.
 
 ## [1.18.0]: 2026-10-20
 
+Version DOI: [10.5281/zenodo.23496711](https://doi.org/10.5281/zenodo.23496711).
+
 ### Removed
 
 - **Spanish and German.** The interface is in English only. Every text the tool shows is checked
