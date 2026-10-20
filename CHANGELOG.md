@@ -162,7 +162,7 @@ Version DOI: [10.5281/zenodo.23317900](https://doi.org/10.5281/zenodo.23317900).
   was; the name changes where a reader meets it: the page title, the rail, the README and
   `CITATION.cff`, whose title Zenodo takes at the next release. Assets move to `?v=47`.
 
-- **The look comes from rijdho/house-style.** `house/` holds a synced copy (house.css and the Inter
+- **The look comes from the shared house style.** `house/` holds a synced copy (house.css and the Inter
   fonts), loaded before `style.css`, with a lock and a test that fail on a hand edit or a stale copy
   (`node scripts/sync-house.mjs` refreshes it). `style.css` keeps only what this tool adds or sets
   differently: 337 declarations identical to house.css went, and the duplicate `fonts/` with them.

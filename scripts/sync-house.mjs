@@ -1,4 +1,4 @@
-// Copy the house style (house.css + fonts) from a sibling checkout of rijdho/house-style into house/,
+// Copy the house style (house.css + fonts) from a sibling house-style checkout into house/,
 // and record what was copied in house/house.lock.json. Never edit the copy: this project's own styles
 // go in style.css, which index.html loads after it. tests/house.test.mjs enforces both.
 //   node scripts/sync-house.mjs            (or HOUSE_STYLE=/path/to/house-style node scripts/sync-house.mjs)

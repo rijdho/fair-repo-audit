@@ -1,4 +1,4 @@
-// The house style is a copy of rijdho/house-style: it must match its lock (a hand edit fails here), and,
+// The house style is a copy of the house style: it must match its lock (a hand edit fails here), and,
 // when the original is checked out next to this repository, the lock must match it (a stale copy fails).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -11,7 +11,7 @@ const sha = (p) => createHash('sha256').update(readFileSync(p)).digest('hex');
 const lock = JSON.parse(readFileSync(at('../house/house.lock.json'), 'utf8'));
 
 test('the house copy is the one the lock records', () => {
-  assert.equal(sha(at('../house/house.css')), lock.sha256, 'house/house.css was edited: change rijdho/house-style instead');
+  assert.equal(sha(at('../house/house.css')), lock.sha256, 'house/house.css was edited: change the original house style instead');
 });
 test('the lock matches the house-style checkout, when there is one', (t) => {
   const original = at('../../house-style/house.css');
