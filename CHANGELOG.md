@@ -13,6 +13,11 @@ latest release.
 
 ## [Unreleased]
 
+### Changed
+
+- The abstract in `CITATION.cff` names the address where the tool runs, so the Zenodo record
+  leads to it and not only to the repository.
+
 ## [1.18.1]: 2026-10-20
 
 Version DOI: [10.5281/zenodo.23502882](https://doi.org/10.5281/zenodo.23502882).
