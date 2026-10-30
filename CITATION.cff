@@ -11,6 +11,7 @@ abstract: >-
   scheduled job the user runs in their own repository. Every mode runs entirely in
   the visitor's browser and uploads nothing. A browser version of the hosted FAIR
   Metadata Check (Extended), whose scoring engine it carries as readable code.
+  It runs at https://rijdho.github.io/fair-repo-audit/.
 type: software
 authors:
   - family-names: "Hartley Belmar"
